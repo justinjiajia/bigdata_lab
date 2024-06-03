@@ -132,7 +132,7 @@ rec_pairs_ordered.saveAsTextFile("hdfs:///output")
 spark-submit --master yarn --deploy-mode client --num-executors 4 recommendation.py
 ```
 
-Check out this [page](https://spark.apache.org/docs/latest/submitting-applications){:target="_blank"} for more launch options 
+Check out this <a href="https://spark.apache.org/docs/latest/submitting-applications" target="_blank">page</a> for more launch options 
 
 ## Print the output
 
