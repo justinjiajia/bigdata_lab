@@ -1,5 +1,5 @@
 
-# Data Preparation
+# 1 Data Preparation
 
 ```shell
 wget -O transactions.txt  https://raw.githubusercontent.com/justinjiajia/datafiles/main/browsing.csv
@@ -10,7 +10,7 @@ hadoop fs -mkdir /input
 hadoop fs -put transactions.txt /input
 ```
 
-# Run PySpark locally via shell
+# 2 Run PySpark locally via shell
 
 ## Start the shell
 
@@ -50,7 +50,7 @@ quit()
 cat output/part-* | grep "ELE96863"
 ```
 
-# Run PySpark on Yarn via shell
+# 3 Run PySpark on Yarn via shell
 
 ## Start the shell
 
@@ -99,7 +99,7 @@ path = hadoop.fs.Path('/output')
 hadoop fs -cat output/part-* | grep "ELE96863"
 ```
 
-# Submit PySpark Code in a script file
+# 3 Launch PySpark applications with `spark-submit`
 
 ## Create a PySpark script file
 
@@ -129,8 +129,10 @@ rec_pairs_ordered.saveAsTextFile("hdfs:///output")
 ## Submit the job
 
 ```shell
-spark-submit --master yarn --deploy-mode cluster recommendation.py
+spark-submit --master yarn --deploy-mode client --num-executors 4 recommendation.py
 ```
+
+Check out this [page](https://spark.apache.org/docs/latest/submitting-applications) for more launch options 
 
 ## Print the output
 
