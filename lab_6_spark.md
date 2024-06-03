@@ -20,7 +20,7 @@ pyspark --master local[*]
 
 ## PySpark code to run sequentially
 
-```pyspark
+```python
 transactions = sc.textFile("file:///home/hadoop/transactions.txt")  # absolute path of the input file on local FS
 
 transactions.cache()
@@ -60,7 +60,7 @@ pyspark --master yarn --deploy-mode client
 
 ## PySpark code to run sequentially
 
-```pyspark
+```python
 transactions = sc.textFile("hdfs:///input/transactions.txt")  # absolute path of the input file on HDFS
 
 transactions.cache()
@@ -109,7 +109,7 @@ nano recommendation.py
 
 ## Code to paste into the file
 
-```pyspark
+```python
 from pyspark.sql import SparkSession
 from itertools import combinations
 
