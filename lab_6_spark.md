@@ -10,6 +10,8 @@ hadoop fs -mkdir /input
 hadoop fs -put transactions.txt /input
 ```
 
+<br>
+
 # 2 Run PySpark locally via shell
 
 ## Start the shell
@@ -99,6 +101,8 @@ path = hadoop.fs.Path('/output')
 hadoop fs -cat output/part-* | grep "ELE96863"
 ```
 
+<br>
+
 # 3 Launch PySpark applications with `spark-submit`
 
 ## Create a PySpark script file
@@ -140,6 +144,7 @@ Check out this <a href="https://spark.apache.org/docs/latest/submitting-applicat
 hadoop fs -cat output/part-* | grep "ELE96863"
 ```
 
+<br>
 
 # AWS CLI command to launch a Spark cluster on EMR
 
