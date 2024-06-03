@@ -52,6 +52,8 @@ quit()
 cat output/part-* | grep "ELE96863"
 ```
 
+<br>
+
 # 3 Run PySpark on Yarn via shell
 
 ## Start the shell
@@ -103,7 +105,7 @@ hadoop fs -cat output/part-* | grep "ELE96863"
 
 <br>
 
-# 3 Launch PySpark applications with `spark-submit`
+# 4 Launch PySpark applications with `spark-submit`
 
 ## Create a PySpark script file
 
