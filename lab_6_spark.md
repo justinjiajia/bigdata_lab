@@ -31,7 +31,7 @@ transactions.take(10)
 
 from itertools import combinations
 
-pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0]<x[1] else (x[1], x[0]))
+pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0] <= x[1] else (x[1], x[0]))
 
 pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
 
@@ -73,7 +73,7 @@ transactions.take(10)
 
 from itertools import combinations
 
-pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0]<x[1] else (x[1], x[0]))
+pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0] <= x[1] else (x[1], x[0]))
 
 pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
 
@@ -124,7 +124,7 @@ sc = spark.sparkContext
 
 transactions = sc.textFile("hdfs:///input/transactions.txt") 
 transactions.cache()
-pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0]<x[1] else (x[1], x[0]))
+pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0] <= x[1] else (x[1], x[0]))
 pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
 rev_pairs_count = pairs_count.map(lambda x: ((x[0][1], x[0][0]), x[1]))
 combined_pairs = pairs_count.union(rev_pairs_count).map(lambda x: (x[0][0], [(x[0][1], x[1])]))
