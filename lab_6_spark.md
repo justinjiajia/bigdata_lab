@@ -138,7 +138,7 @@ rec_pairs_ordered.saveAsTextFile("hdfs:///output")
 spark-submit --master yarn --deploy-mode client --num-executors 4 recommendation.py
 ```
 
-> Any values specified as flags or in the properties file will be passed on to the application and merged with those specified through SparkConf. Properties set directly on the `SparkConf` take highest precedence, then flags passed to `spark-submit` or `spark-shell`, then options in the *spark-defaults.conf* file.
+> Any values specified as flags or in the properties file will be passed on to the application and merged with those specified through `SparkConf`. Properties set directly on the `SparkConf` take highest precedence, then flags passed to `spark-submit` or `spark-shell`, then options in the *spark-defaults.conf* file.
 
 Check out this <a href="https://spark.apache.org/docs/latest/submitting-applications" target="_blank">page</a> for more launch options 
 
