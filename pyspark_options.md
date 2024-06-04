@@ -85,3 +85,5 @@ Options:
  Spark on YARN only:
   --queue QUEUE_NAME          The YARN queue to submit to (Default: "default").
 ```
+
+https://repost.aws/knowledge-center/emr-set-spark-parameters
