@@ -61,6 +61,7 @@ cat output/part-* | grep "ELE96863"
 ```shell
 pyspark --master yarn --deploy-mode client
 ```
+> Note: Spark shell can only be started in client mode.
 
 ## PySpark code to run sequentially
 
