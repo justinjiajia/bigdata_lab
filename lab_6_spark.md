@@ -35,6 +35,8 @@ pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
 
 pairs_count.cache()
 
+pairs_count.take(10)
+
 rev_pairs_count = pairs_count.map(lambda x: ((x[0][1], x[0][0]), x[1]))
 
 combined_pairs = pairs_count.union(rev_pairs_count).map(lambda x: (x[0][0], [(x[0][1], x[1])]))
@@ -67,8 +69,6 @@ pyspark --master yarn --deploy-mode client
 
 ```python
 transactions = sc.textFile("hdfs:///input/transactions.txt")  # absolute path of the input file on HDFS
-
-transactions.take(10)
 
 from itertools import combinations
 
