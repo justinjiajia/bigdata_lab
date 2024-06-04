@@ -25,8 +25,6 @@ pyspark --master local[*]
 ```python
 transactions = sc.textFile("file:///home/hadoop/transactions.txt")  # absolute path of the input file on local FS
 
-transactions.cache()
-
 transactions.take(10)
 
 from itertools import combinations
@@ -34,6 +32,8 @@ from itertools import combinations
 pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0] <= x[1] else (x[1], x[0]))
 
 pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
+
+pairs_count.cache()
 
 rev_pairs_count = pairs_count.map(lambda x: ((x[0][1], x[0][0]), x[1]))
 
@@ -68,8 +68,6 @@ pyspark --master yarn --deploy-mode client
 ```python
 transactions = sc.textFile("hdfs:///input/transactions.txt")  # absolute path of the input file on HDFS
 
-transactions.cache()
-
 transactions.take(10)
 
 from itertools import combinations
@@ -77,6 +75,8 @@ from itertools import combinations
 pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0] <= x[1] else (x[1], x[0]))
 
 pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
+
+pairs_count.cache()
 
 rev_pairs_count = pairs_count.map(lambda x: ((x[0][1], x[0][0]), x[1]))
 
