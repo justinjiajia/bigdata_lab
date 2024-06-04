@@ -123,7 +123,7 @@ from itertools import combinations
 spark = SparkSession.builder.appName("recommendation").getOrCreate()
 sc = spark.sparkContext
 
-transactions = sc.textFile("hdfs:///input/transactions.txt") 
+transactions = sc.textFile("hdfs:///input/transactions.txt")
 transactions.cache()
 pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0] <= x[1] else (x[1], x[0]))
 pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
