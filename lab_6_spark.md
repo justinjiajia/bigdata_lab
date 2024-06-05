@@ -1,4 +1,4 @@
-
+![image](https://github.com/justinjiajia/bigdata_lab/assets/8945640/59909064-93e1-490c-960e-b0bebac4787c)
 # 1 Data Preparation
 
 ```shell
@@ -37,9 +37,7 @@ pairs_count.cache()
 
 pairs_count.take(10)
 
-rev_pairs_count = pairs_count.map(lambda x: ((x[0][1], x[0][0]), x[1]))
-
-combined_pairs = pairs_count.union(rev_pairs_count).map(lambda x: (x[0][0], [(x[0][1], x[1])]))
+combined_pairs = pairs_count.flatMap(lambda x: [(x[0][0], [(x[0][1], x[1])]), (x[0][1], [(x[0][0], x[1])])])
 
 rec_pairs_ordered = combined_pairs.reduceByKey(lambda x, y: sorted(x+y, key=lambda val: val[1], reverse=True)[:5])
 
@@ -78,9 +76,7 @@ pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
 
 pairs_count.cache()
 
-rev_pairs_count = pairs_count.map(lambda x: ((x[0][1], x[0][0]), x[1]))
-
-combined_pairs = pairs_count.union(rev_pairs_count).map(lambda x: (x[0][0], [(x[0][1], x[1])]))
+combined_pairs = pairs_count.flatMap(lambda x: [(x[0][0], [(x[0][1], x[1])]), (x[0][1], [(x[0][0], x[1])])])
 
 rec_pairs_ordered = combined_pairs.reduceByKey(lambda x, y: sorted(x+y, key=lambda val: val[1], reverse=True)[:5])
 
@@ -127,8 +123,7 @@ transactions = sc.textFile("hdfs:///input/transactions.txt")
 transactions.cache()
 pairs = transactions.map(lambda x: x.strip().split(" ")).flatMap(lambda x: combinations(x, 2)).map(lambda x: (x[0], x[1]) if x[0] <= x[1] else (x[1], x[0]))
 pairs_count = pairs.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y)
-rev_pairs_count = pairs_count.map(lambda x: ((x[0][1], x[0][0]), x[1]))
-combined_pairs = pairs_count.union(rev_pairs_count).map(lambda x: (x[0][0], [(x[0][1], x[1])]))
+combined_pairs = pairs_count.flatMap(lambda x: [(x[0][0], [(x[0][1], x[1])]), (x[0][1], [(x[0][0], x[1])])])
 rec_pairs_ordered = combined_pairs.reduceByKey(lambda x, y: sorted(x+y, key=lambda val: val[1], reverse=True)[:5])
 rec_pairs_ordered.saveAsTextFile("hdfs:///output")
 ```
