@@ -1,4 +1,4 @@
-![image](https://github.com/justinjiajia/bigdata_lab/assets/8945640/59909064-93e1-490c-960e-b0bebac4787c)
+
 # 1 Data Preparation
 
 ```shell
