@@ -64,6 +64,8 @@ $ ./data_prep.sh
 ```
 
 More details on how to run bash scripts can be found [here](https://www.geeksforgeeks.org/how-to-run-bash-script-in-linux/).
+
+
 <br>
 
 # HDFS operations for data preparation
@@ -85,7 +87,7 @@ $ hadoop fs -put data /<Your ITSC Account>
 $ hadoop fs -ls /<Your ITSC Account>/data
 ```
 
-
+<br>
 # MapReduce job submission
 
 
@@ -101,6 +103,8 @@ E.g., we can specify the number of reducers to use as follows:
 ```shell
 $ yarn jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar wordcount -D mapreduce.job.reduces=2  /<Your ITSC Account>/data /<Your ITSC Account>/wordcount_output_1
 ```
+
+<br>
 
 # Get the output
 
