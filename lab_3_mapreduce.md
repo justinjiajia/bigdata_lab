@@ -56,7 +56,7 @@ sh data_prep.sh
 
 An alternative way to run the script:
 
-First add the execution permission to the file and then run it:
+First add the execution permission to the file to make it executable. Once the script is executable, we can run it by typing `./` followed by the script name in the terminal:
 
 ```shell
 $ chmod +x data_prep.sh
