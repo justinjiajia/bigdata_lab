@@ -20,6 +20,50 @@ $ cd ..
 $ du -sh data
 ```
 
+Instead of running them one after another, we can also put them into a `.script` file and run them in batch.
+
+```shell
+$ nano data_prep.sh
+```
+
+
+Copy and paste the code snippet below into the file:
+
+```shell
+#!/bin/bash
+
+rm -r data
+mkdir data
+cd data
+wget https://archive.org/download/encyclopaediabri31156gut/pg31156.txt
+wget https://archive.org/download/encyclopaediabri34751gut/pg34751.txt
+wget https://archive.org/download/encyclopaediabri35236gut/pg35236.txt
+wget -O nytimes.txt https://raw.githubusercontent.com/justinjiajia/datafiles/main/nytimes_news_articles.txt
+cd ..
+du -sh data
+```
+
+Save the change and get back to the shell. Then run:
+
+```shell
+bash data_prep.sh
+```
+or 
+
+```shell
+sh data_prep.sh
+```
+
+An alternative way to run the script:
+
+First add the execution permission to the file and then run it:
+
+```shell
+$ chmod +x data_prep.sh
+$ ./data_prep.sh
+```
+
+More details on how to run bash scripts can be found [here](https://www.geeksforgeeks.org/how-to-run-bash-script-in-linux/).
 <br>
 
 # HDFS operations for data preparation
