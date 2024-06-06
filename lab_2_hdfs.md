@@ -5,6 +5,12 @@
 ```json
 [
     {
+        "classification":"core-site",
+        "properties": {
+            "hadoop.http.staticuser.user": "hadoop"
+        }
+    },
+    {
         "classification": "hdfs-site",
         "properties": {
             "dfs.block.size": "16M",
@@ -13,6 +19,9 @@
     }
 ]
 ```
+
+To use the NameNode's Web UI to delete files and create folders, we need to override the "hadoop.http.staticuser.user" property's default value (`"dr.who"`) with `"hadoop"`, which is the default user of EMR instances.
+
 
 <br>
 
