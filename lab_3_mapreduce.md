@@ -51,7 +51,7 @@ Note that `hadoop jar` and `yarn jar` can be interchangeably used below.
 $ hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar wordcount /<Your ITSC Account>/data /<Your ITSC Account>/wordcount_output
 ```
 
-We can use the `-D` flag to define a value for a property in the format of `<property=value>`.
+We can use the `-D` flag to define a value for a property in the format of `property=value`.
 E.g., we can specify the number of reducers to use as follows:
 
 ```shell
