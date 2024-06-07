@@ -54,10 +54,14 @@ The default timeout is 60s. If we were not to configure the property to a longer
 We don’t need to specify the "--deploy-mode" flag, because spark shells can only run in client mode
 
 
-1. Experiment 1
 
+### 1 Experiment 1
 
+```shell
 pyspark --master yarn --conf spark.dynamicAllocation.executorIdleTimeout=10m
+```
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/87c1ca88-170e-40c5-944f-ac0a94dd2bd2">
 
 
  
