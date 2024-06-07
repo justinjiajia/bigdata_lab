@@ -453,7 +453,22 @@ Native Methods: These are methods declared in Java but implemented in another pr
 
 https://en.wikipedia.org/wiki/Java_Native_Interface
 
-- 
+```python
+>>> lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
+>>> friend_lists = lines.map(lambda x: x.strip().split("\t")).filter(lambda x: len(x) == 2).mapValues(lambda x: x.split(","))
+>>> print(friend_lists.toDebugString().decode())
+(2) PythonRDD[2] at RDD at PythonRDD.scala:53 []
+ |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 []
+ |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 []
+```
+
+- "PythonRDD" indicates that the RDD is now being processed using Python functions or lambda expressions. This change in signature reflects the type of RDD resulting from the applied transformations.
+
+- "at PythonRDD.scala:53" indicates the location of the code file (PythonRDD.scala) and the line number (53) where the RDD is defined.
+
+
+   
+  
 <img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5b599410-283f-4e43-abce-79b2017a98c6">
 
 Ongoing
