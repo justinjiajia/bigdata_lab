@@ -55,7 +55,7 @@ We don’t need to specify the "--deploy-mode" flag, because spark shells can on
 
 
 
-### 1 Experiment 1
+### Experiment 1
 
 ```shell
 pyspark --master yarn --conf spark.dynamicAllocation.executorIdleTimeout=10m
@@ -102,7 +102,13 @@ Note that the primary instance is not part of the cluster’s resource pool (bec
 Recall that YARN sees 1 vCore per container. So, for an executor, 1 vCore seen by YARN gets mapped to 4 cores seen by Spark.
 No cores are assigned to the driver. (does it imply that the driver is not running on any of the worker nodes?)
 
+After 10 minutes, all executors are removed automatically. Only the application master and the driver stay alive.
 
- 
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/cbade3c8-8025-4d4a-8328-dd461d6f93da">
+
+ <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4244790b-2a2b-4dff-9a2b-c5bc8a3bf606">
+
+### Experiment 2
+
 
 
