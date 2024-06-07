@@ -100,7 +100,7 @@ the instance `ip-xxxx-48-39` hosts 2 containers.
 Note that the primary instance is not part of the cluster’s resource pool (because no NodeManager is running on it).
 
 Recall that YARN sees 1 vCore per container. So, for an executor, 1 vCore seen by YARN gets mapped to 4 cores seen by Spark.
-No cores are assigned to the driver, implying the driver is not running on any worker node, but in the master node.
+No cores are assigned to the driver. (does it imply that the driver is not running on any of the worker nodes?)
 
 
  
