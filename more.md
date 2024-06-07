@@ -1,4 +1,4 @@
-
+<img width="845" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c524676a-435a-41d8-af81-481017ea2262">
 
 ## Dynamic allocation on EMR
 
@@ -112,7 +112,8 @@ A Spark application ((id: `application_1717748984266_0001`)) is created.
  <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/20b58a73-57ca-46b9-a4c1-9dcfe13f7369">
 
 
-5 containers are allocated to host the 4 executors and the application master.
+4 containers (4.97 GB mem and 1 vCore per container) are allocated to host the 4 executors,
+whereas 1 container (896 MB and 1 vCore) is allocated to host the application master.
 
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
@@ -174,6 +175,11 @@ pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.execut
 A new Spark application (id: `application_1717748984266_0003`) is created. 
 
 9 containers are created by YARN.
+
+8 containers (2.38 GB mem and 1 vCore per container) are allocated to host the 4 executors,
+whereas 1 container (896 MB and 1 vCore) is allocated to host the application master.
+
+
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/a5a549b3-4604-4248-a0d6-3aaa974233e1">
 
