@@ -441,3 +441,18 @@ Completed
 #### Output files on HDFS
 <img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7bf4dc0d-8b18-469f-bfd5-9af0f07e5849">
 
+
+On an Amazon EMR cluster, the source files like PythonRDD.scala are not typically included in the pre-built binaries that come with the EMR installation.
+
+
+```shell
+[hadoop@ip-172-31-56-41 spark]$ pwd
+/usr/lib/spark
+[hadoop@ip-172-31-56-41 spark]$ find . -name PythonRDD.scala
+[hadoop@ip-172-31-56-41 spark]$ jar tf jars/spark-core_*.jar | grep PythonRDD
+org/apache/spark/api/python/PythonRDD.class
+org/apache/spark/api/python/PythonRDD$.class
+org/apache/spark/api/python/PythonRDDServer.class
+```
+
+https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/api/python/
