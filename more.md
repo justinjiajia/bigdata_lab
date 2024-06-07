@@ -13,7 +13,8 @@ EMR release: 7.1.0
 
 YARN resource manager Web UI. It shows that we logged in as hadoop. This is because we set `hadoop.http.staticuser.user` to `hadoop` in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
 
-<img width="717" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/d979fc43-ab7b-4810-b284-5c787be62635">
+ <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/acddf4d5-1bb4-407d-a0ff-3d3c5ac3060f">
+
 
 
  
