@@ -96,11 +96,11 @@ the instance `ip-xxxx-48-39` hosts 2 containers.
 | ------------- |-------------| ------------- | ------------- |
 | ip-xxxx-48-39  | core | executor 4 (4 cores and 2GB mem) and the application master (1 core) | 2 |
 | ip-xxxx-56-172  | core | executor 1  (4 cores and 2GB mem)| 1 |
-| ip-xxxx-39-175  | core |  executor 2 (4 cores and 2GB mem) | 1 |
+| ip-xxxx-59-175  | core |  executor 2 (4 cores and 2GB mem) | 1 |
 | ip-xxxx-51-151  | core |  executor 3 (4 cores and 2GB mem)| 1 |
-| ip-xxxx-31-52 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
+| ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
 
-Note that the primary instance is not part of the cluster’s resource pool (because no NodeManager is running on it).
+Note that the primary instance is not part of the cluster's resource pool (because no NodeManager is running on it).
 
 Recall that YARN sees 1 vCore per container. So, for an executor, 1 vCore seen by YARN gets mapped to 4 cores seen by Spark.
 No cores are assigned to the driver. (does it imply that the driver is not running on any of the worker nodes?)
@@ -120,6 +120,8 @@ After 10 minutes, all executors are removed automatically. Only the application 
 pyspark --master yarn --executor-cores 2 --conf spark.dynamicAllocation.executorIdleTimeout=10m
 ```
 
+A new application is created. 
+
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2dc4ee09-e26a-4ce9-8dbf-32aefdc62a06">
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/97e7547d-7483-4e29-b10f-b8209d1fa6f2">
@@ -129,8 +131,8 @@ pyspark --master yarn --executor-cores 2 --conf spark.dynamicAllocation.executor
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-48-39  | core | executor 4 (4 cores and 2GB mem)  | 2 |
-| ip-xxxx-56-172  | core | executor 1  (4 cores and 2GB mem)| 1 |
-| ip-xxxx-39-175  | core |  executor 2 (4 cores and 2GB mem) | 1 |
-| ip-xxxx-51-151  | core |  executor 3 (4 cores and 2GB mem) and the application master (1 core) | 1 |
-| ip-xxxx-31-52 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
+| ip-xxxx-48-39  | core | executor 3 (2 cores and 2GB mem)  | 1 |
+| ip-xxxx-56-172  | core | executor 4  (2 cores and 2GB mem)| 1 |
+| ip-xxxx-59-175  | core |  executor 2 (2 cores and 2GB mem) | 1 |
+| ip-xxxx-51-151  | core |  executor 1 (2 cores and 2GB mem) and the application master (1 core) | 2|
+| ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
