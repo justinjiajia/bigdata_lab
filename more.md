@@ -70,10 +70,14 @@ This confusion seems to arise from the default configuration for the `yarn.nodem
 More on this confusion: https://repost.aws/questions/QUmbShfKT4ShOy1IX8T6Exng/difference-in-vcore-and-vcpu-ec2-and-emr
 
 
-When launching a shell, make sure to set executors' idle timeout ("spark.dynamicAllocation.executorIdleTimeout") to a longer time interval (e.g., 10 minutes).
+When launching a shell, make sure to set executors' idle timeout (`spark.dynamicAllocation.executorIdleTimeout`) to a longer time interval (e.g., 10 minutes).
 The default timeout is 60s. If we were not to configure the property to a longer time interval, idle executors would be automatically removed after 1 minute.
 
-We don't need to specify the `--deploy-mode` flag, because spark shells can only run in client mode
+We don't need to specify the `--deploy-mode` flag, because spark shells can only run in client mode:
+
+<img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6606ba7c-8309-4ccf-bfa9-ad135e727266">
+
+Although we see the prompt changes to `>>>` above,  `spark` and `sc` were not successfully initialized.
 
 <br>
 
