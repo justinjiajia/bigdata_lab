@@ -214,3 +214,36 @@ The resource allocation is similar except for 2 cores per executor.
 | ip-xxxx-59-175  | core |  executors 3 & 4 (2 cores and 912M mem / executor) | 1 |
 | ip-xxxx-51-151  | core |  executors 1 & 2 (2 cores and 912M mem / executor ) and the application master (1 core) | 2 |
 | ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
+
+
+<br>
+
+### Experiment 5
+
+```shell
+pyspark --master yarn --num-executors 4 --executor-memory 2g --executor-cores 3 --conf spark.dynamicAllocation.executorIdleTimeout=10m
+```
+
+Still, 9 containers are created by YARN.
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1df913ba-1424-4251-a7ef-4828cad745df">
+
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/fe6edead-a504-4040-bfad-380389e79639">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/66aafb5f-fdc3-4ef1-b9f0-e6de3ee350ab">
+
+Even though we've explicitly specified the number of executors to 4, Spark still creates 8 executors (3 cores and 912M mem per executor).
+
+<img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4a444a26-0f3e-410f-ad05-9467a69f8d6a">
+
+
+<br>
+
+### Observations
+
+It seems that:
+
+- The number of executor is determined by the amount of memory per executor and the total amount of memory available on the cluster.
+
+- The number of cores each executor (the multiplier used to scale no. of vcores) owns can be specified by `--executor-cores`
+
