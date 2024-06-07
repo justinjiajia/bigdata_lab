@@ -22,7 +22,8 @@ It seems that YARN sees 8 GB memory and 4 vCores per core instance.
 
 SSHing into the primary node of the same instance type to further verifies that there were 2 CPUs (1 core each) at work in each core instance.
 
- 
+ <img width="448" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/09a99c42-44d3-4f60-95b4-f18b1a4ef8f4">
+
 
 This confusion seems to arise from the configuration for the `yarn.nodemanager.resource.cpu-vcores` property. 
 
