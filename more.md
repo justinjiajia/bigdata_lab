@@ -363,7 +363,30 @@ PythonRDD[6] at RDD at PythonRDD.scala:53
        |  PythonRDD[2] at distinct at <stdin>:1 []
        |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 []
        |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 []
->>> rec_pairs.map(lambda x: (x, 1)).reduceByKey(lambda a,b: a+b).saveAsTextFile("hdfs:///rec_pairs_output")
+>>> output_pairs = rec_pairs.map(lambda x: (x, 1)).reduceByKey(lambda a,b: a+b)
+>>> print(output_pairs.toDebugString().decode())
+(4) PythonRDD[18] at RDD at PythonRDD.scala:53 []
+ |  MapPartitionsRDD[17] at mapPartitions at PythonRDD.scala:160 []
+ |  ShuffledRDD[16] at partitionBy at NativeMethodAccessorImpl.java:0 []
+ +-(4) PairwiseRDD[15] at reduceByKey at <stdin>:1 []
+    |  PythonRDD[14] at reduceByKey at <stdin>:1 []
+    |  MapPartitionsRDD[13] at mapPartitions at PythonRDD.scala:160 []
+    |  ShuffledRDD[12] at partitionBy at NativeMethodAccessorImpl.java:0 []
+    +-(4) PairwiseRDD[11] at subtract at <stdin>:1 []
+       |  PythonRDD[10] at subtract at <stdin>:1 []
+       |  UnionRDD[9] at union at NativeMethodAccessorImpl.java:0 []
+       |  PythonRDD[7] at RDD at PythonRDD.scala:53 []
+       |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 []
+       |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 []
+       |  PythonRDD[8] at RDD at PythonRDD.scala:53 []
+       |  PythonRDD[6] at RDD at PythonRDD.scala:53 []
+       |  MapPartitionsRDD[5] at mapPartitions at PythonRDD.scala:160 []
+       |  ShuffledRDD[4] at partitionBy at NativeMethodAccessorImpl.java:0 []
+       +-(2) PairwiseRDD[3] at distinct at <stdin>:1 []
+          |  PythonRDD[2] at distinct at <stdin>:1 []
+          |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 []
+          |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 []
+>>> output_pairs.saveAsTextFile("hdfs:///rec_pairs_output")
 ```
 
 
