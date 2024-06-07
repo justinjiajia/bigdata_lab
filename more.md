@@ -338,6 +338,14 @@ pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.execut
 ... .map(lambda x: x if x[0] <= x[1] else (x[1], x[0])).distinct()
 >>> already_friend_pairs.cache()
 PythonRDD[6] at RDD at PythonRDD.scala:53
+>>> print(already_friend_pairs.toDebugString().decode())
+(2) PythonRDD[6] at RDD at PythonRDD.scala:53 [Memory Serialized 1x Replicated]
+ |  MapPartitionsRDD[5] at mapPartitions at PythonRDD.scala:160 [Memory Serialized 1x Replicated]
+ |  ShuffledRDD[4] at partitionBy at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]
+ +-(2) PairwiseRDD[3] at distinct at <stdin>:1 [Memory Serialized 1x Replicated]
+    |  PythonRDD[2] at distinct at <stdin>:1 [Memory Serialized 1x Replicated]
+    |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]
+    |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]
 >>> from itertools import combinations
 >>> potential_pairs = friend_lists.flatMap(lambda x: combinations(x[1], 2)).map(lambda x: (int(x[0]), int(x[1])))
 >>> print(potential_pairs.toDebugString().decode())
