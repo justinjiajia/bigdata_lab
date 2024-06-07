@@ -111,8 +111,7 @@ After 10 minutes, all executors are removed automatically. Only the application 
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4244790b-2a2b-4dff-9a2b-c5bc8a3bf606">
 
----
-
+ 
 <br>
 
 ### Experiment 2
@@ -123,7 +122,9 @@ pyspark --master yarn --executor-cores 2 --conf spark.dynamicAllocation.executor
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2dc4ee09-e26a-4ce9-8dbf-32aefdc62a06">
 
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/97e7547d-7483-4e29-b10f-b8209d1fa6f2">
 
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/54b7d2f6-e825-421e-8dc2-5223495a6cff">
 
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
