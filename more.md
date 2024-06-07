@@ -380,28 +380,29 @@ Completed
 
 
 
-#### Stage 0:
+#### Stage 0
 
 <img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/32377e25-91b1-4cd6-b626-a6f38b40ce0e">
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b5923053-d566-4543-bb4a-946b1e8b8e1c">
 
-#### Stage 1:
+#### Stage 1
 
 <img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/829aa613-8ee9-401f-b5bd-bac44b5a0416">
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/93b0bf73-38ca-4e8e-bcc5-d54a43b37712">
 
-#### Stage 2:
+#### Stage 2
 
 <img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9e32409c-dc74-4ee7-ab36-0f20046ce35f">
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/618029df-dbad-4bb0-aa59-ac7026b1f5a4">
 
-#### Stage 3:
+#### Stage 3
 
 <img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/820df47a-daef-4dee-96e1-31443de94d32">
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/ab1745df-9760-4d13-aa14-dd71dde87853">
 
 
+#### Output files on HDFS
 <img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7bf4dc0d-8b18-469f-bfd5-9af0f07e5849">
 
