@@ -24,7 +24,7 @@ YARN resource manager Web UI. It shows that we logged in as hadoop. This is beca
  
 
 The cluster metrics section shows that there are 24 GB memory and 16 vCores.
-It seems that YARN sees 8 GB memory and 4 vCores per core instance. 
+It seems that YARN sees 6 GB memory and 4 vCores per core instance. 
 
 SSHing into the primary node of the same instance type to further verifies that there were 2 CPUs (1 core each) at work in each core instance.
 
