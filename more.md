@@ -30,8 +30,9 @@ SSHing into the primary node of the same instance type to further verifies that 
 
 This confusion seems to arise from the configuration for the `yarn.nodemanager.resource.cpu-vcores` property. 
 
+ ![image](https://github.com/justinjiajia/bigdata_lab/assets/8945640/ae055473-2b7c-4c51-bec0-c89385407105)
 
-http://<primary-node-dns>:8088/conf
+`http://<primary-node-dns>:8088/conf`
 
 ```xml
 <property>
