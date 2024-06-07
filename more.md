@@ -10,7 +10,10 @@ Settings:
 EMR release: 7.1.0
 
 --
-YARN resource manager Web UI. It shows that we logged in as hadoop. This is because we set "hadoop.http.staticuser.user" to "hadoop" in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
+
+YARN resource manager Web UI. It shows that we logged in as hadoop. This is because we set `hadoop.http.staticuser.user` to `hadoop` in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
+
+<img width="452" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/8f46049b-f9f0-4a27-afb6-b9c755fc4003">
 
  
 
@@ -21,21 +24,20 @@ SSHing into the primary node of the same instance type to further verifies that 
 
  
 
-This confusion seems to arise from the configuration for the "yarn.nodemanager.resource.cpu-vcores" property. 
+This confusion seems to arise from the configuration for the `yarn.nodemanager.resource.cpu-vcores` property. 
 
  
 http://<primary-node-dns>:8088/conf
 
+```xml
 <property>
 <name>yarn.nodemanager.resource.cpu-vcores</name>
 <value>4</value>
 <final>false</final>
 <source>yarn-site.xml</source>
-
+```
  
-
-More:
-https://repost.aws/questions/QUmbShfKT4ShOy1IX8T6Exng/difference-in-vcore-and-vcpu-ec2-and-emr
+More on this confusion: https://repost.aws/questions/QUmbShfKT4ShOy1IX8T6Exng/difference-in-vcore-and-vcpu-ec2-and-emr
 
 
 When launching a shell, make sure to set executors’ idle timeout ("spark.dynamicAllocation.executorIdleTimeout") to a longer time interval (e.g., 10 minutes).
