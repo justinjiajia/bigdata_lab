@@ -1,4 +1,4 @@
-<img width="845" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c524676a-435a-41d8-af81-481017ea2262">
+
 
 ## Dynamic allocation on EMR
 
@@ -13,6 +13,7 @@
 
 - EMR release: 7.1.0
 
+- Run a .sh file at `s3://ust-bigdata-class/install_python_libraries.sh` as a bootstrap action
 
 ### AWS CLI
 
