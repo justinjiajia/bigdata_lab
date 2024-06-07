@@ -27,6 +27,7 @@ aws emr create-cluster \
  --applications Name=Hadoop Name=Hive Name=Spark \
  --configurations '[{"Classification":"core-site","Properties":{"hadoop.http.staticuser.user":"hadoop"}},{"Classification":"hdfs-site","Properties":{"dfs.replication":"3"}}]' \
  --instance-groups '[{"InstanceCount":4,"InstanceGroupType":"CORE","Name":"Core","InstanceType":"m4.large","EbsConfiguration":{"EbsBlockDeviceConfigs":[{"VolumeSpecification":{"VolumeType":"gp2","SizeInGB":32},"VolumesPerInstance":1}]}},{"InstanceCount":1,"InstanceGroupType":"MASTER","Name":"Primary","InstanceType":"m4.large","EbsConfiguration":{"EbsBlockDeviceConfigs":[{"VolumeSpecification":{"VolumeType":"gp2","SizeInGB":32},"VolumesPerInstance":1}]}}]' \
+ --bootstrap-actions '[{"Args":[],"Name":"python_libraries","Path":"s3://ust-bigdata-class/install_python_libraries.sh"}]' \
  --scale-down-behavior "TERMINATE_AT_TASK_COMPLETION" \
  --auto-termination-policy '{"IdleTimeout":3600}' \
  --region "us-east-1"
