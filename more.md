@@ -177,7 +177,7 @@ A new Spark application (id: `application_1717748984266_0003`) is created.
 8 containers (2.38 GB mem and 1 vCore per container) are allocated to host the 4 executors,
 whereas 1 container (896 MB and 1 vCore) is allocated to host the application master.
 
-> † 2.38 GB memory for a container that hosts an executor has been confirmed by first letting all executors die out and submitting a job that requires only 1 executor.
+> † 2.38 GB memory above has been verified by first letting all executors die out and submitting a job that requires only 1 executor.
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/a5a549b3-4604-4248-a0d6-3aaa974233e1">
 
