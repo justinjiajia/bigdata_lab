@@ -89,18 +89,16 @@ the instance `ip-xxxx-48-39` hosts 2 containers.
 5 containers are allocated to host the 4 executors and the application master.
 
 
-| Instance ID | Instance Type | Software Entities |
-| ------------- |-------------| ------------- |
-| ip-xxxx-48-39  | core | executor 4 and the application master |
-| ip-xxxx-56-172  | core | executor 1  |
-| ip-xxxx-39-175  | core |  executor 2 |
-| ip-xxxx-51-151  | core |  executor 3 |
-| ip-xxxx-31-52 | primary |  client: Pyspark shell with the driver process running inside it  |
+| Instance ID | Instance Type | Software Entities | No. of Containers |
+| ------------- |-------------| ------------- | ------------- |
+| ip-xxxx-48-39  | core | executor 4 (4 cores and 2GB mem) and the application master (1 core) | 2 |
+| ip-xxxx-56-172  | core | executor 1  (4 cores and 2GB mem)| 1 |
+| ip-xxxx-39-175  | core |  executor 2 (4 cores and 2GB mem) | 1 |
+| ip-xxxx-51-151  | core |  executor 3 (4 cores and 2GB mem)| 1 |
+| ip-xxxx-31-52 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
 
 Note that the primary instance is not part of the cluster’s resource pool (because no NodeManager is running on it).
 
-
-Each executor owns 4 cores and 2GB memory, while the application master has 1 core.
 Recall that YARN sees 1 vCore per container. So, for an executor, 1 vCore seen by YARN gets mapped to 4 cores seen by Spark.
 No cores are assigned to the driver, implying the driver is not running on any worker node, but in the master node.
 
