@@ -1,0 +1,83 @@
+Dynamic allocation on EMR with YARN
+
+Settings:
+1 primary instance; type: m4.large
+4 core instances; type: 4 m4.large 
+
+
+EMR release: 7.1.0
+
+--
+YARN resource manager Web UI. It shows that we logged in as hadoop. This is because we set "hadoop.http.staticuser.user" to "hadoop" in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
+
+ 
+
+The cluster metrics section shows that there are 24 GB memory and 16 vCores.
+It seems that YARN sees 8 GB memory and 4 vCores per core instance. 
+
+SSHing into the primary node of the same instance type to further verifies that there were 2 CPUs (1 core each) at work in each core instance.
+
+ 
+
+This confusion seems to arise from the configuration for the "yarn.nodemanager.resource.cpu-vcores" property. 
+
+ 
+http://<primary-node-dns>:8088/conf
+
+<property>
+<name>yarn.nodemanager.resource.cpu-vcores</name>
+<value>4</value>
+<final>false</final>
+<source>yarn-site.xml</source>
+
+ 
+
+More:
+https://repost.aws/questions/QUmbShfKT4ShOy1IX8T6Exng/difference-in-vcore-and-vcpu-ec2-and-emr
+
+
+When launching a shell, make sure to set executors’ idle timeout ("spark.dynamicAllocation.executorIdleTimeout") to a longer time interval (e.g., 10 minutes).
+The default timeout is 60s. If we were not to configure the property to a longer time interval, idle executors would be automatically removed after 1 minute.
+
+We don’t need to specify the "--deploy-mode" flag, because spark shells can only run in client mode
+
+
+1. Experiment 1
+
+
+pyspark --master yarn --conf spark.dynamicAllocation.executorIdleTimeout=10m
+
+
+ 
+
+5 containers are created and spread across the 4 core instances.
+1 vCore is used by each container.
+Memory used on ip-xxxx-48-39 is larger than that used in any of the other core instances, because that instance hosts 2 containers.
+
+
+1 spark application is created
+
+ 
+
+4 executors are created for this application
+ 
+
+ 
+
+5 containers are allocated to host the 4 executors and the application master.
+
+ip-xxxx-48-39: 1 container for executor 4 and the application master
+ip-xxxx-56-172: 1 container for executor 1
+ip-xxxx-39-175: 1 container for executor 2
+ip-xxxx-51-151: 1 container for executor 3
+ip-xxxx-31-52: this is the master node of the cluster, which is not part of the cluster’s resource pool (because no NodeManager is running on it).
+
+
+Each executor owns 4 cores and 2GB memory, while the application master has 1 core.
+Recall that YARN sees 1 vCore per container. So, for an executor, 1 vCore seen by YARN gets mapped to 4 cores seen by Spark.
+No cores are assigned to the driver, implying the driver is not running on any worker node, but in the master node.
+
+
+ 
+
+
