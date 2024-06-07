@@ -346,6 +346,52 @@ rec_pairs = potential_pairs.subtract(already_friend_pairs)
 output_pairs = rec_pairs.map(lambda x: (x, 1)).reduceByKey(lambda a,b: a+b)
 output_pairs.saveAsTextFile("hdfs:///rec_pairs_output")
 ```
+
+
+
+   
+  
+<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5b599410-283f-4e43-abce-79b2017a98c6">
+
+Ongoing
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/69cb158c-7d5d-455b-98b3-ab2b3e64ff58">
+
+Completed
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2f178dbd-7658-4a54-9a5f-9809f7710ea0">
+
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/056b0c61-ea4a-4996-b1e5-68c93d694981">
+
+
+
+#### Stage 0
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/32377e25-91b1-4cd6-b626-a6f38b40ce0e">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b5923053-d566-4543-bb4a-946b1e8b8e1c">
+
+#### Stage 1
+
+<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/829aa613-8ee9-401f-b5bd-bac44b5a0416">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/93b0bf73-38ca-4e8e-bcc5-d54a43b37712">
+
+#### Stage 2
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9e32409c-dc74-4ee7-ab36-0f20046ce35f">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/618029df-dbad-4bb0-aa59-ac7026b1f5a4">
+
+#### Stage 3
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/820df47a-daef-4dee-96e1-31443de94d32">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/ab1745df-9760-4d13-aa14-dd71dde87853">
+
+
+#### Output files on HDFS
+<img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7bf4dc0d-8b18-469f-bfd5-9af0f07e5849">
+
+
+
 #### Print debug strings
 
 The Spark Driver keeps track of every RDD's lineage — that is, the series of transformations performed to yield an RDD or a partition thereof. This enables every RDD at every stage to be reevaluated in the event of a failure, which provides the resiliency in RDDs.
@@ -466,47 +512,6 @@ https://en.wikipedia.org/wiki/Java_Native_Interface
 
 - "at PythonRDD.scala:53" indicates the location of the code file (PythonRDD.scala) and the line number (53) where the RDD is defined.
 
-
-   
-  
-<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5b599410-283f-4e43-abce-79b2017a98c6">
-
-Ongoing
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/69cb158c-7d5d-455b-98b3-ab2b3e64ff58">
-
-Completed
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2f178dbd-7658-4a54-9a5f-9809f7710ea0">
-
-
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/056b0c61-ea4a-4996-b1e5-68c93d694981">
-
-
-
-#### Stage 0
-
-<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/32377e25-91b1-4cd6-b626-a6f38b40ce0e">
-
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b5923053-d566-4543-bb4a-946b1e8b8e1c">
-
-#### Stage 1
-
-<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/829aa613-8ee9-401f-b5bd-bac44b5a0416">
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/93b0bf73-38ca-4e8e-bcc5-d54a43b37712">
-
-#### Stage 2
-
-<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9e32409c-dc74-4ee7-ab36-0f20046ce35f">
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/618029df-dbad-4bb0-aa59-ac7026b1f5a4">
-
-#### Stage 3
-
-<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/820df47a-daef-4dee-96e1-31443de94d32">
-
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/ab1745df-9760-4d13-aa14-dd71dde87853">
-
-
-#### Output files on HDFS
-<img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7bf4dc0d-8b18-469f-bfd5-9af0f07e5849">
 
 
 On an Amazon EMR cluster, the source files like PythonRDD.scala are not typically included in the pre-built binaries that come with the EMR installation.
