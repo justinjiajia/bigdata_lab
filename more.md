@@ -253,3 +253,36 @@ It seems that:
 
 - The number of cores each executor (the multiplier used to scale no. of vcores) owns can be specified by `--executor-cores`
 
+
+
+
+
+# Other experiments
+
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/ccb137d0-4ed1-4553-a330-0a87f8f530d8">
+
+
+```python
+>>> import numpy as np
+>>> parallel_rdd = sc.parallelize(np.arange(1000000)**2)
+>>> parallel_rdd.cache()
+ParallelCollectionRDD[0] at readRDDFromFile at PythonRDD.scala:289
+>>> parallel_rdd.count()
+24/06/07 13:04:05 WARN TaskSetManager: Stage 0 contains a task of very large size (1173 KiB). The maximum recommended task size is 1000 KiB.
+1000000                                                                         
+>>> print(parallel_rdd.toDebugString().decode())
+(16) ParallelCollectionRDD[0] at readRDDFromFile at PythonRDD.scala:289 [Memory Serialized 1x Replicated]
+ |        CachedPartitions: 16; MemorySize: 5.9 MiB; DiskSize: 0.0 B
+```
+
+<img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b5f917ec-b73d-4941-a45d-9723b91cc1d7">
+
+one stage only; 16 tasks (4 executors * 4 cores / executor) are created for this stage:
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1fd99eac-a5c8-4d09-9bb5-4eda2577ee9a">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2cf9ba67-cc22-4f17-be89-46e0cc596535">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f2cac384-54f2-4be8-88aa-239e7013f6e1">
+
+
