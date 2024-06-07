@@ -32,7 +32,7 @@ SSHing into the primary node of the same instance type to further verifies that 
 
 
 
-This confusion seems to arise from the configuration for the `yarn.nodemanager.resource.cpu-vcores` property. 
+This confusion seems to arise from the default configuration for the `yarn.nodemanager.resource.cpu-vcores` property. 
 
 <img width="150" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5d49060a-c976-4493-a809-b4a640b6f500">
 
@@ -51,10 +51,10 @@ This confusion seems to arise from the configuration for the `yarn.nodemanager.r
 More on this confusion: https://repost.aws/questions/QUmbShfKT4ShOy1IX8T6Exng/difference-in-vcore-and-vcpu-ec2-and-emr
 
 
-When launching a shell, make sure to set executors’ idle timeout ("spark.dynamicAllocation.executorIdleTimeout") to a longer time interval (e.g., 10 minutes).
+When launching a shell, make sure to set executors' idle timeout ("spark.dynamicAllocation.executorIdleTimeout") to a longer time interval (e.g., 10 minutes).
 The default timeout is 60s. If we were not to configure the property to a longer time interval, idle executors would be automatically removed after 1 minute.
 
-We don’t need to specify the "--deploy-mode" flag, because spark shells can only run in client mode
+We don't need to specify the `--deploy-mode` flag, because spark shells can only run in client mode
 
 
 
@@ -109,9 +109,27 @@ After 10 minutes, all executors are removed automatically. Only the application 
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/cbade3c8-8025-4d4a-8328-dd461d6f93da">
 
- <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4244790b-2a2b-4dff-9a2b-c5bc8a3bf606">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4244790b-2a2b-4dff-9a2b-c5bc8a3bf606">
+
+---
+
+<br>
 
 ### Experiment 2
 
+```shell
+pyspark --master yarn --executor-cores 2 --conf spark.dynamicAllocation.executorIdleTimeout=10m
+```
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2dc4ee09-e26a-4ce9-8dbf-32aefdc62a06">
 
 
+
+
+| Instance ID | Instance Type | Software Entities | No. of Containers |
+| ------------- |-------------| ------------- | ------------- |
+| ip-xxxx-48-39  | core | executor 4 (4 cores and 2GB mem)  | 2 |
+| ip-xxxx-56-172  | core | executor 1  (4 cores and 2GB mem)| 1 |
+| ip-xxxx-39-175  | core |  executor 2 (4 cores and 2GB mem) | 1 |
+| ip-xxxx-51-151  | core |  executor 3 (4 cores and 2GB mem) and the application master (1 core) | 1 |
+| ip-xxxx-31-52 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
