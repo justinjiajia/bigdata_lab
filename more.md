@@ -71,7 +71,7 @@ the instance `ip-xxxx-48-39` hosts 2 containers.
 
 1 spark application is created
 
- <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/45f2e918-1f60-4f7e-a546-cc22a9d026b2">
+ <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/45f2e918-1f60-4f7e-a546-cc22a9d026b2">
 
 
 4 executors are created for this application
