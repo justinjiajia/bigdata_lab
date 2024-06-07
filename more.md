@@ -77,11 +77,16 @@ Memory used on ip-xxxx-48-39 is larger than that used in any of the other core i
 
 5 containers are allocated to host the 4 executors and the application master.
 
-ip-xxxx-48-39: 1 container for executor 4 and the application master
-ip-xxxx-56-172: 1 container for executor 1
-ip-xxxx-39-175: 1 container for executor 2
-ip-xxxx-51-151: 1 container for executor 3
-ip-xxxx-31-52: this is the master node of the cluster, which is not part of the cluster’s resource pool (because no NodeManager is running on it).
+
+| Instance ID | Instance Type | Software Entities |
+| ------------- |-------------| ------------- |
+| ip-xxxx-48-39  | core | executor 4 and the application master |
+| ip-xxxx-56-172  | core | executor 1  |
+| ip-xxxx-39-175  | core |  executor 2 |
+| ip-xxxx-51-151  | core |  executor 3 |
+|ip-xxxx-31-52 | primary |  executor 2 |
+
+Note that the primary instance is not part of the cluster’s resource pool (because no NodeManager is running on it).
 
 
 Each executor owns 4 cores and 2GB memory, while the application master has 1 core.
