@@ -5,13 +5,13 @@
 
 ###  Settings
 
-1 primary instance; type: `m4.large`
-4 core instances; type: `m4.large`
+- 1 primary instance; type: `m4.large`
 
-<img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1644cc8c-d79b-4c48-a194-f5c49478d126">
+- 4 core instances; type: `m4.large`
+  
+    <img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1644cc8c-d79b-4c48-a194-f5c49478d126">
 
-
-EMR release: 7.1.0
+- EMR release: 7.1.0
 
 --
 
