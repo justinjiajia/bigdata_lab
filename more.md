@@ -75,7 +75,7 @@ the instance `ip-xxxx-48-39` hosts 2 containers.
 
 4 executors are created for this application
  
- <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0071bdd9-de48-4193-a181-fbed3a61d39c">
+ <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0071bdd9-de48-4193-a181-fbed3a61d39c">
 
 
  
