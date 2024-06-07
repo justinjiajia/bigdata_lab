@@ -332,7 +332,27 @@ pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.execut
 <img width="938" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/34186597-49b3-414b-b38a-01a79bfec899">
 
 ```python
+lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
+friend_lists = lines.map(lambda x: x.strip().split("\t")).filter(lambda x: len(x) == 2).mapValues(lambda x: x.split(","))
+
+already_friend_pairs = friend_lists.flatMap(lambda x: [(int(x[0]), int(item)) for item in x[1]]) \
+                                   .map(lambda x: x if x[0] <= x[1] else (x[1], x[0])).distinct()
+
+already_friend_pairs.cache()
+
+from itertools import combinations
+potential_pairs = friend_lists.flatMap(lambda x: combinations(x[1], 2)).map(lambda x: (int(x[0]), int(x[1])))
+rec_pairs = potential_pairs.subtract(already_friend_pairs)
+output_pairs = rec_pairs.map(lambda x: (x, 1)).reduceByKey(lambda a,b: a+b)
+output_pairs.saveAsTextFile("hdfs:///rec_pairs_output")
+```
+#### Print debug strings
+
+```python
 >>> lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
+>>> print(lines.toDebugString().decode())
+(2) hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 []
+ |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 []
 >>> friend_lists = lines.map(lambda x: x.strip().split("\t")).filter(lambda x: len(x) == 2).mapValues(lambda x: x.split(","))
 >>> print(friend_lists.toDebugString().decode())
 (2) PythonRDD[2] at RDD at PythonRDD.scala:53 []
