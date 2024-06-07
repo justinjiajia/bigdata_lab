@@ -243,7 +243,7 @@ Even though we've explicitly specified the number of executors to 4, Spark still
 
 It seems that:
 
-- The number of executor is determined by the amount of memory per executor and the total amount of memory available on the cluster.
+- The number of executor is determined by the amount of memory per executor (configured via `--executor-memory`) and the total amount of memory available on the cluster.
 
 - The number of cores each executor (the multiplier used to scale no. of vcores) owns can be specified by `--executor-cores`
 
