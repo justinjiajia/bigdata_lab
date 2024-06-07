@@ -139,7 +139,7 @@ After 10 minutes, all executors are removed automatically. Only the application 
 pyspark --master yarn --executor-cores 2 --conf spark.dynamicAllocation.executorIdleTimeout=10m
 ```
 
-A new Spark application (id: `application_1717748984266_0002`) is created. 
+A new Spark application (id: `application_1717748984266_0002`) is created. 5 containers are created by YARN to host 4 executors and 1 application master.
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2dc4ee09-e26a-4ce9-8dbf-32aefdc62a06">
 
@@ -148,6 +148,7 @@ A new Spark application (id: `application_1717748984266_0002`) is created.
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/54b7d2f6-e825-421e-8dc2-5223495a6cff">
 
 The number of cores per executor seems to be affected by the `--executor-cores 2` flag.
+Now 1 vCore seen by YARN gets mapped to 2 cores seen by Spark.
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
@@ -163,10 +164,12 @@ The number of cores per executor seems to be affected by the `--executor-cores 2
 ### Experiment 3
 
 ```shell
-pyspark --master yarn  --executor-memory 2g --conf spark.dynamicAllocation.executorIdleTimeout=10m
+pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.executorIdleTimeout=10m
 ``` 
 
 A new Spark application (id: `application_1717748984266_0003`) is created. 
+
+9 containers are created by YARN.
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/a5a549b3-4604-4248-a0d6-3aaa974233e1">
 
@@ -176,6 +179,8 @@ A new Spark application (id: `application_1717748984266_0003`) is created.
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/bd8f649a-d0b9-4bdb-a259-b307c4f60fd2">
 
+8 executors are created for this Spark application. 
+
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
 | ip-xxxx-48-39  | core | executors 3 & 4 (4 cores and 912M mem / executor)  | 1 |
@@ -184,3 +189,24 @@ A new Spark application (id: `application_1717748984266_0003`) is created.
 | ip-xxxx-51-151  | core |  executors 7 & 8 (4 cores and 912M mem / executor ) and the application master (1 core) | 2|
 | ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
 
+
+
+<br>
+
+### Experiment 4
+
+```shell
+pyspark --master yarn --executor-memory 2g --executor-cores 2 --conf spark.dynamicAllocation.executorIdleTimeout=10m
+```
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/99cab554-4664-4eca-ade3-bacb4b273c38">
+
+The resource allocation is similar except for 2 cores per executor.
+
+| Instance ID | Instance Type | Software Entities | No. of Containers |
+| ------------- |-------------| ------------- | ------------- |
+| ip-xxxx-48-39  | core | executors 7 & 8 (2 cores and 912M mem / executor)  | 1 |
+| ip-xxxx-56-172  | core | executors 5 & 6  (2 cores and 912M mem / executor)| 1 |
+| ip-xxxx-59-175  | core |  executors 3 & 4 (2 cores and 912M mem / executor) | 1 |
+| ip-xxxx-51-151  | core |  executors 1 & 2 (2 cores and 912M mem / executor ) and the application master (1 core) | 2 |
+| ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
