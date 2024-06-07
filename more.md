@@ -65,20 +65,26 @@ pyspark --master yarn --conf spark.dynamicAllocation.executorIdleTimeout=10m
 
 
  
-
-5 containers are created and spread across the 4 core instances.
-1 vCore is used by each container.
-Memory used on ip-xxxx-48-39 is larger than that used in any of the other core instances, because that instance hosts 2 containers.
+5 containers are created and spread across the 4 core instances. one vCore is used by each container.
+the instance `ip-xxxx-48-39` hosts 2 containers.
 
 
 1 spark application is created
 
- 
+ <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/45f2e918-1f60-4f7e-a546-cc22a9d026b2">
+
 
 4 executors are created for this application
  
+ <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0071bdd9-de48-4193-a181-fbed3a61d39c">
+
 
  
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/135ec1b2-fb40-452b-82d5-c3f00febf746">
+
+
+ <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/20b58a73-57ca-46b9-a4c1-9dcfe13f7369">
+
 
 5 containers are allocated to host the 4 executors and the application master.
 
