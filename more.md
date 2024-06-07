@@ -260,6 +260,12 @@ It seems that:
 # Other experiments
 
 
+### Example 1
+
+```shell
+pyspark --master yarn --conf spark.dynamicAllocation.executorIdleTimeout=10m
+```
+
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/ccb137d0-4ed1-4553-a330-0a87f8f530d8">
 
 
@@ -274,15 +280,128 @@ ParallelCollectionRDD[0] at readRDDFromFile at PythonRDD.scala:289
 >>> print(parallel_rdd.toDebugString().decode())
 (16) ParallelCollectionRDD[0] at readRDDFromFile at PythonRDD.scala:289 [Memory Serialized 1x Replicated]
  |        CachedPartitions: 16; MemorySize: 5.9 MiB; DiskSize: 0.0 B
+
+>>> parallel_rdd.getStorageLevel()
+StorageLevel(False, True, False, False, 1)
+>>> print(parallel_rdd.getStorageLevel())
+Memory Serialized 1x Replicated
+>>> parallel_rdd.getStorageLevel().MEMORY_ONLY
+StorageLevel(False, True, False, False, 1)
+
+>>> parallel_rdd.unpersist()
+
 ```
+
+The `StorageLevel` class: https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.StorageLevel.html
 
 <img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b5f917ec-b73d-4941-a45d-9723b91cc1d7">
 
-one stage only; 16 tasks (4 executors * 4 cores / executor) are created for this stage:
+One stage only; 16 tasks (4 executors * 4 cores / executor) are created at approximately the same time for this stage:
 
 <img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1fd99eac-a5c8-4d09-9bb5-4eda2577ee9a">
+
+
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2cf9ba67-cc22-4f17-be89-46e0cc596535">
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f2cac384-54f2-4be8-88aa-239e7013f6e1">
 
+
+The 4 exectuors stay alive even after 10 minutes elapses due to the data they cache.
+
+but once you run:
+```
+>>> parallel_rdd.unpersist()
+ParallelCollectionRDD[0] at readRDDFromFile at PythonRDD.scala:289
+```
+The 4 executors will be immediately removed.
+
+
+### Example 2
+
+```shell
+wget https://raw.githubusercontent.com/justinjiajia/datafiles/main/soc-LiveJournal1Adj.txt
+
+hadoop fs -mkdir /input
+
+hadoop fs -put soc-LiveJournal1Adj.txt /input
+
+pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.executorIdleTimeout=20m
+
+```
+
+<img width="938" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/34186597-49b3-414b-b38a-01a79bfec899">
+
+```python
+>>> lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
+>>> friend_lists = lines.map(lambda x: x.strip().split("\t")).filter(lambda x: len(x) == 2).mapValues(lambda x: x.split(","))
+>>> already_friend_pairs = friend_lists.flatMap(lambda x: [(int(x[0]), int(item)) for item in x[1]]) \
+... .map(lambda x: x if x[0] <= x[1] else (x[1], x[0])).distinct()
+>>> already_friend_pairs.cache()
+PythonRDD[6] at RDD at PythonRDD.scala:53
+>>> from itertools import combinations
+>>> potential_pairs = friend_lists.flatMap(lambda x: combinations(x[1], 2)).map(lambda x: (int(x[0]), int(x[1])))
+>>> print(potential_pairs.toDebugString().decode())
+(2) PythonRDD[7] at RDD at PythonRDD.scala:53 []
+ |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 []
+ |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 []
+>>> rec_pairs = potential_pairs.subtract(already_friend_pairs)
+>>> print(rec_pairs.toDebugString().decode())
+(4) PythonRDD[15] at RDD at PythonRDD.scala:53 []
+ |  MapPartitionsRDD[14] at mapPartitions at PythonRDD.scala:160 []
+ |  ShuffledRDD[13] at partitionBy at NativeMethodAccessorImpl.java:0 []
+ +-(4) PairwiseRDD[12] at subtract at <stdin>:1 []
+    |  PythonRDD[11] at subtract at <stdin>:1 []
+    |  UnionRDD[10] at union at NativeMethodAccessorImpl.java:0 []
+    |  PythonRDD[8] at RDD at PythonRDD.scala:53 []
+    |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 []
+    |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 []
+    |  PythonRDD[9] at RDD at PythonRDD.scala:53 []
+    |  PythonRDD[6] at RDD at PythonRDD.scala:53 []
+    |  MapPartitionsRDD[5] at mapPartitions at PythonRDD.scala:160 []
+    |  ShuffledRDD[4] at partitionBy at NativeMethodAccessorImpl.java:0 []
+    +-(2) PairwiseRDD[3] at distinct at <stdin>:1 []
+       |  PythonRDD[2] at distinct at <stdin>:1 []
+       |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 []
+       |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 []
+>>> rec_pairs.map(lambda x: (x, 1)).reduceByKey(lambda a,b: a+b).saveAsTextFile("hdfs:///rec_pairs_output")
+```
+
+
+<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5b599410-283f-4e43-abce-79b2017a98c6">
+
+Ongoing
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/69cb158c-7d5d-455b-98b3-ab2b3e64ff58">
+
+Completed
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2f178dbd-7658-4a54-9a5f-9809f7710ea0">
+
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/056b0c61-ea4a-4996-b1e5-68c93d694981">
+
+
+
+#### Stage 0:
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/32377e25-91b1-4cd6-b626-a6f38b40ce0e">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b5923053-d566-4543-bb4a-946b1e8b8e1c">
+
+#### Stage 1:
+
+<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/829aa613-8ee9-401f-b5bd-bac44b5a0416">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/93b0bf73-38ca-4e8e-bcc5-d54a43b37712">
+
+#### Stage 2:
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9e32409c-dc74-4ee7-ab36-0f20046ce35f">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/618029df-dbad-4bb0-aa59-ac7026b1f5a4">
+
+#### Stage 3:
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/820df47a-daef-4dee-96e1-31443de94d32">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/ab1745df-9760-4d13-aa14-dd71dde87853">
+
+
+<img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7bf4dc0d-8b18-469f-bfd5-9af0f07e5849">
 
