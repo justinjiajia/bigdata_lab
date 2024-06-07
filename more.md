@@ -13,6 +13,25 @@
 
 - EMR release: 7.1.0
 
+
+### AWS CLI
+
+```shell
+aws emr create-cluster \
+ --name "My cluster" \
+ --log-uri "s3://aws-logs-339712892718-us-east-1/elasticmapreduce" \
+ --release-label "emr-7.1.0" \
+ --service-role "arn:aws:iam::339712892718:role/EMR_DefaultRole" \
+ --unhealthy-node-replacement \
+ --ec2-attributes '{"InstanceProfile":"EMR_EC2_DefaultRole","EmrManagedMasterSecurityGroup":"sg-0e760c758acd676b7","EmrManagedSlaveSecurityGroup":"sg-091de8a5a48f351e5","KeyName":"vockey","AdditionalMasterSecurityGroups":[],"AdditionalSlaveSecurityGroups":[],"SubnetId":"subnet-00d31ecbf9ca1d2f3"}' \
+ --applications Name=Hadoop Name=Hive Name=Spark \
+ --configurations '[{"Classification":"core-site","Properties":{"hadoop.http.staticuser.user":"hadoop"}},{"Classification":"hdfs-site","Properties":{"dfs.replication":"3"}}]' \
+ --instance-groups '[{"InstanceCount":4,"InstanceGroupType":"CORE","Name":"Core","InstanceType":"m4.large","EbsConfiguration":{"EbsBlockDeviceConfigs":[{"VolumeSpecification":{"VolumeType":"gp2","SizeInGB":32},"VolumesPerInstance":1}]}},{"InstanceCount":1,"InstanceGroupType":"MASTER","Name":"Primary","InstanceType":"m4.large","EbsConfiguration":{"EbsBlockDeviceConfigs":[{"VolumeSpecification":{"VolumeType":"gp2","SizeInGB":32},"VolumesPerInstance":1}]}}]' \
+ --scale-down-behavior "TERMINATE_AT_TASK_COMPLETION" \
+ --auto-termination-policy '{"IdleTimeout":3600}' \
+ --region "us-east-1"
+```
+
 --
 
 YARN resource manager Web UI. It shows that we logged in as hadoop. This is because we set `hadoop.http.staticuser.user` to `hadoop` in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
@@ -56,7 +75,7 @@ The default timeout is 60s. If we were not to configure the property to a longer
 
 We don't need to specify the `--deploy-mode` flag, because spark shells can only run in client mode
 
-
+<br>
 
 ### Experiment 1
 
@@ -72,7 +91,7 @@ pyspark --master yarn --conf spark.dynamicAllocation.executorIdleTimeout=10m
 the instance `ip-xxxx-48-39` hosts 2 containers.
 
 
-1 spark application is created
+A Spark application ((id: `application_1717748984266_0001`)) is created.
 
  <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/45f2e918-1f60-4f7e-a546-cc22a9d026b2">
 
@@ -120,7 +139,7 @@ After 10 minutes, all executors are removed automatically. Only the application 
 pyspark --master yarn --executor-cores 2 --conf spark.dynamicAllocation.executorIdleTimeout=10m
 ```
 
-A new application is created. 
+A new Spark application (id: `application_1717748984266_0002`) is created. 
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2dc4ee09-e26a-4ce9-8dbf-32aefdc62a06">
 
@@ -128,6 +147,7 @@ A new application is created.
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/54b7d2f6-e825-421e-8dc2-5223495a6cff">
 
+The number of cores per executor seems to be affected by the `--executor-cores 2` flag.
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
@@ -136,3 +156,31 @@ A new application is created.
 | ip-xxxx-59-175  | core |  executor 2 (2 cores and 2GB mem) | 1 |
 | ip-xxxx-51-151  | core |  executor 1 (2 cores and 2GB mem) and the application master (1 core) | 2|
 | ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
+
+
+<br>
+
+### Experiment 3
+
+```shell
+pyspark --master yarn  --executor-memory 2g --conf spark.dynamicAllocation.executorIdleTimeout=10m
+``` 
+
+A new Spark application (id: `application_1717748984266_0003`) is created. 
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/a5a549b3-4604-4248-a0d6-3aaa974233e1">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e14a3b7a-bc4c-4205-8605-2bd12e076db0">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5e231131-a299-4f12-a7f8-06d6d0fe4d7e">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/bd8f649a-d0b9-4bdb-a259-b307c4f60fd2">
+
+| Instance ID | Instance Type | Software Entities | No. of Containers |
+| ------------- |-------------| ------------- | ------------- |
+| ip-xxxx-48-39  | core | executors 3 & 4 (4 cores and 912M mem / executor)  | 1 |
+| ip-xxxx-56-172  | core | executors 5 & 6  (4 cores and 912M mem / executor)| 1 |
+| ip-xxxx-59-175  | core |  executors 1 & 2 (4 cores and 912M mem / executor) | 1 |
+| ip-xxxx-51-151  | core |  executors 7 & 8 (4 cores and 912M mem / executor ) and the application master (1 core) | 2|
+| ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
+
