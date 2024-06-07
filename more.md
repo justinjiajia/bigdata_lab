@@ -348,6 +348,8 @@ output_pairs.saveAsTextFile("hdfs:///rec_pairs_output")
 ```
 #### Print debug strings
 
+The Spark Driver keeps track of every RDD's lineage — that is, the series of transformations performed to yield an RDD or a partition thereof. This enables every RDD at every stage to be reevaluated in the event of a failure, which provides the resiliency in RDDs.
+
 ```python
 >>> lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
 >>> print(lines.toDebugString().decode())
