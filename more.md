@@ -4,7 +4,7 @@ Settings:
 1 primary instance; type: m4.large
 4 core instances; type: 4 m4.large 
 
-<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1644cc8c-d79b-4c48-a194-f5c49478d126">
+<img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1644cc8c-d79b-4c48-a194-f5c49478d126">
 
 
 EMR release: 7.1.0
@@ -13,7 +13,7 @@ EMR release: 7.1.0
 
 YARN resource manager Web UI. It shows that we logged in as hadoop. This is because we set `hadoop.http.staticuser.user` to `hadoop` in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
 
-<img width="452" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/8f46049b-f9f0-4a27-afb6-b9c755fc4003">
+<img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/8f46049b-f9f0-4a27-afb6-b9c755fc4003">
 
  
 
