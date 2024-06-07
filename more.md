@@ -43,7 +43,8 @@ This confusion seems to arise from the configuration for the `yarn.nodemanager.r
 <final>false</final>
 <source>yarn-site.xml</source>
 ```
- 
+ <img width="766" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/85e92972-c24f-4647-89ce-95acd5ca238f">
+
 More on this confusion: https://repost.aws/questions/QUmbShfKT4ShOy1IX8T6Exng/difference-in-vcore-and-vcpu-ec2-and-emr
 
 
@@ -84,7 +85,7 @@ Memory used on ip-xxxx-48-39 is larger than that used in any of the other core i
 | ip-xxxx-56-172  | core | executor 1  |
 | ip-xxxx-39-175  | core |  executor 2 |
 | ip-xxxx-51-151  | core |  executor 3 |
-|ip-xxxx-31-52 | primary |  executor 2 |
+| ip-xxxx-31-52 | primary |  client: Pyspark shell with the driver process running inside it  |
 
 Note that the primary instance is not part of the cluster’s resource pool (because no NodeManager is running on it).
 
