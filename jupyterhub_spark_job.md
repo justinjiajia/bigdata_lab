@@ -36,10 +36,10 @@ Running any code will start a new application on YARN with the custom configurat
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-63-62  | core | the driver (0 core) | 1 |
-| ip-xxxx-54-228  | core | executor 1  (4 cores and 2GB mem)| 1 |
-| ip-xxxx-48-235  | core |  executor 2 (4 cores and 2GB mem) | 1 |
-| ip-xxxx-58-45  | core |  executor 3 (4 cores and 2GB mem)| 1 |
+| ip-xxxx-63-62  | core | the driver (0 core) | 1 (1 vCore and 2.38G) |
+| ip-xxxx-54-228  | core | executor 1  (4 cores and 2GB mem)| 1 (1 vCore and 4.97G)|
+| ip-xxxx-48-235  | core |  executor 2 (4 cores and 2GB mem) | 1 (1 vCore and 4.97G)|
+| ip-xxxx-58-45  | core |  executor 3 (4 cores and 2GB mem)| 1 (1 vCore and 4.97G)|
 
 Later, running the configuration cell every time will launch a new application with new configurations.
 
@@ -59,10 +59,10 @@ Later, running the configuration cell every time will launch a new application w
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-58-45  | core | the driver (0 core) | 1 |
-| ip-xxxx-48-235  | core | executor 1  (2 cores and 2GB mem)| 1 |
-| ip-xxxx-54-228  | core |  executor 2 (2 cores and 2GB mem) | 1 |
-| ip-xxxx-63-62  | core |  executor 3 (2 cores and 2GB mem)| 1 |
+| ip-xxxx-58-45  | core | the driver (0 core) | 1 (1 vCore and 2.38G)|
+| ip-xxxx-48-235  | core | executor 1  (2 cores and 2GB mem)| 1 (1 vCore and 4.97G)|
+| ip-xxxx-54-228  | core |  executor 2 (2 cores and 2GB mem) | 1 (1 vCore and 4.97G)|
+| ip-xxxx-63-62  | core |  executor 3 (2 cores and 2GB mem)| 1 (1 vCore and 4.97G)|
 
 
 A Jupyter notebook uses the Sparkmagic kernel as a client for interactively working with Spark in a remote EMR cluster through an Apache Livy server. 
