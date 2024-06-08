@@ -1,16 +1,38 @@
 
 ### Settings
 
-3 core instances
-1 primary instance
+- 1 primary instance; type: `m4.large`
 
+- 3 core instances; type: `m4.large`
+  
+    <img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1644cc8c-d79b-4c48-a194-f5c49478d126">
 
+- EMR release: 7.1.0
+
+- Software configurations
+  ```json
+  [
+      {
+          "classification":"core-site",
+          "properties": {
+              "hadoop.http.staticuser.user": "hadoop"
+          }
+      },
+      {
+          "classification": "hdfs-site",
+          "properties": {
+              "dfs.webhdfs.enabled": "true",
+              "dfs.replication": "3"
+          }
+      }
+  ]
+  ```
+- Make sure the EC2 security groups of both master and slaves have a rule allowing "ALL TCP" from "my IP"
 
 ### WebHDFS in Action
 
 https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/WebHDFS.html
 
-Make sure the EC2 security groups of both master and slaves have a rule allowing "ALL TCP" from "my IP"
 
 
 <img width="1283" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/99efc7ff-cd97-4418-9fcd-41b5eb64514b">
@@ -158,6 +180,9 @@ To create and write a file:
     ```
     
 
+### Example 2
+
+This time a different DataNode is picked. Remember to replace the private DNS in the returned location URL with its public DNS.
 
 ```shell
 (base) jiajia@Jias-MacBook-Pro ~ % curl -i -X PUT "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/input/b.txt?user.name=hadoop&op=CREATE&noredirect=true"
