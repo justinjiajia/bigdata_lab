@@ -1,0 +1,189 @@
+
+### Settings
+
+3 core instances
+1 primary instance
+
+
+
+### WebHDFS in Action
+
+https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/WebHDFS.html
+
+Make sure the EC2 security groups of both master and slaves have a rule allowing "ALL TCP" from "my IP"
+
+
+<img width="1283" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/99efc7ff-cd97-4418-9fcd-41b5eb64514b">
+
+
+|Role| Private DNS | Public DNS |
+|---|---|---|
+|master|ip-172-31-53-255.ec2.internal|ec2-54-160-96-204.compute-1.amazonaws.com|
+|master|ip-172-31-63-217.ec2.internal|ec2-52-3-255-53.compute-1.amazonaws.com|
+|master|ip-172-31-63-54.ec2.internal|ec2-52-91-136-254.compute-1.amazonaws.com|
+|master|ip-172-31-49-88.ec2.internal|ec2-100-26-255-155.compute-1.amazonaws.com|
+
+Find the HTTP address of the NameNode: `http://ec2-54-160-96-204.compute-1.amazonaws.com:9870`
+
+
+Run either one below to query the status of HDFS root directory:
+
+```shell
+curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS"
+curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS" | jq .
+```
+
+The quoted string is constructed in the format of `"http://<HOST>:<PORT>/webhdfs/v1/<PATH>?[user.name=<USER>&]op=..." `
+
+```shell
+(base) jiajia@Jias-MacBook-Pro ~ % curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS"    
+HTTP/1.1 200 OK
+Date: Sat, 08 Jun 2024 17:59:04 GMT
+Cache-Control: no-cache
+Expires: Sat, 08 Jun 2024 17:59:04 GMT
+Date: Sat, 08 Jun 2024 17:59:04 GMT
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+X-FRAME-OPTIONS: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+Set-Cookie: hadoop.auth="u=hadoop&p=hadoop&t=simple&e=1717905544178&s=9kFpBzu344D0B0hVfipFrnGx43v2yh3EeHLe/pWXPJo="; Path=/; HttpOnly
+Content-Type: application/json
+Transfer-Encoding: chunked
+
+{"FileStatuses":{"FileStatus":[
+{"accessTime":0,"blockSize":0,"childrenNum":1,"fileId":16403,"group":"hdfsadmingroup","length":0,"modificationTime":1717869268561,"owner":"hadoop","pathSuffix":"input","permission":"755","replication":0,"storagePolicy":0,"type":"DIRECTORY"},
+{"accessTime":0,"blockSize":0,"childrenNum":2,"fileId":16386,"group":"hdfsadmingroup","length":0,"modificationTime":1717868336253,"owner":"hdfs","pathSuffix":"tmp","permission":"1777","replication":0,"storagePolicy":0,"type":"DIRECTORY"},
+{"accessTime":0,"blockSize":0,"childrenNum":3,"fileId":16393,"group":"hdfsadmingroup","length":0,"modificationTime":1717868336346,"owner":"hdfs","pathSuffix":"user","permission":"755","replication":0,"storagePolicy":0,"type":"DIRECTORY"},
+{"accessTime":0,"blockSize":0,"childrenNum":1,"fileId":16397,"group":"hdfsadmingroup","length":0,"modificationTime":1717868336357,"owner":"hdfs","pathSuffix":"var","permission":"755","replication":0,"storagePolicy":0,"type":"DIRECTORY"}
+]}}
+(base) jiajia@Jias-MacBook-Pro ~ % curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS" | jq .       
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   751    0   751    0     0    249      0 --:--:--  0:00:03 --:--:--   249
+{
+  "FileStatuses": {
+    "FileStatus": [
+      {
+        "accessTime": 0,
+        "blockSize": 0,
+        "childrenNum": 2,
+        "fileId": 16386,
+        "group": "hdfsadmingroup",
+        "length": 0,
+        "modificationTime": 1717868336253,
+        "owner": "hdfs",
+        "pathSuffix": "tmp",
+        "permission": "1777",
+        "replication": 0,
+        "storagePolicy": 0,
+        "type": "DIRECTORY"
+      },
+      {
+        "accessTime": 0,
+        "blockSize": 0,
+        "childrenNum": 3,
+        "fileId": 16393,
+        "group": "hdfsadmingroup",
+        "length": 0,
+        "modificationTime": 1717868336346,
+        "owner": "hdfs",
+        "pathSuffix": "user",
+        "permission": "755",
+        "replication": 0,
+        "storagePolicy": 0,
+        "type": "DIRECTORY"
+      },
+      {
+        "accessTime": 0,
+        "blockSize": 0,
+        "childrenNum": 1,
+        "fileId": 16397,
+        "group": "hdfsadmingroup",
+        "length": 0,
+        "modificationTime": 1717868336357,
+        "owner": "hdfs",
+        "pathSuffix": "var",
+        "permission": "755",
+        "replication": 0,
+        "storagePolicy": 0,
+        "type": "DIRECTORY"
+      }
+    ]
+  }
+}
+```
+
+To create and write a file:
+
+- Step 1: Submit a HTTP PUT request without sending the file data.
+  ```
+  curl -i -X PUT "http://<HOST>:<PORT>/webhdfs/v1/<PATH>?op=CREATE
+                    [&overwrite=<true |false>][&blocksize=<LONG>][&replication=<SHORT>]
+                    [&permission=<OCTAL>][&buffersize=<INT>][&noredirect=<true|false>]"
+  ```
+  E.g.:
+  ```shell
+  (base) jiajia@Jias-MacBook-Pro ~ % curl -i -X PUT "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/input/a.txt?user.name=hadoop&op=CREATE"
+  HTTP/1.1 307 Temporary Redirect
+  Date: Sat, 08 Jun 2024 17:53:07 GMT
+  Cache-Control: no-cache
+  Expires: Sat, 08 Jun 2024 17:53:07 GMT
+  Date: Sat, 08 Jun 2024 17:53:07 GMT
+  Pragma: no-cache
+  X-Content-Type-Options: nosniff
+  X-FRAME-OPTIONS: SAMEORIGIN
+  X-XSS-Protection: 1; mode=block
+  Set-Cookie: hadoop.auth="u=hadoop&p=hadoop&t=simple&e=1717905187034&s=5Q6uaLeYYHLLxNpKa3aHKmR1SIopzZbY/oe1B4JuD9E="; Path=/; HttpOnly
+  Location: http://ip-172-31-49-88.ec2.internal:9864/webhdfs/v1/input/a.txt?op=CREATE&user.name=hadoop&namenoderpcaddress=ip-172-31-53-255.ec2.internal:8020&createflag=&createparent=true&overwrite=false
+  Content-Type: application/octet-stream
+  Content-Length: 0
+  ```
+  Usually the request is redirected to a datanode where the file data is to be written.
+  Replace the private DNS in the returned location URL with its public DNS.
+
+  - Step 2: Submit another HTTP PUT request using the URL in the Location header with the file data to be written.
+    ```shell
+    curl -i -X PUT -T <LOCAL_FILE> "http://<DATANODE>:<PORT>/webhdfs/v1/<PATH>?op=CREATE..."
+    ```
+    E.g.:
+    ```shell
+    (base) jiajia@Jias-MacBook-Pro ~ % curl -i -X PUT -T Downloads/zh_vocab.txt "http://ec2-100-26-255-155.compute-1.amazonaws.com:9864/webhdfs/v1/input/a.txt?op=CREATE&user.name=hadoop&namenoderpcaddress=ip-172-31-53-255.ec2.internal:8020&createflag=&createparent=true&overwrite=false"
+    HTTP/1.1 100 Continue
+    
+    HTTP/1.1 201 Created
+    Location: hdfs://ip-172-31-53-255.ec2.internal:8020/input/a.txt
+    Content-Length: 0
+    Access-Control-Allow-Origin: *
+    Connection: close
+    ```
+    
+
+
+```shell
+(base) jiajia@Jias-MacBook-Pro ~ % curl -i -X PUT "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/input/b.txt?user.name=hadoop&op=CREATE&noredirect=true"
+HTTP/1.1 200 OK
+Date: Sat, 08 Jun 2024 18:15:36 GMT
+Cache-Control: no-cache
+Expires: Sat, 08 Jun 2024 18:15:36 GMT
+Date: Sat, 08 Jun 2024 18:15:36 GMT
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+X-FRAME-OPTIONS: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+Set-Cookie: hadoop.auth="u=hadoop&p=hadoop&t=simple&e=1717906536927&s=jf/DAiQRdEPzDeM0ibPTTDTTKfX6qWoIVtQj8AK67RQ="; Path=/; HttpOnly
+Content-Type: application/json
+Transfer-Encoding: chunked
+
+{"Location":"http://ip-172-31-63-217.ec2.internal:9864/webhdfs/v1/input/b.txt?op=CREATE&user.name=hadoop&namenoderpcaddress=ip-172-31-53-255.ec2.internal:8020&createflag=&createparent=true&overwrite=false"}%
+                                                                       
+(base) jiajia@Jias-MacBook-Pro ~ % curl -i -X PUT -T Downloads/zh_vocab.txt "http://ec2-52-3-255-53.compute-1.amazonaws.com:9864/webhdfs/v1/input/b.txt?op=CREATE&user.name=hadoop&namenoderpcaddress=ip-172-31-53-255.ec2.internal:8020&createflag=&createparent=true&overwrite=false"
+HTTP/1.1 100 Continue
+
+HTTP/1.1 201 Created
+Location: hdfs://ip-172-31-53-255.ec2.internal:8020/input/b.txt
+Content-Length: 0
+Access-Control-Allow-Origin: *
+Connection: close
+```
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f31b0550-956e-4da8-8a04-53c645d855bb">
