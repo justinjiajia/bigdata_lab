@@ -40,10 +40,10 @@ Running any code will start a new application on YARN with the custom configurat
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-63-62  | core | driver (0 core; 1GB mem) | 1 (1 vCore; 2.38G mem) |
-| ip-xxxx-54-228  | core | executor 1  (4 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
-| ip-xxxx-48-235  | core |  executor 2 (4 cores; 2GB mem) | 1 (1 vCore; 4.97G mem)|
-| ip-xxxx-58-45  | core |  executor 3 (4 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-63-62  | core | driver (0 core; 1G mem) | 1 (1 vCore; 2.38G mem) |
+| ip-xxxx-54-228  | core | executor 1  (4 cores; 2G mem)| 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-48-235  | core |  executor 2 (4 cores; 2G mem) | 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-58-45  | core |  executor 3 (4 cores; 2G mem)| 1 (1 vCore; 4.97G mem)|
 
 
 Note that the driver process now is started on a core instance. 
@@ -72,10 +72,10 @@ Later, running the configuration cell every time will launch a new application w
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-58-45  | core | driver (0 core; 1GB mem) | 1 (1 vCore; 2.38G mem)|
-| ip-xxxx-48-235  | core | executor 1  (2 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
-| ip-xxxx-54-228  | core |  executor 2 (2 cores; 2GB mem) | 1 (1 vCore; 4.97G mem)|
-| ip-xxxx-63-62  | core |  executor 3 (2 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-58-45  | core | driver (0 core; 1G mem) | 1 (1 vCore; 2.38G mem)|
+| ip-xxxx-48-235  | core | executor 1  (2 cores; 2G mem)| 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-54-228  | core |  executor 2 (2 cores; 2G mem) | 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-63-62  | core |  executor 3 (2 cores; 2G mem)| 1 (1 vCore; 4.97G mem)|
 
 
 
@@ -101,10 +101,10 @@ Later, running the configuration cell every time will launch a new application w
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-58-45  | core | driver (0 core; 1GB mem) | 1 (1 vCore; 2.38G mem)|
-| ip-xxxx-48-235  | core | executor 1  (2 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
-| ip-xxxx-54-228  | core |  executor 2 (2 cores; 2GB mem) | 1 (1 vCore; 4.97G mem)|
-| ip-xxxx-63-62  | core |  executor 3 (2 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-58-45  | core | driver (0 core; 1G mem) & executor 3 (3 cores; 912M mem) | 2 |
+| ip-xxxx-48-235  | core | executors 4 & 5 (3 cores; 912M mem)| 1  |
+| ip-xxxx-54-228  | core |  executors 1 & 2 (3 cores; 912M mem) | 1  |
+| ip-xxxx-63-62  | core |  executors 6 & 7 (3 cores; 912M mem)| 1  |
 
 
 ### Observations
