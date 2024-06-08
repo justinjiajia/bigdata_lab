@@ -196,7 +196,7 @@ Next, we create and write a file with 2 steps:
 
 ### Example 2
 
-This time a different DataNode is picked. Remember to replace the private DNS in the returned location URL with its public DNS.
+A different DataNode is picked by NameNode this time. Remember to replace the private DNS in the returned location URL with its public DNS.
 
 ```shell
 (base) jiajia@Jias-MacBook-Pro ~ % curl -i -X PUT "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/input/b.txt?user.name=hadoop&op=CREATE&noredirect=true"
