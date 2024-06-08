@@ -118,11 +118,11 @@ whereas 1 container (896 MB and 1 vCore) is allocated to host the application ma
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-48-39  | core | executor 4 (4 cores; 2G mem) and the application master (1 core) | 2 |
+| ip-xxxx-48-39  | core | executor 4 (4 cores; 2G mem) and<br>the application master (1 core) | 2 |
 | ip-xxxx-56-172  | core | executor 1  (4 cores; 2G mem)| 1 |
 | ip-xxxx-59-175  | core |  executor 2 (4 cores; 2G mem) | 1 |
 | ip-xxxx-51-151  | core |  executor 3 (4 cores; 2G mem) | 1 |
-| ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process ((0 core; 1G mem)) running inside it | 0 |
+| ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process (0 core; 1G mem) running inside it | 0 |
 
 Note that the primary instance is not part of the cluster's resource pool (because no NodeManager is running on it).
 
