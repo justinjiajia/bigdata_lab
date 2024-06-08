@@ -225,8 +225,10 @@ Access-Control-Allow-Origin: *
 Connection: close
 ```
 
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f31b0550-956e-4da8-8a04-53c645d855bb">
+<img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f31b0550-956e-4da8-8a04-53c645d855bb">
 
+
+Commands to show the status of the `/input` path:
 
 ```shell
 (base) jiajia@Jias-MacBook-Pro ~ % curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/input?user.name=hadoop&op=LISTSTATUS"      
@@ -386,5 +388,5 @@ Connection: close
 }
 ```
 
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f1fc1b08-0d98-4bde-aeb2-c9cfd6fbd622">
+<img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f1fc1b08-0d98-4bde-aeb2-c9cfd6fbd622">
 
