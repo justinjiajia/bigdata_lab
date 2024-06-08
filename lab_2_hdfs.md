@@ -13,7 +13,6 @@
     {
         "classification": "hdfs-site",
         "properties": {
-            "dfs.webhdfs.enabled": "true",
             "dfs.block.size": "16M",
             "dfs.replication": "3"
         }
