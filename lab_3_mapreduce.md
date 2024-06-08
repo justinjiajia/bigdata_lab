@@ -1,4 +1,35 @@
 
+# EMR settings
+
+- EMR release: 7.1.0
+  
+- 1 primary instance; type: `m4.large`
+
+- 3 core instances; type: `m4.large`
+
+- Software configurations
+    ```json
+    [
+        {
+            "classification":"core-site",
+            "properties": {
+                "hadoop.http.staticuser.user": "hadoop"
+            }
+        },
+        {
+            "classification": "hdfs-site",
+            "properties": {
+                "dfs.block.size": "16M",
+                "dfs.replication": "3"
+            }
+        }
+    ]
+    ```
+
+- Make sure the primary node's EC2 security group has a rule allowing for "ALL TCP" from "My IP" and a rule allowing for "SSH" from "Anywhere".
+
+
+
 # Local file system operations for data preparation
 
 
