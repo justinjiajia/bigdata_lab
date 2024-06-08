@@ -8,6 +8,10 @@ Note: Installing JupyterHub only won't download and install Python libraries suc
 
 <img width="1409" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/74a924d5-2c13-4fc9-b82a-7e9fe85a20b8">
 
+No containers are allocated until we run some Python code in a notebook cell.
+
+
+### Experiment 1
 
 How to modify a spark application with custom configurations: https://repost.aws/knowledge-center/modify-spark-configuration-emr-notebook
 
@@ -16,7 +20,7 @@ In a Jupyter notebook cell, run the `%%configure` command with desired configura
 ```python
 %%configure -f
 {"conf": {
-    "spark.dynamicAllocation.executorIdleTimeout": "10m"}  
+    "spark.dynamicAllocation.executorIdleTimeout": "5m"}  
 }
 ```
 For example, we may want to increase executors' idle timeout. Otherwise, executors will be automatically removed after 1 minute.
@@ -41,7 +45,16 @@ Running any code will start a new application on YARN with the custom configurat
 | ip-xxxx-48-235  | core |  executor 2 (4 cores; 2GB mem) | 1 (1 vCore; 4.97G mem)|
 | ip-xxxx-58-45  | core |  executor 3 (4 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
 
+
+Note that the driver process now is started on a core instance. 
+> A Jupyter notebook uses the Sparkmagic kernel as a client for interactively working with Spark in a remote EMR cluster through an Apache Livy server.  https://repost.aws/knowledge-center/modify-spark-configuration-emr-notebook
+
+
 Later, running the configuration cell every time will launch a new application with new configurations.
+
+
+### Experiment 2
+
 
 ```python
 %%configure -f
@@ -65,4 +78,44 @@ Later, running the configuration cell every time will launch a new application w
 | ip-xxxx-63-62  | core |  executor 3 (2 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
 
 
-A Jupyter notebook uses the Sparkmagic kernel as a client for interactively working with Spark in a remote EMR cluster through an Apache Livy server. 
+
+### Experiment 3
+
+
+```python
+%%configure -f
+{"conf": {
+    "spark.executor.cores": "3", 
+    "spark.executor.memory": "2g",
+    "spark.dynamicAllocation.executorIdleTimeout": "5m"}
+}
+```
+
+<img width="874" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/d8d6f227-1995-4538-9274-60571fcb8076">
+
+<img width="1404" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e59d0ecf-c538-4259-b534-f57c4eb578ac">
+
+<img width="1405" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/68367571-16ef-409b-920c-f7c877342be7">
+
+<img width="1429" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9a2ebe4b-4c10-4c54-b0c8-03897ecf4a32">
+
+| Instance ID | Instance Type | Software Entities | No. of Containers |
+| ------------- |-------------| ------------- | ------------- |
+| ip-xxxx-58-45  | core | driver (0 core; 1GB mem) | 1 (1 vCore; 2.38G mem)|
+| ip-xxxx-48-235  | core | executor 1  (2 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-54-228  | core |  executor 2 (2 cores; 2GB mem) | 1 (1 vCore; 4.97G mem)|
+| ip-xxxx-63-62  | core |  executor 3 (2 cores; 2GB mem)| 1 (1 vCore; 4.97G mem)|
+
+
+### Observations
+
+To summarize:
+```
+%%configure -f
+{"conf": {
+    "spark.executor.instances": "6",     # does't take effect
+    "spark.executor.cores": "3",         # take effect
+    "spark.executor.memory": "2g",       # take effect; can affect the actual no. of executors
+    "spark.dynamicAllocation.executorIdleTimeout": "5m"}  # take effect
+}
+```
