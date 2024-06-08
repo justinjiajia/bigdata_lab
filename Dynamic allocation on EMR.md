@@ -192,9 +192,9 @@ whereas 1 container (896 MB and 1 vCore) is allocated to host the application ma
 | ------------- |-------------| ------------- | ------------- |
 | ip-xxxx-48-39  | core | executors 3 & 4 (4 cores, 912M mem each)  | 1 |
 | ip-xxxx-56-172  | core | executors 5 & 6  (4 cores, 912M mem each)| 1 |
-| ip-xxxx-59-175  | core |  executors 1 & 2 (4 cores, 912M mem each) | 1 |
-| ip-xxxx-51-151  | core |  executors 7 & 8 (4 cores, 912M mem each) and the application master (1 core) | 2|
-| ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
+| ip-xxxx-59-175  | core |  executors 1 & 2 (4 cores, 912M mem each)| 1 |
+| ip-xxxx-51-151  | core |  executors 7 & 8 (4 cores, 912M mem each) and the application master<br>(1 core)| 2|
+| ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process (0 cores; 1G mem)<br>running inside it| 0 |
 
 
 
