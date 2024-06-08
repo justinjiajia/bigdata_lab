@@ -56,14 +56,18 @@ Mapping between private DNS and public DNS:
 |master|ip-172-31-49-88.ec2.internal|ec2-100-26-255-155.compute-1.amazonaws.com|
 
 
-So the HTTP address of the NameNode is `http://ec2-54-160-96-204.compute-1.amazonaws.com:9870`. Run either one below to query the status of HDFS root directory:
+So the HTTP address of the NameNode is `http://ec2-54-160-96-204.compute-1.amazonaws.com:9870`. Run either
 
 ```shell
 curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS"
+```
+or 
+```shell
 curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS" | jq .
 ```
+to query the status of HDFS root directory:
 
-The quoted string is constructed in the format of `"http://<HOST>:<PORT>/webhdfs/v1/<PATH>?[user.name=<USER>&]op=..." `
+The quoted string above is constructed by following this format: `"http://<HOST>:<PORT>/webhdfs/v1/<PATH>?[user.name=<USER>&]op=..." `
 
 ```shell
 (base) jiajia@Jias-MacBook-Pro ~ % curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS"    
