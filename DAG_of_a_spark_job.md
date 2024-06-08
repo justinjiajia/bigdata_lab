@@ -10,10 +10,83 @@
 
 - EMR release: 7.1.0
 
+- Software configurations
+```json
+[
+    {
+        "classification":"core-site",
+        "properties": {
+            "hadoop.http.staticuser.user": "hadoop"
+        }
+    },
+    {
+        "classification": "hdfs-site",
+        "properties": {
+            "dfs.replication": "3"
+        }
+    }
+]
+```
 - Run a .sh file at `s3://ust-bigdata-class/install_python_libraries.sh` as a bootstrap action
 
 > Use AWS CLI: https://github.com/justinjiajia/bigdata_lab/blob/main/AWS_CLI_command.md
 
+
+```shell
+echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master local
+[hadoop@ip-172-31-57-98 ~]$ echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master local
+Jun 08, 2024 2:57:54 PM org.apache.spark.launcher.Log4jHotPatchOption staticJavaAgentOption
+WARNING: spark.log4jHotPatch.enabled is set to true, but /usr/share/log4j-cve-2021-44228-hotpatch/jdk17/Log4jHotPatchFat.jar does not exist at the configured location
+
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Spark context Web UI available at http://ip-172-31-57-98.ec2.internal:4040
+Spark context available as 'sc' (master = local, app id = local-1717858688375).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 3.5.0-amzn-1
+      /_/
+         
+Using Scala version 2.12.17 (OpenJDK 64-Bit Server VM, Java 17.0.11)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> sc.getConf.get("spark.submit.deployMode")
+res0: String = client
+
+scala> :quit
+[hadoop@ip-172-31-57-98 ~]$ echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master yarn
+Jun 08, 2024 2:58:35 PM org.apache.spark.launcher.Log4jHotPatchOption staticJavaAgentOption
+WARNING: spark.log4jHotPatch.enabled is set to true, but /usr/share/log4j-cve-2021-44228-hotpatch/jdk17/Log4jHotPatchFat.jar does not exist at the configured location
+
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+24/06/08 14:58:52 WARN Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
+24/06/08 14:59:06 WARN YarnSchedulerBackend$YarnSchedulerEndpoint: Attempted to request executors before the AM has registered!
+Spark context Web UI available at http://ip-172-31-57-98.ec2.internal:4040
+Spark context available as 'sc' (master = yarn, app id = application_1717855434172_0005).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 3.5.0-amzn-1
+      /_/
+         
+Using Scala version 2.12.17 (OpenJDK 64-Bit Server VM, Java 17.0.11)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> sc.getConf.get("spark.submit.deployMode")
+res0: String = client
+
+scala> :quit
+```
+
+Spark shells only run in client mode.
 
 
 ### Example 1
