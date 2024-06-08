@@ -1,9 +1,21 @@
  
 
-# AWS CLI command to launch a Spark cluster on EMR
+A workaround to launch a Spark cluster on EMR when EMR's launch wizard does not function properly.
 
-A workaround when EMR's launch wizard does not function properly.
-first create a AWS Cloud9:
+first create a Cloud9 environment:
+
+Then run the following commends as needed.
+
+#### Examples of AWS CLI commands
+
+```shell
+aws emr create-cluster \
+ --release-label emr-7.1.0 
+ --applications Name=Hadoop Name=Hive Name=Spark  \
+ --service-role EMR_DefaultRole 
+ --ec2-attributes KeyName=vockey,InstanceProfile=EMR_EC2_DefaultRole 
+ --instance-groups InstanceGroupType=MASTER,InstanceCount=1,InstanceType=m4.large InstanceGroupType=CORE,InstanceCount=3,InstanceType=m4.large
+```
 
 ```shell
 aws emr create-cluster \
