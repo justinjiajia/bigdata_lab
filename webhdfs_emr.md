@@ -373,3 +373,6 @@ Connection: close
   }
 }
 ```
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f1fc1b08-0d98-4bde-aeb2-c9cfd6fbd622">
+
