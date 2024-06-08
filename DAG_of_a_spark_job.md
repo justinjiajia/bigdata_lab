@@ -195,10 +195,36 @@ https://en.wikipedia.org/wiki/Java_Native_Interface
 
 
 
-On an Amazon EMR cluster, the source files like `PythonRDD.scala` are not typically included in the pre-built binaries that come with the EMR installation.
+On an Amazon EMR cluster, the source files like `PythonRDD.scala` are not typically included in the pre-built binaries that come with the EMR installation. 
 
+How to find Spark's installation directory?
 
 ```shell
+[hadoop@ip-172-31-56-41 ~]$ echo 'sc.getConf.get("spark.home")' | spark-shell --master local
+Jun 08, 2024 2:54:49 PM org.apache.spark.launcher.Log4jHotPatchOption staticJavaAgentOption
+WARNING: spark.log4jHotPatch.enabled is set to true, but /usr/share/log4j-cve-2021-44228-hotpatch/jdk17/Log4jHotPatchFat.jar does not exist at the configured location
+
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Spark context Web UI available at http://ip-172-31-57-98.ec2.internal:4040
+Spark context available as 'sc' (master = local, app id = local-1717858504144).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 3.5.0-amzn-1
+      /_/
+         
+Using Scala version 2.12.17 (OpenJDK 64-Bit Server VM, Java 17.0.11)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> sc.getConf.get("spark.home")
+res0: String = /usr/lib/spark
+
+scala> :quit
+[hadoop@ip-172-31-56-41 ~]$ cd /usr/lib/spark
 [hadoop@ip-172-31-56-41 spark]$ pwd
 /usr/lib/spark
 [hadoop@ip-172-31-56-41 spark]$ find . -name PythonRDD.scala
