@@ -56,8 +56,9 @@ Mapping between private DNS and public DNS:
 |master|ip-172-31-49-88.ec2.internal|ec2-100-26-255-155.compute-1.amazonaws.com|
 
 
-So the HTTP address of the NameNode is `http://ec2-54-160-96-204.compute-1.amazonaws.com:9870`. Run either
+So the HTTP address of the NameNode is `http://ec2-54-160-96-204.compute-1.amazonaws.com:9870`. 
 
+First, run either
 ```shell
 curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS"
 ```
@@ -147,7 +148,7 @@ Transfer-Encoding: chunked
 }
 ```
 
-To create and write a file:
+Next, we create and write a file with 2 steps:
 
 - Step 1: Submit a HTTP PUT request without sending the file data.
   ```
