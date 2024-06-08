@@ -43,6 +43,9 @@ https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/WebHDFS.ht
 
 <img width="1283" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/99efc7ff-cd97-4418-9fcd-41b5eb64514b">
 
+<br>
+
+Mapping between private DNS and public DNS:
 
 |Role| Private DNS | Public DNS |
 |---|---|---|
@@ -51,10 +54,8 @@ https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/WebHDFS.ht
 |master|ip-172-31-63-54.ec2.internal|ec2-52-91-136-254.compute-1.amazonaws.com|
 |master|ip-172-31-49-88.ec2.internal|ec2-100-26-255-155.compute-1.amazonaws.com|
 
-Find the HTTP address of the NameNode: `http://ec2-54-160-96-204.compute-1.amazonaws.com:9870`
 
-
-Run either one below to query the status of HDFS root directory:
+So the HTTP address of the NameNode is `http://ec2-54-160-96-204.compute-1.amazonaws.com:9870`. Run either one below to query the status of HDFS root directory:
 
 ```shell
 curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS"
