@@ -21,7 +21,7 @@ In a Jupyter notebook cell, run the `%%configure` command with desired configura
 ```
 For example, we may want to increase executors' idle timeout. Otherwise, executors will be automatically removed after 1 minute.
 
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/fde09276-dc92-45cf-9cad-ac957890cb52">
+<img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/fde09276-dc92-45cf-9cad-ac957890cb52">
 
 Running any code will start a new application on YARN with the custom configurations.
 
@@ -34,6 +34,13 @@ Running any code will start a new application on YARN with the custom configurat
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/d066c0d1-a265-4228-8129-acf97887b71d">
 
 
+| Instance ID | Instance Type | Software Entities | No. of Containers |
+| ------------- |-------------| ------------- | ------------- |
+| ip-xxxx-63-62  | core | the driver (0 core) | 1 |
+| ip-xxxx-54-228  | core | executor 1  (4 cores and 2GB mem)| 1 |
+| ip-xxxx-48-235  | core |  executor 2 (4 cores and 2GB mem) | 1 |
+| ip-xxxx-58-45  | core |  executor 3 (4 cores and 2GB mem)| 1 |
+
 Later, running the configuration cell every time will launch a new application with new configurations.
 
 ```python
@@ -45,13 +52,17 @@ Later, running the configuration cell every time will launch a new application w
 ```
 
 
-
-
-<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/eb020ee4-7978-48b7-9d78-0d85ec297894">
+<img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/eb020ee4-7978-48b7-9d78-0d85ec297894">
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/da36ada8-af96-4d27-bb69-d41530c33f20">
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1d384489-6d97-43a2-80c5-23838923f4c7">
 
+| Instance ID | Instance Type | Software Entities | No. of Containers |
+| ------------- |-------------| ------------- | ------------- |
+| ip-xxxx-58-45  | core | the driver (0 core) | 1 |
+| ip-xxxx-48-235  | core | executor 1  (2 cores and 2GB mem)| 1 |
+| ip-xxxx-54-228  | core |  executor 2 (2 cores and 2GB mem) | 1 |
+| ip-xxxx-63-62  | core |  executor 3 (2 cores and 2GB mem)| 1 |
 
 
 A Jupyter notebook uses the Sparkmagic kernel as a client for interactively working with Spark in a remote EMR cluster through an Apache Livy server. 
