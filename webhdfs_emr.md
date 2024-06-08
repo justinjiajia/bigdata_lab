@@ -66,7 +66,7 @@ or
 ```shell
 curl -i "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/?user.name=hadoop&op=LISTSTATUS" | jq .
 ```
-to query the status of HDFS root directory:
+to query the status of HDFS root directory.
 
 The quoted string above is constructed by following this format: `"http://<HOST>:<PORT>/webhdfs/v1/<PATH>?[user.name=<USER>&]op=..." `
 
