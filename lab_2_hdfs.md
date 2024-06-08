@@ -1,28 +1,37 @@
 
+# EMR settings
 
-# EMR software configuration 
+- EMR release: 7.1.0
+  
+- 1 primary instance; type: `m4.large`
 
-```json
-[
-    {
-        "classification":"core-site",
-        "properties": {
-            "hadoop.http.staticuser.user": "hadoop"
+- 3 core instances; type: `m4.large`
+  
+    <img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1644cc8c-d79b-4c48-a194-f5c49478d126">
+
+- Software configurations
+    ```json
+    [
+        {
+            "classification":"core-site",
+            "properties": {
+                "hadoop.http.staticuser.user": "hadoop"
+            }
+        },
+        {
+            "classification": "hdfs-site",
+            "properties": {
+                "dfs.block.size": "16M",
+                "dfs.replication": "3"
+            }
         }
-    },
-    {
-        "classification": "hdfs-site",
-        "properties": {
-            "dfs.block.size": "16M",
-            "dfs.replication": "3"
-        }
-    }
-]
-```
+    ]
+    ```
+    -  To use the NameNode's Web UI to delete files and create directories, we need to override the `"hadoop.http.staticuser.user"` property's default value (`"dr.who"`) with `"hadoop"`, which is the default user of EMR instances.
+    
+    - Set `"dfs.webhdfs.enabled"` to `"true"` to use WebHDFS if you want to upload files from a local computer. Check out [this manual](webhdfs_emr.md) for more details.
 
--  To use the NameNode's Web UI to delete files and create directories, we need to override the `"hadoop.http.staticuser.user"` property's default value (`"dr.who"`) with `"hadoop"`, which is the default user of EMR instances.
-
-- Set `"dfs.webhdfs.enabled"` to `"true"` to use WebHDFS if you want to upload files from a local computer. Check out [this manual](webhdfs_emr.md) for more details.
+- Make sure the primary node's EC2 security group has a rule allowing for "ALL TCP" from "My IP" and a rule allowing for "SSH" from "Anywhere".
 
 <br>
 
