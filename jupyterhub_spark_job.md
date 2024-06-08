@@ -181,8 +181,59 @@ output_pairs.saveAsTextFile("hdfs:///rec_pairs_output")
 
 <img width="511" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f77f87d3-705f-4ac8-a468-013c35ee3b4f">
 
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2de052c9-38b6-4358-a249-eb611b408c06">
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6db91dff-4b89-4f97-bf09-ce3bbc36397e">
+
+
+<img width="375" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4d71f8d5-c7dd-4ee7-a494-bd5a4b5618ff">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f39923fc-4558-4c76-a882-8083fc40b9cf">
+
+<img width="402" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/29e425af-a80f-4c53-ad70-c1f03bc88488">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9f729d62-f674-4cc0-b556-104204f68364">
+
+
+```python
+print(output_pairs.toDebugString().decode())
+(4) PythonRDD[20] at RDD at PythonRDD.scala:53 []
+ |  MapPartitionsRDD[19] at mapPartitions at PythonRDD.scala:160 []
+ |  ShuffledRDD[18] at partitionBy at NativeMethodAccessorImpl.java:0 []
+ +-(4) PairwiseRDD[17] at reduceByKey at <stdin>:12 []
+    |  PythonRDD[16] at reduceByKey at <stdin>:12 []
+    |  MapPartitionsRDD[15] at mapPartitions at PythonRDD.scala:160 []
+    |  ShuffledRDD[14] at partitionBy at NativeMethodAccessorImpl.java:0 []
+    +-(4) PairwiseRDD[13] at subtract at <stdin>:11 []
+       |  PythonRDD[12] at subtract at <stdin>:11 []
+       |  UnionRDD[11] at union at NativeMethodAccessorImpl.java:0 []
+       |  PythonRDD[9] at RDD at PythonRDD.scala:53 []
+       |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[3] at textFile at NativeMethodAccessorImpl.java:0 []
+       |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[2] at textFile at NativeMethodAccessorImpl.java:0 []
+       |  PythonRDD[10] at RDD at PythonRDD.scala:53 []
+       |  PythonRDD[8] at RDD at PythonRDD.scala:53 []
+       |      CachedPartitions: 2; MemorySize: 2.5 MiB; DiskSize: 0.0 B
+       |  MapPartitionsRDD[7] at mapPartitions at PythonRDD.scala:160 []
+       |  ShuffledRDD[6] at partitionBy at NativeMethodAccessorImpl.java:0 []
+       +-(2) PairwiseRDD[5] at distinct at <stdin>:4 []
+          |  PythonRDD[4] at distinct at <stdin>:4 []
+          |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[3] at textFile at NativeMethodAccessorImpl.java:0 []
+          |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[2] at textFile at NativeMethodAccessorImpl.java:0 []
+```
+
+```python
+output_pairs.saveAsTextFile("hdfs:///rec_pairs_output_1")
+```
+<img width="704" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/cfda56ff-f121-4d71-b472-d914a2f35ceb">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1b11255e-d2e5-4b5c-afcd-1703a6d27f58">
+
+<img width="404" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/061cda36-9eaa-4671-af3a-e32caf5d93cd">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b09bfebc-478d-4b40-b1e5-12bffc842535">
+
+
+
+
+<img width="338" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/59845d39-4911-49bb-a6e6-b3abdf002e94">
+<img width="1415" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0d7c2e0d-18be-407c-97b6-102ff005ea84">
 
 
 
