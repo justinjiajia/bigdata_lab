@@ -33,6 +33,8 @@
 
 - Make sure the primary node's EC2 security group has a rule allowing for "ALL TCP" from "My IP" and a rule allowing for "SSH" from "Anywhere".
 
+- You can also include a rule allowing for "SSH" from "Anywhere" into the EC2 security group for core nodes.
+
 <br>
 
 # Check HDFS daemon processes on EMR
