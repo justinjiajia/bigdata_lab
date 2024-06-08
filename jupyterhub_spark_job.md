@@ -46,7 +46,8 @@ Running any code will start a new application on YARN with the custom configurat
 | ip-xxxx-58-45  | core |  executor 3 (4 cores; 2G mem)| 1 (1 vCore; 4.97G mem)|
 
 
-Note that the driver process now is started on a core instance. 
+Note that the driver process now is started on a core instance. And there's no application master displayed on this page (no **Miscellaneous process** section).
+
 > A Jupyter notebook uses the Sparkmagic kernel as a client for interactively working with Spark in a remote EMR cluster through an Apache Livy server.  https://repost.aws/knowledge-center/modify-spark-configuration-emr-notebook
 
 
