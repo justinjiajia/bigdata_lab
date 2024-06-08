@@ -166,7 +166,7 @@ To create and write a file:
   Content-Type: application/octet-stream
   Content-Length: 0
   ```
-  Usually the request is redirected to a datanode where the file data is to be written.
+  Usually the request is redirected to a DataNode where the file data is to be written.
   Replace the private DNS in the returned location URL with its public DNS.
 
   - Step 2: Submit another HTTP PUT request using the URL in the Location header with the file data to be written.
