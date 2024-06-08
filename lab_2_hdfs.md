@@ -1,7 +1,7 @@
 
 # EMR settings
 
-- EMR release: 7.1.0
+- EMR release: 7.1.0 and select Hadoop only.
   
 - 1 primary instance; type: `m4.large`
 
