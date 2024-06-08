@@ -9,6 +9,24 @@
 
 - EMR release: 7.1.0
 
+- Software configurations
+```json
+[
+    {
+        "classification":"core-site",
+        "properties": {
+            "hadoop.http.staticuser.user": "hadoop"
+        }
+    },
+    {
+        "classification": "hdfs-site",
+        "properties": {
+            "dfs.replication": "3"
+        }
+    }
+]
+```
+
 - Run a .sh file at `s3://ust-bigdata-class/install_python_libraries.sh` as a bootstrap action
 
 > Use AWS CLI: https://github.com/justinjiajia/bigdata_lab/blob/main/AWS_CLI_command.md
