@@ -44,7 +44,7 @@ https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/WebHDFS.ht
 <img width="1283" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/99efc7ff-cd97-4418-9fcd-41b5eb64514b">
 
 
-<br> 
+ <br> 
 
 Mapping between private DNS and public DNS:
 
