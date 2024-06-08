@@ -208,6 +208,9 @@ org/apache/spark/api/python/PythonRDD$.class
 org/apache/spark/api/python/PythonRDDServer.class
 ```
 
+The source code of a particular Spark version can be found at https://archive.apache.org/dist/spark/
+For example, the source code for Spark 5.1.0 is in spark-3.5.0.tgz at https://archive.apache.org/dist/spark/spark-3.5.0/.    
+
 https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/api/python/
 
 
