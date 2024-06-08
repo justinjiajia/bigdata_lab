@@ -27,7 +27,7 @@
       }
   ]
   ```
-- Make sure the EC2 security groups of both master and slaves have a rule allowing "ALL TCP" from "my IP"
+- Make sure the EC2 security groups of both master and slaves have a rule allowing for "ALL TCP" from "My IP"
 
 ### Example 1
 
