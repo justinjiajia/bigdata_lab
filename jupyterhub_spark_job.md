@@ -102,11 +102,12 @@ Later, running the configuration cell every time will launch a new application w
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-58-45  | core | driver (0 core; 1G mem) & executor 3 (3 cores; 912M mem) | 2 (2.38G mem for driver) |
+| ip-xxxx-58-45  | core | driver (0 core; 1G mem) & executor 3 (3 cores; 912M mem) | 2 |
 | ip-xxxx-48-235  | core | executors 4 & 5 (3 cores; 912M mem)| 2  |
 | ip-xxxx-54-228  | core |  executors 1 & 2 (3 cores; 912M mem) | 2  |
 | ip-xxxx-63-62  | core |  executors 6 & 7 (3 cores; 912M mem)| 2  |
 
+After all executors die out, it can be verified that the memory allocated to the container for driver is still 2.38G.
 
 ### Observations
 
