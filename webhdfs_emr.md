@@ -30,11 +30,16 @@
 - Make sure the EC2 security groups of both master and slaves have a rule allowing for "ALL TCP" from "My IP"
 
 
+
+
+Official documentation:
+https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/WebHDFS.html
+
 <br>
 
 ### Example 1
 
-https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/WebHDFS.html
+
 
 <img width="1283" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/99efc7ff-cd97-4418-9fcd-41b5eb64514b">
 
