@@ -212,10 +212,10 @@ The resource allocation is similar except for 2 cores per executor.
 
 | Instance ID | Instance Type | Software Entities | No. of Containers |
 | ------------- |-------------| ------------- | ------------- |
-| ip-xxxx-48-39  | core | executors 7 & 8 (2 cores and 912M mem / executor)  | 1 |
-| ip-xxxx-56-172  | core | executors 5 & 6  (2 cores and 912M mem / executor)| 1 |
-| ip-xxxx-59-175  | core |  executors 3 & 4 (2 cores and 912M mem / executor) | 1 |
-| ip-xxxx-51-151  | core |  executors 1 & 2 (2 cores and 912M mem / executor ) and the application master (1 core) | 2 |
+| ip-xxxx-48-39  | core | executors 7 & 8 (2 cores, 912M mem each)  | 1 |
+| ip-xxxx-56-172  | core | executors 5 & 6  (2 cores, 912M mem each)| 1 |
+| ip-xxxx-59-175  | core |  executors 3 & 4 (2 cores, 912M mem each) | 1 |
+| ip-xxxx-51-151  | core |  executors 1 & 2 (2 cores, 912M mem each) and the application master (1 core) | 2 |
 | ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process running inside it | 0 |
 
 
