@@ -118,6 +118,7 @@ $ hadoop fs -ls /<Your ITSC Account>/data
 ```
 
 <br>
+
 # MapReduce job submission
 
 
