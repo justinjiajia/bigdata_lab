@@ -10,10 +10,11 @@ Then run the following commends as needed.
 
 ```shell
 aws emr create-cluster \
- --release-label emr-7.1.0 
+ --release-label emr-7.1.0 \
  --applications Name=Hadoop Name=Hive Name=Spark  \
- --service-role EMR_DefaultRole 
- --ec2-attributes KeyName=vockey,InstanceProfile=EMR_EC2_DefaultRole 
+ --service-role EMR_DefaultRole \
+ --ec2-attributes KeyName=vockey,InstanceProfile=EMR_EC2_DefaultRole \
+ --configurations '[{"Classification":"core-site","Properties":{"hadoop.http.staticuser.user":"hadoop"}},{"Classification":"hdfs-site","Properties":{"dfs.replication":"3"}}]' \
  --instance-groups InstanceGroupType=MASTER,InstanceCount=1,InstanceType=m4.large InstanceGroupType=CORE,InstanceCount=3,InstanceType=m4.large
 ```
 
