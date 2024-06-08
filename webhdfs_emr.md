@@ -29,6 +29,9 @@
   ```
 - Make sure the EC2 security groups of both master and slaves have a rule allowing for "ALL TCP" from "My IP"
 
+
+<br>
+
 ### Example 1
 
 https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/WebHDFS.html
@@ -177,6 +180,7 @@ To create and write a file:
     Connection: close
     ```
     
+<br>
 
 ### Example 2
 
@@ -278,9 +282,11 @@ parse error: Invalid numeric literal at line 1, column 9
 }
 ```
 
+<br>
+
 ### Example 3
 
-Try to use a different replication factor:
+Try to use a different replication factor for a new file:
 
 ```shell
 (base) jiajia@Jias-MacBook-Pro ~ % curl -i -X PUT "http://ec2-54-160-96-204.compute-1.amazonaws.com:9870/webhdfs/v1/input/c.txt?user.name=hadoop&op=CREATE&replication=2"                                                                                                             
