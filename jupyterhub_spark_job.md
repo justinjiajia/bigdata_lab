@@ -10,6 +10,7 @@ Note: Installing JupyterHub only won't download and install Python libraries suc
 
 No containers are allocated until we run some Python code in a notebook cell.
 
+<br>
 
 ### Experiment 1
 
@@ -53,6 +54,7 @@ Note that the driver process now is started on a core instance. And there's no a
 
 Later, running the configuration cell every time will launch a new application with new configurations.
 
+<br>
 
 ### Experiment 2
 
@@ -79,6 +81,7 @@ Later, running the configuration cell every time will launch a new application w
 | ip-xxxx-63-62  | core |  executor 3 (2 cores; 2G mem)| 1 (1 vCore; 4.97G mem)|
 
 
+<br>
 
 ### Experiment 3
 
@@ -109,6 +112,9 @@ Later, running the configuration cell every time will launch a new application w
 
 After all executors die out, it can be verified that the memory allocated to the container for driver is still 2.38G.
 
+
+<br>
+
 ### Observations
 
 To summarize:
@@ -123,7 +129,10 @@ To summarize:
 ```
 
 
-### 
+<br>
+
+### Analyze livejournal data
+
 
 ```python
 lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
