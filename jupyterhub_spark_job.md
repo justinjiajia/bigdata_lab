@@ -121,3 +121,70 @@ To summarize:
     "spark.dynamicAllocation.executorIdleTimeout": "5m"}  # take effect
 }
 ```
+
+
+### 
+
+```python
+lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
+friend_lists = lines.map(lambda x: x.strip().split("\t")).filter(lambda x: len(x) == 2).mapValues(lambda x: x.split(","))
+
+already_friend_pairs = friend_lists.flatMap(lambda x: [(int(x[0]), int(item)) for item in x[1]]) \
+                                   .map(lambda x: x if x[0] <= x[1] else (x[1], x[0])).distinct()
+
+already_friend_pairs.cache()
+
+from itertools import combinations
+potential_pairs = friend_lists.flatMap(lambda x: combinations(x[1], 2)).map(lambda x: (int(x[0]), int(x[1])))
+rec_pairs = potential_pairs.subtract(already_friend_pairs)
+output_pairs = rec_pairs.map(lambda x: (x, 1)).reduceByKey(lambda a,b: a+b)
+```
+
+```python
+print(output_pairs.toDebugString().decode())
+(4) PythonRDD[20] at RDD at PythonRDD.scala:53 []
+ |  MapPartitionsRDD[19] at mapPartitions at PythonRDD.scala:160 []
+ |  ShuffledRDD[18] at partitionBy at NativeMethodAccessorImpl.java:0 []
+ +-(4) PairwiseRDD[17] at reduceByKey at <stdin>:12 []
+    |  PythonRDD[16] at reduceByKey at <stdin>:12 []
+    |  MapPartitionsRDD[15] at mapPartitions at PythonRDD.scala:160 []
+    |  ShuffledRDD[14] at partitionBy at NativeMethodAccessorImpl.java:0 []
+    +-(4) PairwiseRDD[13] at subtract at <stdin>:11 []
+       |  PythonRDD[12] at subtract at <stdin>:11 []
+       |  UnionRDD[11] at union at NativeMethodAccessorImpl.java:0 []
+       |  PythonRDD[9] at RDD at PythonRDD.scala:53 []
+       |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[3] at textFile at NativeMethodAccessorImpl.java:0 []
+       |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[2] at textFile at NativeMethodAccessorImpl.java:0 []
+       |  PythonRDD[10] at RDD at PythonRDD.scala:53 []
+       |  PythonRDD[8] at RDD at PythonRDD.scala:53 []
+       |  MapPartitionsRDD[7] at mapPartitions at PythonRDD.scala:160 []
+       |  ShuffledRDD[6] at partitionBy at NativeMethodAccessorImpl.java:0 []
+       +-(2) PairwiseRDD[5] at distinct at <stdin>:4 []
+          |  PythonRDD[4] at distinct at <stdin>:4 []
+          |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[3] at textFile at NativeMethodAccessorImpl.java:0 []
+          |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[2] at textFile at NativeMethodAccessorImpl.java:0 []
+```
+
+```python
+output_pairs.saveAsTextFile("hdfs:///rec_pairs_output")
+```
+
+<img width="675" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e7ad4ec8-81ab-411f-946b-91a633853910">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/401b034c-49d0-4940-b1e4-4bbb0edcd2db">
+
+
+<img width="370" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/56cbeb8e-3601-4ba1-82dc-20fbcc83f425">
+
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5c489836-fce2-4bad-b1e4-de505ea5a0fa">
+
+<img width="511" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f77f87d3-705f-4ac8-a468-013c35ee3b4f">
+
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6db91dff-4b89-4f97-bf09-ce3bbc36397e">
+
+
+
+
+
