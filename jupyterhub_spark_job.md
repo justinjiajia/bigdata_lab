@@ -50,6 +50,8 @@ Later, running the configuration cell every time will launch a new application w
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/eb020ee4-7978-48b7-9d78-0d85ec297894">
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/da36ada8-af96-4d27-bb69-d41530c33f20">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1d384489-6d97-43a2-80c5-23838923f4c7">
+
 
 
 A Jupyter notebook uses the Sparkmagic kernel as a client for interactively working with Spark in a remote EMR cluster through an Apache Livy server. 
