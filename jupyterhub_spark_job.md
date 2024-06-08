@@ -161,6 +161,7 @@ To summarize:
 ```
 
 It seems that a spark application created in this way can only run in cluster mode ('spark.submit.deployMode' defaults to 'cluster' and cannot be modified)?
+
 <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3cfb6080-5e9b-4b7e-a71b-2051e5db9f5a">
 
 <br>
