@@ -230,12 +230,20 @@ output_pairs.saveAsTextFile("hdfs:///rec_pairs_output_1")
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b09bfebc-478d-4b40-b1e5-12bffc842535">
 
 
+```python
+print(already_friend_pairs.toDebugString().decode())
+```
 
+```python
+already_friend_pairs.saveAsTextFile("hdfs:///pairs_output")
+```
 
 <img width="338" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/59845d39-4911-49bb-a6e6-b3abdf002e94">
-<img width="1415" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0d7c2e0d-18be-407c-97b6-102ff005ea84">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0d7c2e0d-18be-407c-97b6-102ff005ea84">
 
+<img width="337" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/50202e37-6ab6-43c6-a12f-f430568bcbb2">
 
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e8ce7803-ea24-4820-9311-6b79c4984493">
 
 
 
