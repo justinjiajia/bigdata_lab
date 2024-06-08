@@ -54,16 +54,15 @@ or
 sh data_prep.sh
 ```
 
-An alternative way to run the script:
-
-First add the execution permission to the file to make it executable. Once the script is executable, we can run it by typing `./` followed by the script name in the terminal:
+There is a third way: first add the execution permission to the file to make it executable; then run it by typing `./` followed by the script name in the terminal (other):
 
 ```shell
 $ chmod +x data_prep.sh
 $ ./data_prep.sh
 ```
+> By default, the current directory (represented by ".") is not included in the `$PATH` variable to prevents the accidental execution of programs in the current directory, which could be malicious or unintended. The `"./"` syntax explicitly tells the shell (e.g., bash, zsh) that you want to execute a file in the current directory, rather than searching for a command or program with the same name in the directories listed in `$PATH`.
 
-More details on how to run bash scripts can be found [here](https://www.geeksforgeeks.org/how-to-run-bash-script-in-linux/).
+Check out [this page](https://www.geeksforgeeks.org/how-to-run-bash-script-in-linux/) for more details on how to run bash scripts.
 
 
 <br>
