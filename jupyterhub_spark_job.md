@@ -232,6 +232,14 @@ output_pairs.saveAsTextFile("hdfs:///rec_pairs_output_1")
 
 ```python
 print(already_friend_pairs.toDebugString().decode())
+(2) PythonRDD[8] at RDD at PythonRDD.scala:53 [Memory Serialized 1x Replicated]
+ |       CachedPartitions: 2; MemorySize: 2.5 MiB; DiskSize: 0.0 B
+ |  MapPartitionsRDD[7] at mapPartitions at PythonRDD.scala:160 [Memory Serialized 1x Replicated]
+ |  ShuffledRDD[6] at partitionBy at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]
+ +-(2) PairwiseRDD[5] at distinct at <stdin>:4 [Memory Serialized 1x Replicated]
+    |  PythonRDD[4] at distinct at <stdin>:4 [Memory Serialized 1x Replicated]
+    |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[3] at textFile at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]
+    |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[2] at textFile at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]
 ```
 
 ```python
