@@ -27,7 +27,7 @@
         }
     ]
     ```
-    -  To use the NameNode's Web UI to delete files and create directories, we need to override the `"hadoop.http.staticuser.user"` property's default value (`"dr.who"`) with `"hadoop"`, which is the default user of EMR instances.
+    -  Override the `"hadoop.http.staticuser.user"` property's default value (`"dr.who"`) with `"hadoop" (the default user of EMR instances.) if you want to use the NameNode's Web UI to delete files and create directories.
     
     - Set `"dfs.webhdfs.enabled"` to `"true"` to use WebHDFS if you want to upload files from a local computer. Check out [this manual](webhdfs_emr.md) for more details.
 
