@@ -164,10 +164,12 @@ It seems that a spark application created in this way can only run in cluster mo
 
 `'spark.submit.deployMode'` defaults to `'cluster'` (`sc.getConf().get('spark.submit.deployMode')`) and seems to be unmodifiable?
 
-<img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3cfb6080-5e9b-4b7e-a71b-2051e5db9f5a">
+
 
 
 <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/45703223-2ec8-4117-a9f5-d7d5ff38e135">
+
+<img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3cfb6080-5e9b-4b7e-a71b-2051e5db9f5a">
 
 This also explains why the driver process runs on a worker machine. 
 
