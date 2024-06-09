@@ -244,7 +244,7 @@ Then perform the following steps:
 [hadoop@xxxx ~]$ ls ~/.kaggle/
 kaggle.json
 ```
-Then you can download the data using `kaggle`:
+Then you can download the data using the Kaggle CLI tool:
 
 ```shell
 [hadoop@xxxx ~]$ kaggle competitions download -c jigsaw-toxic-comment-classification-challenge
