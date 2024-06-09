@@ -172,7 +172,14 @@ pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.execut
 
 <br>
 
-The placement of the 8 executors and that of HDFS replicas of the single block are summarized below:
+
+Sepcification of this Spark application is as follows:
+
+- 1 data block with 3 replicas placed on HDFS. 
+- 8 executors
+
+  
+The placements of the executors and the HDFS replicas are summarized below:
 
 | Instance ID |Software Entities | HDFS Replicas |
 |-------------|------------- |-------------|
@@ -182,8 +189,8 @@ The placement of the 8 executors and that of HDFS replicas of the single block a
 | ip-xxxx-52-17   |  executors 7 & 8 | 1 |
 
 
-
 <br>
+
 ```python
 lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
 friend_lists = lines.map(lambda x: x.strip().split("\t")).filter(lambda x: len(x) == 2).mapValues(lambda x: x.split(","))
