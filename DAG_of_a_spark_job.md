@@ -145,8 +145,15 @@ ParallelCollectionRDD[0] at readRDDFromFile at PythonRDD.scala:289
 The 4 executors will be immediately removed.
 
 
+<br>
+
+
 ### Example 2
 
+
+
+
+ 
 ```shell
 wget https://raw.githubusercontent.com/justinjiajia/datafiles/main/soc-LiveJournal1Adj.txt
 
@@ -157,6 +164,19 @@ hadoop fs -put soc-LiveJournal1Adj.txt /input
 pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.executorIdleTimeout=20m
 
 ```
+
+<br>
+
+The placement of the 8 executors and that of HDFS replicas of the single block are summarized below:
+
+| Instance ID |Software Entities | HDFS Replicas |
+|-------------|------------- |-------------|
+| ip-xxxx-55-19  | executors 1 & 2 | 1 |
+| ip-xxxx-52-223  | executors 3 & 4  | 0| 
+| ip-xxxx-54-249  |  executors 5 & 6 | 1 |
+| ip-xxxx-52-17   |  executors 7 & 8 | 1 |
+
+
 
 <img width="938" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/34186597-49b3-414b-b38a-01a79bfec899">
 
