@@ -36,6 +36,95 @@ Find its URL adress and download it with `wget`:
 
 ```shell
 [hadoop@xxxx ~]$ wget https://huggingface.co/datasets/legacy-datasets/wikipedia/resolve/main/data/20220301.simple/train-00000-of-00001.parquet
+[hadoop@ip-172-31-63-215 ~]$ parquet-tools inspect train-00000-of-00001.parquet 
+
+############ file meta data ############
+created_by: parquet-cpp-arrow version 10.0.1
+num_columns: 4
+num_rows: 205328
+num_row_groups: 206
+format_version: 2.6
+serialized_size: 407414
+
+
+############ Columns ############
+id
+url
+title
+text
+
+############ Column(id) ############
+name: id
+path: id
+max_definition_level: 1
+max_repetition_level: 0
+physical_type: BYTE_ARRAY
+logical_type: String
+converted_type (legacy): UTF8
+compression: SNAPPY (space_saved: 37%)
+
+############ Column(url) ############
+name: url
+path: url
+max_definition_level: 1
+max_repetition_level: 0
+physical_type: BYTE_ARRAY
+logical_type: String
+converted_type (legacy): UTF8
+compression: SNAPPY (space_saved: 74%)
+
+############ Column(title) ############
+name: title
+path: title
+max_definition_level: 1
+max_repetition_level: 0
+physical_type: BYTE_ARRAY
+logical_type: String
+converted_type (legacy): UTF8
+compression: SNAPPY (space_saved: 25%)
+
+############ Column(text) ############
+name: text
+path: text
+max_definition_level: 1
+max_repetition_level: 0
+physical_type: BYTE_ARRAY
+logical_type: String
+converted_type (legacy): UTF8
+compression: SNAPPY (space_saved: 42%)
+
+[hadoop@xxxx ~]$ parq train-00000-of-00001.parquet 
+
+ # Metadata 
+ <pyarrow._parquet.FileMetaData object at 0x7f36063c3bd0>
+  created_by: parquet-cpp-arrow version 10.0.1
+  num_columns: 4
+  num_rows: 205328
+  num_row_groups: 206
+  format_version: 2.6
+  serialized_size: 407414
+
+[hadoop@xxxx ~]$ parq train-00000-of-00001.parquet --head 5
+   id                                                url  \
+0   1            https://simple.wikipedia.org/wiki/April   
+1   2           https://simple.wikipedia.org/wiki/August   
+2   6              https://simple.wikipedia.org/wiki/Art   
+3   8                https://simple.wikipedia.org/wiki/A   
+4   9              https://simple.wikipedia.org/wiki/Air    
+
+                             title  \
+0                            April   
+1                           August   
+2                              Art   
+3                                A   
+4                              Air   
+
+                                                text  
+0  April is the fourth month of the year in the J...  
+1  August (Aug.) is the eighth month of the year ...  
+2  Art is a creative activity that expresses imag...  
+3  A or a is the first letter of the English alph...  
+4  Air refers to the Earth's atmosphere. Air is a...  
 ```
 
 https://pypi.org/project/parquet-tools/
