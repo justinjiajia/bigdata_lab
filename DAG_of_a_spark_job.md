@@ -307,7 +307,7 @@ On an Amazon EMR cluster, the source files like `PythonRDD.scala` are not typica
 How to find Spark's installation directory?
 
 ```shell
-[hadoop@ip-172-31-56-41 ~]$ echo 'sc.getConf.get("spark.home")' | spark-shell --master local
+[hadoop@xxxx ~]$ echo 'sc.getConf.get("spark.home")' | spark-shell --master local
 Jun 08, 2024 2:54:49 PM org.apache.spark.launcher.Log4jHotPatchOption staticJavaAgentOption
 WARNING: spark.log4jHotPatch.enabled is set to true, but /usr/share/log4j-cve-2021-44228-hotpatch/jdk17/Log4jHotPatchFat.jar does not exist at the configured location
 
@@ -331,11 +331,9 @@ scala> sc.getConf.get("spark.home")
 res0: String = /usr/lib/spark
 
 scala> :quit
-[hadoop@ip-172-31-56-41 ~]$ cd /usr/lib/spark
-[hadoop@ip-172-31-56-41 spark]$ pwd
-/usr/lib/spark
-[hadoop@ip-172-31-56-41 spark]$ find . -name PythonRDD.scala
-[hadoop@ip-172-31-56-41 spark]$ jar tf jars/spark-core_*.jar | grep PythonRDD
+[hadoop@xxxx ~]$ cd /usr/lib/spark
+[hadoop@xxxx spark]$ find . -name PythonRDD.scala
+[hadoop@xxxx spark]$ jar tf jars/spark-core_*.jar | grep PythonRDD
 org/apache/spark/api/python/PythonRDD.class
 org/apache/spark/api/python/PythonRDD$.class
 org/apache/spark/api/python/PythonRDDServer.class
