@@ -169,9 +169,17 @@ https://pypi.org/project/parquet-tools/
 https://github.com/chhantyal/parquet-cli
 
 
+Parquet is an open source column-oriented data store that provides a variety of storage optimizations, especially for analytics workloads. It provides columnar compression, which saves storage space and allows for reading individual columns instead of entire files. It is a file format that works exceptionally well with Apache Spark and is
+in fact the default file format. It is recommended to write data out to Parquet for longterm storage because reading from a Parquet file will always be more efficient than
+JSON or CSV.
+
+Parquet enforces its own schema when storing data. Thus, to load the data from a parquet file in Spark, all you need to set is the format. 
+
 ```shell
 [hadoop@xxxx ~]$ pyspark --master local[*]
 ```
+
+
 
 ```python
 >>> df = spark.read.format("parquet").load("file:///home/hadoop/train-00000-of-00001.parquet")
