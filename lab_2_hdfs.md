@@ -116,6 +116,8 @@ We can customize the block size and replication factor on a file basis (not on a
 
 <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/a7f4c939-e271-444b-9789-e1ece0b392d2">
 
+<br>
+
 We can also reset the replication factor for an existing file or directory:
 
 ```shell
@@ -134,5 +136,10 @@ WARNING: the waiting time may be long for DECREASING the number of replications.
 . done
 Waiting for /input/b.csv ... done
 ```
+
+<br>
+
+> The `-w` option in the `hadoop fs -setrep` command stands for "wait." When you use the `-w` option, the command will wait for the replication to complete before returning.
+
 
 <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/41ff4ab0-0442-4195-8279-0571a925deca">
