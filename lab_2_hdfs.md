@@ -23,7 +23,7 @@
         {
             "classification": "hdfs-site",
             "properties": {
-                "dfs.block.size": "16M",
+                "dfs.blocksize": "16M",
                 "dfs.replication": "3"
             }
         }
