@@ -167,6 +167,11 @@ pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.execut
 
 <br>
 
+<img width="938" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/34186597-49b3-414b-b38a-01a79bfec899">
+
+
+<br>
+
 The placement of the 8 executors and that of HDFS replicas of the single block are summarized below:
 
 | Instance ID |Software Entities | HDFS Replicas |
@@ -178,8 +183,7 @@ The placement of the 8 executors and that of HDFS replicas of the single block a
 
 
 
-<img width="938" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/34186597-49b3-414b-b38a-01a79bfec899">
-
+<br>
 ```python
 lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
 friend_lists = lines.map(lambda x: x.strip().split("\t")).filter(lambda x: len(x) == 2).mapValues(lambda x: x.split(","))
