@@ -167,3 +167,34 @@ optional arguments:
 
 https://pypi.org/project/parquet-tools/
 https://github.com/chhantyal/parquet-cli
+
+
+```shell
+[hadoop@xxxx ~]$ pyspark --master local[*]
+```
+
+```python
+>>> df = spark.read.format("parquet").load("file:///home/hadoop/train-00000-of-00001.parquet")
+>>> df.schema
+StructType([StructField('id', StringType(), True), StructField('url', StringType(), True), StructField('title', StringType(), True), StructField('text', StringType(), True)])
+>>> df.select("url", "title").show(10)
++--------------------+--------------------+                                     
+|                 url|               title|
++--------------------+--------------------+
+|https://simple.wi...|               April|
+|https://simple.wi...|              August|
+|https://simple.wi...|                 Art|
+|https://simple.wi...|                   A|
+|https://simple.wi...|                 Air|
+|https://simple.wi...|Autonomous commun...|
+|https://simple.wi...|         Alan Turing|
+|https://simple.wi...|   Alanis Morissette|
+|https://simple.wi...|   Adobe Illustrator|
+|https://simple.wi...|           Andouille|
++--------------------+--------------------+
+only showing top 10 rows
+
+>>> rdd = df.select("url", "title").rdd
+>>> rdd.take(10)
+[Row(url='https://simple.wikipedia.org/wiki/April', title='April'), Row(url='https://simple.wikipedia.org/wiki/August', title='August'), Row(url='https://simple.wikipedia.org/wiki/Art', title='Art'), Row(url='https://simple.wikipedia.org/wiki/A', title='A'), Row(url='https://simple.wikipedia.org/wiki/Air', title='Air'), Row(url='https://simple.wikipedia.org/wiki/Autonomous%20communities%20of%20Spain', title='Autonomous communities of Spain'), Row(url='https://simple.wikipedia.org/wiki/Alan%20Turing', title='Alan Turing'), Row(url='https://simple.wikipedia.org/wiki/Alanis%20Morissette', title='Alanis Morissette'), Row(url='https://simple.wikipedia.org/wiki/Adobe%20Illustrator', title='Adobe Illustrator'), Row(url='https://simple.wikipedia.org/wiki/Andouille', title='Andouille')]
+```
