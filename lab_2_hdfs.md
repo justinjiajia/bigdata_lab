@@ -61,7 +61,7 @@ You can also log into a core instance and run the above command to show all Hado
 
 <br>
 
-# Local file system operations for data preparation
+# File system operations for data preparation
 
 ```shell
 mkdir data
