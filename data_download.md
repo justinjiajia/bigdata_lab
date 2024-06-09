@@ -36,7 +36,7 @@ Find its URL adress and download it with `wget`:
 
 ```shell
 [hadoop@xxxx ~]$ wget https://huggingface.co/datasets/legacy-datasets/wikipedia/resolve/main/data/20220301.simple/train-00000-of-00001.parquet
-[hadoop@ip-172-31-63-215 ~]$ parquet-tools inspect train-00000-of-00001.parquet 
+[hadoop@xxxx ~]$ parquet-tools inspect train-00000-of-00001.parquet 
 
 ############ file meta data ############
 created_by: parquet-cpp-arrow version 10.0.1
