@@ -38,7 +38,7 @@ hadoop fs -put transactions.txt /input
 
 # 2 Run PySpark locally via shell
 
-## Start the shell
+## Start the PySpark shell
 
 ```shell
 pyspark --master local[*]
