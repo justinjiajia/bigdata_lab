@@ -20,3 +20,17 @@ upload failed: ./a.sh to s3://ust-bigdata-class/install_python_libraries.sh An e
 ```
 
 We may need to configure this s3 file to allow for file writes.
+
+
+### from HuggingFace
+
+Choose **Files and versions** tab
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/a6928049-4a43-48d9-a307-75280cb9c5d4">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/54ddecef-cf4d-4818-b952-f48d17b970c6">
+
+
+```shell
+[hadoop@xxxx ~]$ wget https://huggingface.co/datasets/legacy-datasets/wikipedia/resolve/main/data/20220301.simple/train-00000-of-00001.parquet
+```
