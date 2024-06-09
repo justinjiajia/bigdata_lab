@@ -222,6 +222,8 @@ E.g. https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data
 Go to your Kaggle account. Click **Expire Token** to remove previous tokens.
 Click on **Create New Token** to generate an API token. It starts downloading a kaggle.json file.
 
+<img width="737" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/593f8e0a-43df-4938-b8c5-e459b3519ef7">
+
 Open the downloaded file on your local computer. Its content looks like the following:
 
 ```json
@@ -253,7 +255,7 @@ Downloading jigsaw-toxic-comment-classification-challenge.zip to /home/hadoop
 jigsaw-toxic-comment-classification-challenge.zip
 [hadoop@xxxx ~]$ unzip jigsaw-toxic-comment-classification-challenge.zip -d jigsaw_toxic_comment
 ```
-<img width="737" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/593f8e0a-43df-4938-b8c5-e459b3519ef7">
+
 
 #### Download a specific data file 
 
