@@ -29,11 +29,13 @@
         }
     ]
     ```
-    - The default block size is 128M, and the default replication factor is 2.
+    - The default block size is 128M, and the default replication factor is 2. 
       
     - Override the `"hadoop.http.staticuser.user"` property's default value (`"dr.who"`) with `"hadoop"` (the default user of EMR instances.) if you want to use the NameNode's Web UI to delete files and create directories.
     
     - Set `"dfs.webhdfs.enabled"` to `"true"` if you want use WebHDFS to upload files from a local computer. Check out [this manual](webhdfs_emr.md) for details.
+      
+    - The actual configuration files (i.e., *core-site.xml* and *hdfs-site.xml*) can be found in `/etc/hadoop/conf`.
 
 - Make sure the primary node's EC2 security group has a rule allowing for "ALL TCP" from "My IP" and a rule allowing for "SSH" from "Anywhere".
 
