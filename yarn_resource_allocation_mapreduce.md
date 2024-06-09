@@ -1,7 +1,7 @@
 
 
+ <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f2ecfbcd-5191-47e8-8b62-ced4e2b19eef">
 
-<img width="958" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3c200782-358b-43b7-ad19-71860abb3c1e">
 
 | Instance | file | block | 
 |------|-----------|--------|
