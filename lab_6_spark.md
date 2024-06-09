@@ -30,10 +30,7 @@
 
 ```shell
 wget -O transactions.txt  https://raw.githubusercontent.com/justinjiajia/datafiles/main/browsing.csv
-
-# prepare data on HDFS
 hadoop fs -mkdir /input
-
 hadoop fs -put transactions.txt /input
 ```
 
