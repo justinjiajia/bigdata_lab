@@ -30,7 +30,13 @@ Choose **Files and versions** tab
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/54ddecef-cf4d-4818-b952-f48d17b970c6">
 
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5328862c-1643-48cb-8be7-a33cd820ec95">
+
+Find its URL adress and download it with `wget`:
 
 ```shell
 [hadoop@xxxx ~]$ wget https://huggingface.co/datasets/legacy-datasets/wikipedia/resolve/main/data/20220301.simple/train-00000-of-00001.parquet
 ```
+
+https://pypi.org/project/parquet-tools/
+https://github.com/chhantyal/parquet-cli
