@@ -97,8 +97,6 @@ $ hadoop fs -ls /<Your ITSC Account>/data
 $ hadoop fs -cat /<Your ITSC Account>/data/*.txt | tail -n50
 
 $ hadoop fs -get /<Your ITSC Account>/data <A Directory in Local FS> 
-
-$ hadoop fs -setrep -w 2 /<Your ITSC Account>/pg31156.txt
 ```
 
 <br>
