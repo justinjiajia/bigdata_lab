@@ -124,7 +124,42 @@ compression: SNAPPY (space_saved: 42%)
 1  August (Aug.) is the eighth month of the year ...  
 2  Art is a creative activity that expresses imag...  
 3  A or a is the first letter of the English alph...  
-4  Air refers to the Earth's atmosphere. Air is a...  
+4  Air refers to the Earth's atmosphere. Air is a...
+
+[hadoop@xxxx ~]$ parquet-tools show -h
+usage: parquet-tools show [-h] [--format {psql,github}] [--columns COLUMNS] [--head HEAD] [--awsprofile AWSPROFILE] [--endpoint-url ENDPOINT_URL]
+                          FILE [FILE ...]
+
+Show parquet file content with human readability.
+
+positional arguments:
+  FILE                  The parquet file to print to stdout. e.g. ./target.parquet or s3://bucket-name/target.parquet or s3://bucket-name/*
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --format {psql,github}, -f {psql,github}
+                        Table format(default: psql).
+  --columns COLUMNS, -c COLUMNS
+                        Show only the given column, can be specified more than once. e.g. --columns email,name
+  --head HEAD, -n HEAD  Show only head record(default:infinity)
+  --awsprofile AWSPROFILE
+                        awscli profile in ~/.aws/credentials. You use this option when you read parquet file on s3.
+  --endpoint-url ENDPOINT_URL
+                        A custom S3 endpoint URL
+
+[hadoop@xxxx ~]$ parquet-tools show -c title -n 5 train-00000-of-00001.parquet 
++---------+
+| title   |
+|---------|
+| April   |
+| August  |
+| Art     |
+| A       |
+| Air     |
++---------+
+[hadoop@xxxx ~]$ hadoop fs -mkdir /input
+[hadoop@xxxx ~]$ hadoop fs -put train-00000-of-00001.parquet /input
+
 ```
 
 https://pypi.org/project/parquet-tools/
