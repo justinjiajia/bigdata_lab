@@ -1,3 +1,36 @@
+# EMR settings
+
+- EMR release: 7.1.0 
+
+- Application: Hadoop
+  
+- Primary instance: type: `m4.large`, quantity: 1
+
+- Core instance: type: `m4.large`, quantity: 3
+  
+    <img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1644cc8c-d79b-4c48-a194-f5c49478d126">
+
+- Software configurations
+    ```json
+    [
+        {
+            "classification":"core-site",
+            "properties": {
+                "hadoop.http.staticuser.user": "hadoop"
+            }
+        },
+        {
+            "classification": "hdfs-site",
+            "properties": {
+                "dfs.replication": "3"
+            }
+        }
+    ]
+    ```
+
+- Make sure the primary node's EC2 security group has a rule allowing for "ALL TCP" from "My IP" and a rule allowing for "SSH" from "Anywhere".
+
+<br>
 
 # 1 Data Preparation
 
