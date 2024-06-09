@@ -169,23 +169,6 @@ On YARN timeline server UI,
 <img width="1427" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/89028599-19d2-4fa2-a3d4-9a6aed37d915">
 <img width="1428" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b177ccf8-db48-4115-8537-22357db5485b">
 
-container 1 (3072 Memory, 1 VCores; Priority: 0) is used to host the application master.
-
-| Instance | Containers |
-|------|-----------|
-| ip-xxxx-52-142.xxxx| 10, 11, 12, 13 |  
-| ip-xxxx-52-162.xxxx| 14, 15, 16, 17 |  
-| ip-xxxx-57-35.xxxx  | 6, 7, 8, 9   |
-| ip-xxxx-63-90.xxxx  | 2, 3, 4, 5 , 18, 19, 20|
-
-containers 2-17: 1536 Memory, 1 VCores each; Priority: 20
-containers 18-20: 3072 Memory, 1 VCores each; Priority:	10
-
-The Diagnostics field of container 20: *Diagnostics: Container released by application*. The same field of the other containers is all empty.
-
-
-<img width="1431" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/52882800-bd6d-4134-b681-26403ad5d2f0">
-
 <img width="1430" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/04e02f4e-a849-46b5-bc25-c71a3f7f7960">
 
 
@@ -193,6 +176,28 @@ The Diagnostics field of container 20: *Diagnostics: Container released by appli
 
 
  <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f2ecfbcd-5191-47e8-8b62-ced4e2b19eef">
+ 
+- Container 1 (3072 Memory, 1 VCores; Priority: 0) is used to host the application master.
+
+- containers 2-17: 1536 Memory, 1 VCores each; Priority: 20
+  
+- Containers 18-20: 3072 Memory, 1 VCores each; Priority: 10
+  
+| Instance | Containers |
+|------|-----------|
+| ip-xxxx-52-142.xxxx| 10, 11, 12, 13 |  
+| ip-xxxx-52-162.xxxx| 1, 14, 15, 16, 17 |  
+| ip-xxxx-57-35.xxxx  | 6, 7, 8, 9  |
+| ip-xxxx-63-90.xxxx  | 2, 3, 4, 5 , 18, 19, 20|
+
+
+
+The Diagnostics field of container 20: *Diagnostics: Container released by application*. The Diagnostics field of the other containers is all empty. Higher Integer value indicates higher priority?
+only container 20's exit status is -100.
+
+<img width="1431" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/52882800-bd6d-4134-b681-26403ad5d2f0">
+
+
 
 |file name | file size|
 |------|-----------|
