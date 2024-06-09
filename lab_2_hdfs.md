@@ -77,7 +77,7 @@ du -sh data
 
 You can change all `<Your ITSC Account>` placeholders below to your ITSC account string first. Later, you can just copy and paste the commands to the terminal for execution.
 
-Note that `hadoop fs` and `hdfs dfs` can be interchangeably used below.
+Note that `hadoop fs` and `hdfs dfs` are interchangeable below.
 
 ```shell
 $ hadoop fs -ls /
