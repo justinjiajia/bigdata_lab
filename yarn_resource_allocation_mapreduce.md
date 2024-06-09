@@ -158,6 +158,8 @@ http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955
 | ip-xxxx-63-90.xxxx  | 0, 13,  14, 15| 0, 1| |
 
 
+#### Resource Manager Web UI
+
 <img width="1416" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/34ab5b87-303e-455a-96e2-9860ee9d8781">
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/de45b913-6ac0-48cf-84aa-ca85d4281fc5">
 
@@ -165,7 +167,7 @@ http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955
 <img width="1432" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/62ea968e-9321-4041-99fd-588a27a94068">
 
 
-#### YARN timeline Server UI
+#### YARN timeline Server Web UI
 
 <img width="1417" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/86ba2a8c-0660-4bed-aea9-815c1cc85045">
 <img width="1413" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/767506e5-0fdd-4c1a-8357-70ad6f916b05">
