@@ -1,4 +1,144 @@
 
+- 1 primary; 4 core
+
+```shell
+wget -O nytimes.txt https://raw.githubusercontent.com/justinjiajia/datafiles/main/nytimes_news_articles.txt
+hadoop fs -mkdir /input
+hadoop fs -put  nytimes.txt /input
+```
+
+<img width="1178" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e62eaa0f-0755-40d5-864a-c34da7df2951">
+
+| Instance | file | block | 
+|------|-----------|--------|
+| ip-xxxx-52-142.xxxx| block 1 |
+| ip-xxxx-52-162.xxxx| block 0 |
+| ip-xxxx-52-162.xxxx| block 2 |
+| ip-xxxx-57-35.xxxx   | block 0 |
+| ip-xxxx-57-35.xxxx  | block 1 |
+| ip-xxxx-63-90.xxxx  | block 2 |
+ 
+
+```shell
+[hadoop@ip-172-31-53-255 ~]$ mapred streaming -D mapreduce.job.reduces=2 -files mapper.py,reducer.py -input /input -output /output_1 -mapper mapper.py -reducer reducer.py
+packageJobJar: [] [/usr/lib/hadoop/hadoop-streaming-3.3.6-amzn-3.jar] /tmp/streamjob12540940317434631248.jar tmpDir=null
+2024-06-09 18:16:22,825 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at ip-172-31-53-255.ec2.internal/172.31.53.255:8032
+2024-06-09 18:16:23,030 INFO client.AHSProxy: Connecting to Application History server at ip-172-31-53-255.ec2.internal/172.31.53.255:10200
+2024-06-09 18:16:23,096 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at ip-172-31-53-255.ec2.internal/172.31.53.255:8032
+2024-06-09 18:16:23,097 INFO client.AHSProxy: Connecting to Application History server at ip-172-31-53-255.ec2.internal/172.31.53.255:10200
+2024-06-09 18:16:23,451 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/hadoop/.staging/job_1717955085543_0001
+2024-06-09 18:16:23,921 INFO lzo.GPLNativeCodeLoader: Loaded native gpl library
+2024-06-09 18:16:23,954 INFO lzo.LzoCodec: Successfully loaded & initialized native-lzo library [hadoop-lzo rev 049362b7cf53ff5f739d6b1532457f2c6cd495e8]
+2024-06-09 18:16:24,024 INFO mapred.FileInputFormat: Total input files to process : 1
+2024-06-09 18:16:24,029 INFO net.NetworkTopology: Adding a new node: /default-rack/172.31.57.35:9866
+2024-06-09 18:16:24,030 INFO net.NetworkTopology: Adding a new node: /default-rack/172.31.52.162:9866
+2024-06-09 18:16:24,030 INFO net.NetworkTopology: Adding a new node: /default-rack/172.31.52.142:9866
+2024-06-09 18:16:24,031 INFO net.NetworkTopology: Adding a new node: /default-rack/172.31.63.90:9866
+2024-06-09 18:16:24,125 INFO mapreduce.JobSubmitter: number of splits:16
+2024-06-09 18:16:24,513 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1717955085543_0001
+2024-06-09 18:16:24,513 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2024-06-09 18:16:24,755 INFO conf.Configuration: resource-types.xml not found
+2024-06-09 18:16:24,755 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2024-06-09 18:16:25,294 INFO impl.YarnClientImpl: Submitted application application_1717955085543_0001
+2024-06-09 18:16:25,415 INFO mapreduce.Job: The url to track the job: http://ip-172-31-53-255.ec2.internal:20888/proxy/application_1717955085543_0001/
+2024-06-09 18:16:25,417 INFO mapreduce.Job: Running job: job_1717955085543_0001
+2024-06-09 18:16:37,585 INFO mapreduce.Job: Job job_1717955085543_0001 running in uber mode : false
+2024-06-09 18:16:37,586 INFO mapreduce.Job:  map 0% reduce 0%
+2024-06-09 18:16:55,823 INFO mapreduce.Job:  map 6% reduce 0%
+2024-06-09 18:16:56,828 INFO mapreduce.Job:  map 13% reduce 0%
+2024-06-09 18:17:09,917 INFO mapreduce.Job:  map 19% reduce 0%
+2024-06-09 18:17:10,924 INFO mapreduce.Job:  map 38% reduce 0%
+2024-06-09 18:17:12,941 INFO mapreduce.Job:  map 54% reduce 0%
+2024-06-09 18:17:13,946 INFO mapreduce.Job:  map 67% reduce 0%
+2024-06-09 18:17:15,957 INFO mapreduce.Job:  map 69% reduce 0%
+2024-06-09 18:17:16,971 INFO mapreduce.Job:  map 75% reduce 0%
+2024-06-09 18:17:17,976 INFO mapreduce.Job:  map 96% reduce 0%
+2024-06-09 18:17:18,981 INFO mapreduce.Job:  map 100% reduce 0%
+2024-06-09 18:17:32,047 INFO mapreduce.Job:  map 100% reduce 39%
+2024-06-09 18:17:34,057 INFO mapreduce.Job:  map 100% reduce 87%
+2024-06-09 18:17:36,066 INFO mapreduce.Job:  map 100% reduce 89%
+2024-06-09 18:17:38,075 INFO mapreduce.Job:  map 100% reduce 100%
+2024-06-09 18:17:39,088 INFO mapreduce.Job: Job job_1717955085543_0001 completed successfully
+2024-06-09 18:17:39,229 INFO mapreduce.Job: Counters: 56
+	File System Counters
+		FILE: Number of bytes read=4682233
+		FILE: Number of bytes written=17780414
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=45104845
+		HDFS: Number of bytes written=2015382
+		HDFS: Number of read operations=58
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=4
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Killed map tasks=1
+		Launched map tasks=16
+		Launched reduce tasks=2
+		Data-local map tasks=14
+		Rack-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=23454336
+		Total time spent by all reduces in occupied slots (ms)=4710240
+		Total time spent by all map tasks (ms)=488632
+		Total time spent by all reduce tasks (ms)=49065
+		Total vcore-milliseconds taken by all map tasks=488632
+		Total vcore-milliseconds taken by all reduce tasks=49065
+		Total megabyte-milliseconds taken by all map tasks=750538752
+		Total megabyte-milliseconds taken by all reduce tasks=150727680
+	Map-Reduce Framework
+		Map input records=192577
+		Map output records=7124665
+		Map output bytes=56117703
+		Map output materialized bytes=7802355
+		Input split bytes=1776
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=127867
+		Reduce shuffle bytes=7802355
+		Reduce input records=7124665
+		Reduce output records=127867
+		Spilled Records=14249330
+		Shuffled Maps =32
+		Failed Shuffles=0
+		Merged Map outputs=32
+		GC time elapsed (ms)=1749
+		CPU time spent (ms)=99880
+		Physical memory (bytes) snapshot=8752455680
+		Virtual memory (bytes) snapshot=60125720576
+		Total committed heap usage (bytes)=8860467200
+		Peak Map Physical memory (bytes)=529059840
+		Peak Map Virtual memory (bytes)=3193434112
+		Peak Reduce Physical memory (bytes)=350130176
+		Peak Reduce Virtual memory (bytes)=4778999808
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=45103069
+	File Output Format Counters 
+		Bytes Written=2015382
+2024-06-09 18:17:39,230 INFO streaming.StreamJob: Output directory: /output_1
+```
+
+Job ID: job_1717955085543_0001
+No. of input splits: 16
+
+http://<primary_node_DNS>:19888/jobhistory/job/<job_id>
+
+ec2-52-72-29-130.compute-1.amazonaws.com
+http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955085543_0001
+
+<img width="1425" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c3a9cf55-44d4-4991-9e3d-89b31e37eea3">
+
+<img width="1422" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c94ba8a6-19a7-4268-9d31-639eebbffcda">
+
+
+
 
  <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f2ecfbcd-5191-47e8-8b62-ced4e2b19eef">
 
