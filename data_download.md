@@ -18,3 +18,5 @@ $ nano a.sh
 [hadoop@xxxx ~]$ aws s3 cp a.sh s3://ust-bigdata-class/install_python_libraries.sh
 upload failed: ./a.sh to s3://ust-bigdata-class/install_python_libraries.sh An error occurred (AccessDenied) when calling the PutObject operation: Access Denied
 ```
+
+We may need to configure this s3 file to allow for file writes.
