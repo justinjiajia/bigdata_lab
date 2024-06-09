@@ -55,11 +55,13 @@ It shows all Hadoop-related processes currently running on the master node.
 
 <br>
 
-You can also log into a core instance and run the above command to show all Hadoop-related processes there.
+You can also log into a core instance and run the same command to show all Hadoop-related processes there.
 
 <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9013c894-8106-499b-80e8-031b01cf8fff">
 
-<br>
+   <br>  
+
+
 
 # File system operations for data preparation
 
