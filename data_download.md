@@ -278,12 +278,20 @@ optional arguments:
   -o, --force           Skip check whether local version of file is up to date, force file download
   -q, --quiet           Suppress printing information about the upload/download progress
 
-[hadoop@xxxx ~]$ aggle datasets download -f HI-Small_Trans.csv ealtman2019/ibm-transactions-for-anti-money-laundering-aml
+[hadoop@xxxx ~]$ kaggle datasets download -f HI-Small_Trans.csv ealtman2019/ibm-transactions-for-anti-money-laundering-aml
 Warning: Your Kaggle API key is readable by other users on this system! To fix this, you can run 'chmod 600 /home/hadoop/.kaggle/kaggle.json'
 Dataset URL: https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml
 License(s): Community Data License Agreement - Sharing - Version 1.0
 Downloading HI-Small_Trans.csv.zip to /home/hadoop
  93%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▌          | 81.0M/86.9M [00:03<00:00, 27.7MB/s]
 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 86.9M/86.9M [00:03<00:00, 24.5MB/s]
-[hadoop@ip-172-31-60-181 ~]$ 
+
+[hadoop@xxxx ~]$ unzip HI-Small_Trans.csv.zip
+[hadoop@xxxx ~]$ unzip HI-Small_Trans.csv.zip
+Archive:  HI-Small_Trans.csv.zip
+  inflating: HI-Small_Trans.csv        
+[hadoop@xxxx ~]$ ls
+HI-Small_Trans.csv  HI-Small_Trans.csv.zip
+[hadoop@xxxx ~]$ hadoop fs -mkdir /input
+[hadoop@xxxx ~]$ hadoop fs -put HI-Small_Trans.csv /input
 ```
