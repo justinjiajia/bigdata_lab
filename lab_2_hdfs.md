@@ -53,6 +53,8 @@ It shows all Hadoop-related processes currently running on the master node.
 
 <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/05b538ea-c7fd-483e-9314-c74e5db102a7">
 
+<br>
+
 You can also log into a core instance and run the above command to show all Hadoop-related processes there.
 
 <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9013c894-8106-499b-80e8-031b01cf8fff">
