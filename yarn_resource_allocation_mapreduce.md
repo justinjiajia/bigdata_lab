@@ -618,6 +618,11 @@ user.name: yarn
 <img width="1432" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/62ea968e-9321-4041-99fd-588a27a94068">
 
 
+Click the link in the Logs field, and replace the private DNS with the public DNS of the primary node 
+
+
+
+
 ### YARN timeline Server Web UI
 
 <img width="1417" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/86ba2a8c-0660-4bed-aea9-815c1cc85045">
@@ -655,9 +660,12 @@ only container 20's exit status is -100.
 #### Logs
 
 
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3590d279-a13e-426a-a244-e8ad225dc95a">
+click the link in the last section
+Log Type: /logs/containers/application_1717955085543_0001/container_1717955085543_0001_01_000001/syslog.gz
 
 
-<img width="1416" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1feb7bfd-da49-45d7-a322-2e912c917e4f">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1feb7bfd-da49-45d7-a322-2e912c917e4f">
 
 click the link in the last section shows
 
