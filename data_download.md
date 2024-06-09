@@ -206,3 +206,82 @@ only showing top 10 rows
 >>> rdd.take(10)
 [Row(url='https://simple.wikipedia.org/wiki/April', title='April'), Row(url='https://simple.wikipedia.org/wiki/August', title='August'), Row(url='https://simple.wikipedia.org/wiki/Art', title='Art'), Row(url='https://simple.wikipedia.org/wiki/A', title='A'), Row(url='https://simple.wikipedia.org/wiki/Air', title='Air'), Row(url='https://simple.wikipedia.org/wiki/Autonomous%20communities%20of%20Spain', title='Autonomous communities of Spain'), Row(url='https://simple.wikipedia.org/wiki/Alan%20Turing', title='Alan Turing'), Row(url='https://simple.wikipedia.org/wiki/Alanis%20Morissette', title='Alanis Morissette'), Row(url='https://simple.wikipedia.org/wiki/Adobe%20Illustrator', title='Adobe Illustrator'), Row(url='https://simple.wikipedia.org/wiki/Andouille', title='Andouille')]
 ```
+
+alternatively, you can use:
+```
+df = spark.read.parquet("path/to/parquet_file.parquet")
+```
+
+
+### from Kaggle using Kaggle CLI
+
+#### Download the data for a competiton
+
+E.g. https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data
+
+Go to your Kaggle account. Click **Expire Token** to remove previous tokens.
+Click on **Create New Token** to generate an API token. It starts downloading a kaggle.json file.
+
+Open the downloaded file on your local computer. Its content looks like the following:
+
+```json
+{"username":"xxxxxxx","key":"xxxxxxxxxxxx"}
+```
+
+Copy and paste the content into a nano editor opened in your terminal:
+
+```shell
+[hadoop@xxxx ~]$ nano kaggle.json
+```
+Then perform the following steps:
+
+```shell
+[hadoop@xxxx ~]$ mkdir ~/.kaggle
+[hadoop@xxxx ~]$ mv kaggle.json ~/.kaggle
+[hadoop@xxxx ~]$ chmod 600 ~/.kaggle/kaggle.json
+[hadoop@xxxx ~]$ ls ~/.kaggle/
+kaggle.json
+```
+Then you can download the data using `kaggle`:
+
+```shell
+[hadoop@xxxx ~]$ kaggle competitions download -c jigsaw-toxic-comment-classification-challenge
+Downloading jigsaw-toxic-comment-classification-challenge.zip to /home/hadoop
+ 99%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████▋ | 52.0M/52.6M [00:00<00:00, 67.3MB/s]
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 52.6M/52.6M [00:00<00:00, 59.0MB/s]
+[hadoop@xxxx ~]$ ls
+jigsaw-toxic-comment-classification-challenge.zip
+[hadoop@xxxx ~]$ unzip jigsaw-toxic-comment-classification-challenge.zip -d jigsaw_toxic_comment
+```
+<img width="737" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/593f8e0a-43df-4938-b8c5-e459b3519ef7">
+
+#### Download a specific data file 
+
+E.g., *HI-Small_Trans.csv* at https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml
+
+```shell
+[hadoop@xxxx ~]$ kaggle datasets download -h
+Warning: Your Kaggle API key is readable by other users on this system! To fix this, you can run 'chmod 600 /home/hadoop/.kaggle/kaggle.json'
+usage: kaggle datasets download [-h] [-f FILE_NAME] [-p PATH] [-w] [--unzip] [-o] [-q] [dataset]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  dataset               Dataset URL suffix in format <owner>/<dataset-name> (use "kaggle datasets list" to show options)
+  -f FILE_NAME, --file FILE_NAME
+                        File name, all files downloaded if not provided
+                        (use "kaggle datasets files -d <dataset>" to show options)
+  -p PATH, --path PATH  Folder where file(s) will be downloaded, defaults to current working directory
+  -w, --wp              Download files to current working path
+  --unzip               Unzip the downloaded file. Will delete the zip file when completed.
+  -o, --force           Skip check whether local version of file is up to date, force file download
+  -q, --quiet           Suppress printing information about the upload/download progress
+
+[hadoop@xxxx ~]$ aggle datasets download -f HI-Small_Trans.csv ealtman2019/ibm-transactions-for-anti-money-laundering-aml
+Warning: Your Kaggle API key is readable by other users on this system! To fix this, you can run 'chmod 600 /home/hadoop/.kaggle/kaggle.json'
+Dataset URL: https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml
+License(s): Community Data License Agreement - Sharing - Version 1.0
+Downloading HI-Small_Trans.csv.zip to /home/hadoop
+ 93%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▌          | 81.0M/86.9M [00:03<00:00, 27.7MB/s]
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 86.9M/86.9M [00:03<00:00, 24.5MB/s]
+[hadoop@ip-172-31-60-181 ~]$ 
+```
