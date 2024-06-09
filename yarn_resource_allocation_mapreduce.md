@@ -138,12 +138,18 @@ http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c3a9cf55-44d4-4991-9e3d-89b31e37eea3">
 
+
+##### Map tasks
+
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c94ba8a6-19a7-4268-9d31-639eebbffcda">
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4e65d3c2-5bb0-4261-8e64-2fb3b39d35c6">
 
+
+
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/d32e0bd8-658a-414f-8061-07970b84f0e6">
 
+##### Reduce tasks
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6bcf33a9-d5d0-4996-92e5-0fa8e27bf94f">
 
