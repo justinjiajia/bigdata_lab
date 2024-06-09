@@ -1,4 +1,5 @@
 
+<br>
 
 ### from S3
 
@@ -21,6 +22,7 @@ upload failed: ./a.sh to s3://ust-bigdata-class/install_python_libraries.sh An e
 
 We may need to configure this s3 file to allow for file writes.
 
+<br>
 
 ### from HuggingFace
 
@@ -147,16 +149,17 @@ optional arguments:
   --endpoint-url ENDPOINT_URL
                         A custom S3 endpoint URL
 
-[hadoop@xxxx ~]$ parquet-tools show -c title -n 5 train-00000-of-00001.parquet 
-+---------+
-| title   |
-|---------|
-| April   |
-| August  |
-| Art     |
-| A       |
-| Air     |
-+---------+
+[hadoop@xxxx ~]$ parquet-tools show -c title,url -n 5 train-00000-of-00001.parquet 
++---------+------------------------------------------+
+| title   | url                                      |
+|---------+------------------------------------------|
+| April   | https://simple.wikipedia.org/wiki/April  |
+| August  | https://simple.wikipedia.org/wiki/August |
+| Art     | https://simple.wikipedia.org/wiki/Art    |
+| A       | https://simple.wikipedia.org/wiki/A      |
+| Air     | https://simple.wikipedia.org/wiki/Air    |
++---------+------------------------------------------+
+
 [hadoop@xxxx ~]$ hadoop fs -mkdir /input
 [hadoop@xxxx ~]$ hadoop fs -put train-00000-of-00001.parquet /input
 
