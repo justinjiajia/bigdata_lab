@@ -175,7 +175,7 @@ pyspark --master yarn --executor-memory 2g --conf spark.dynamicAllocation.execut
 
 Sepcification of this Spark application is as follows:
 
-- 1 data block with 3 replicas placed on HDFS. 
+- 1 data block with 3 replicas
 - 8 executors
 
   
