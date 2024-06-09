@@ -133,11 +133,33 @@ http://<primary_node_DNS>:19888/jobhistory/job/<job_id>
 ec2-52-72-29-130.compute-1.amazonaws.com
 http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955085543_0001
 
-<img width="1425" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c3a9cf55-44d4-4991-9e3d-89b31e37eea3">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c3a9cf55-44d4-4991-9e3d-89b31e37eea3">
 
-<img width="1422" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c94ba8a6-19a7-4268-9d31-639eebbffcda">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c94ba8a6-19a7-4268-9d31-639eebbffcda">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4e65d3c2-5bb0-4261-8e64-2fb3b39d35c6">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/d32e0bd8-658a-414f-8061-07970b84f0e6">
 
 
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6bcf33a9-d5d0-4996-92e5-0fa8e27bf94f">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7f2d0bbb-e739-4bfa-8098-993fc835d892">
+
+
+| Instance | Map tasks |  Reduce tasks | ApplicationMaster|
+|------|-----------|--------|--------|
+| ip-xxxx-52-142.xxxx|  7, 8, 9, 10 | | |
+| ip-xxxx-52-162.xxxx| 5, 6, 11, 12| | yes |
+| ip-xxxx-57-35.xxxx  | 1, 2, 3, 4 | | |
+| ip-xxxx-63-90.xxxx  | 0, 13,  14, 15| 0, 1| |
+
+
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/de45b913-6ac0-48cf-84aa-ca85d4281fc5">
+
+
+<img width="1432" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/62ea968e-9321-4041-99fd-588a27a94068">
 
 
  <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f2ecfbcd-5191-47e8-8b62-ced4e2b19eef">
