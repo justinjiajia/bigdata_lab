@@ -111,6 +111,7 @@ We can customize the block size and replication factor on a file basis (not on a
 [hadoop@xxxx ~]$ hadoop fs -D dfs.replication=2 -D dfs.blocksize=64M -put data/flights.csv /input/b.csv
 ```
 
+On the NameNode Web UI, you'll see these two files successfully added.
 
 <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/a7f4c939-e271-444b-9789-e1ece0b392d2">
 
