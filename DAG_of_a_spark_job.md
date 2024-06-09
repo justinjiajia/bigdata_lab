@@ -27,7 +27,7 @@
     }
 ]
 ```
-- Run a .sh file at `s3://ust-bigdata-class/install_python_libraries.sh` as a bootstrap action
+- Run a .sh file at the S3 URI `s3://ust-bigdata-class/install_python_libraries.sh` as a bootstrap action (URL: "https://ust-bigdata-class.s3.amazonaws.com/install_python_libraries.sh"; allow for pubic access)
 
 > Use AWS CLI: https://github.com/justinjiajia/bigdata_lab/blob/main/AWS_CLI_command.md
 
