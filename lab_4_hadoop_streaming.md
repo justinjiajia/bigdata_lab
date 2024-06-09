@@ -101,7 +101,6 @@ nano reducer.py
 ```
 Copy and paste the code below into the *reducer.py* file:
 
-----------------------------------------------------------------------------
 
 ```shell
 #!/usr/bin/env python3
@@ -125,22 +124,23 @@ if word == current_word:
 ```
 
 
-----------------------------------------------------------------------------
-
-chmod +x mapper.py reducer.py
-
-echo "foo FOO2 quux. lab foo Ba1r Quux" | ~/mapper.py | sort -k 1,1 | ~/reducer.py
-
-----------------------------------------------------------------------------
+# Test the programs locally (Optional)
 
 
-mapred streaming -D mapreduce.job.reduces=2 \
--files mapper.py,reducer.py \
--input /<Your ITSC Account>/data \
--output /<Your ITSC Account>/program_output_1 \
--mapper mapper.py \
--reducer reducer.py
+```shell
+$ chmod +x mapper.py reducer.py
+$ echo "foo FOO2 quux. lab foo Ba1r Quux" | ~/mapper.py | sort -k 1,1 | ~/reducer.py
+```
 
+# Submit the job
+
+
+```shell
+$ mapred streaming -D mapreduce.job.reduces=2 \
+  -files mapper.py,reducer.py \
+  -input /<Your ITSC Account>/data -output /<Your ITSC Account>/program_output_1 \
+  -mapper mapper.py -reducer reducer.py
+```
 
 ----------------------------------------------------------------------------
 
