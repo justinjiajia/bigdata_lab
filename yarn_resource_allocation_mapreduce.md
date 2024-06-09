@@ -33,6 +33,7 @@
 
 <br>
 
+Submit a job for word counting:
  
 ```shell
 [hadoop@ip-xxxx ~]$ mapred streaming -D mapreduce.job.reduces=2 -files mapper.py,reducer.py -input /input -output /output_1 -mapper mapper.py -reducer reducer.py
@@ -135,9 +136,16 @@ packageJobJar: [] [/usr/lib/hadoop/hadoop-streaming-3.3.6-amzn-3.jar] /tmp/strea
 	File Output Format Counters 
 		Bytes Written=2196033
 2024-06-09 17:18:20,769 INFO streaming.StreamJob: Output directory: /output_1
-
 ```
 
-<img width="1392" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/d9fde575-730d-4b62-a321-ac99b5770253">
+Job ID: job_1717949687705_0003
+No. of input splits: 18
+
+http://<primary_node_DNS>:19888/jobhistory/job/<job_id>
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7b51091d-100c-4e58-bfab-4ebf0da71bf0">
 
 
+Map tasks:
+
+<img width="1419" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/15623e6c-766c-4b46-a2a3-7023b712fd43">
