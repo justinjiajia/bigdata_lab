@@ -230,6 +230,9 @@ Completed
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b5923053-d566-4543-bb4a-946b1e8b8e1c">
 
+Two tasks are spawned and get executed on the worker nodes that each hold one replica of the HDFS block.
+
+
 #### Stage 1
 
 <img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/829aa613-8ee9-401f-b5bd-bac44b5a0416">
