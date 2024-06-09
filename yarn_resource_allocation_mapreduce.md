@@ -128,6 +128,9 @@ packageJobJar: [] [/usr/lib/hadoop/hadoop-streaming-3.3.6-amzn-3.jar] /tmp/strea
 Job ID: job_1717955085543_0001
 No. of input splits: 16
 
+
+#### MapReduce jobhistory Web UI
+
 http://<primary_node_DNS>:19888/jobhistory/job/<job_id>
 
 ec2-52-72-29-130.compute-1.amazonaws.com
@@ -162,7 +165,7 @@ http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955
 <img width="1432" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/62ea968e-9321-4041-99fd-588a27a94068">
 
 
-On YARN timeline server UI,
+#### YARN timeline Server UI
 
 <img width="1417" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/86ba2a8c-0660-4bed-aea9-815c1cc85045">
 <img width="1413" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/767506e5-0fdd-4c1a-8357-70ad6f916b05">
@@ -195,7 +198,9 @@ On YARN timeline server UI,
 The Diagnostics field of container 20: *Diagnostics: Container released by application*. The Diagnostics field of the other containers is all empty. Higher Integer value indicates higher priority?
 only container 20's exit status is -100.
 
-<img width="1431" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/52882800-bd6d-4134-b681-26403ad5d2f0">
+
+----
+drop???
 
 
 
@@ -335,8 +340,12 @@ packageJobJar: [] [/usr/lib/hadoop/hadoop-streaming-3.3.6-amzn-3.jar] /tmp/strea
 2024-06-09 17:18:20,769 INFO streaming.StreamJob: Output directory: /output_1
 ```
 
+
 Job ID: job_1717949687705_0003
 No. of input splits: 18
+
+
+#### MapReduce jobhistory Web UI
 
 http://<primary_node_DNS>:19888/jobhistory/job/<job_id>
 
