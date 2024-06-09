@@ -15,7 +15,7 @@ Configurations:
 
  
 
-#### Run AWS CLI commands
+### Run AWS CLI commands
 
 Examples:
 
