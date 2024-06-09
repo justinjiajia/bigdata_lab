@@ -2,11 +2,22 @@
 
 A workaround to launch a Spark cluster on EMR when EMR's launch wizard does not function properly.
 
-first create a Cloud9 environment:
+### Create a Cloud9 environment
 
-Then run the following commends as needed.
 
-#### Examples of AWS CLI commands
+Go to AWS Cloud9, AWS’ native cloud CLI environment. Choose **Create Environment**.  
+
+Configurations:
+
+- Give a name: e.g., <itsc-string>-emr-launch 
+- Instance type: Choose t3-small(2 GiB RAM + 2 vCPU)
+- Connection:  Secure Shell (SSH)
+
+ 
+
+#### Run AWS CLI commands
+
+Examples:
 
 ```shell
 aws emr create-cluster \
