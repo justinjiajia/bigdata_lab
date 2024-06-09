@@ -5,9 +5,9 @@
 
 - Application: Hadoop
   
-- 1 primary instance; type: `m4.large`
+- Primary instance: type: `m4.large`, quantity: 1
 
-- 3 core instances; type: `m4.large`
+- Core instance: type: `m4.large`, quantity: 3
   
     <img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/1644cc8c-d79b-4c48-a194-f5c49478d126">
 
