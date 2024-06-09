@@ -100,3 +100,39 @@ $ hadoop fs -get /<Your ITSC Account>/data <A Directory in Local FS>
 
 $ hadoop fs -setrep -w 2 /<Your ITSC Account>/pg31156.txt
 ```
+
+<br>
+
+# Customize block size and replication factor
+
+We can customize the block size and replication factor on a file basis (not on a directory basis)
+
+```shell
+[hadoop@xxxx ~]$ hadoop fs -mkdir /input
+[hadoop@xxxx ~]$ hadoop fs -D dfs.blocksize=32M -put data/flights.csv /input/a.csv
+[hadoop@xxxx ~]$ hadoop fs -D dfs.replication=2 -D dfs.blocksize=64M -put data/flights.csv /input/b.csv
+```
+
+
+<img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/a7f4c939-e271-444b-9789-e1ece0b392d2">
+
+We can also reset the replication factor for an existing file or directory:
+
+```shell
+[hadoop@xxxx ~]$ hadoop fs -setrep -w 3 /input/b.csv
+Replication 3 set: /input/b.csv
+Waiting for /input/b.csv .... done
+```
+<img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2d961332-baa1-43b8-9df2-01bc16eb463b">
+
+```shell
+[hadoop@xxxx ~]$ hadoop fs -setrep -w 2 /input
+Replication 2 set: /input/a.csv
+Replication 2 set: /input/b.csv
+Waiting for /input/a.csv ...
+WARNING: the waiting time may be long for DECREASING the number of replications.
+. done
+Waiting for /input/b.csv ... done
+```
+
+<img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/41ff4ab0-0442-4195-8279-0571a925deca">
