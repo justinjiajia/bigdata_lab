@@ -35,7 +35,7 @@
     
     - Set `"dfs.webhdfs.enabled"` to `"true"` if you want use WebHDFS to upload files from a local computer. Check out [this manual](webhdfs_emr.md) for details.
       
-    - The actual configuration files (i.e., *core-site.xml* and *hdfs-site.xml*) can be found in `/etc/hadoop/conf`.
+     > The actual configuration files (i.e., *core-site.xml* and *hdfs-site.xml*) can be found in `/etc/hadoop/conf`.
 
 - Make sure the primary node's EC2 security group has a rule allowing for "ALL TCP" from "My IP" and a rule allowing for "SSH" from "Anywhere".
 
