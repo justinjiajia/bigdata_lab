@@ -18,12 +18,6 @@
             "properties": {
                 "hadoop.http.staticuser.user": "hadoop"
             }
-        },
-        {
-            "classification": "hdfs-site",
-            "properties": {
-                "dfs.replication": "3"
-            }
         }
     ]
     ```
