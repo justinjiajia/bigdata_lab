@@ -129,7 +129,7 @@ Job ID: job_1717955085543_0001
 No. of input splits: 16
 
 
-#### MapReduce jobhistory Web UI
+### MapReduce jobhistory Web UI
 
 http://<primary_node_DNS>:19888/jobhistory/job/<job_id>
 
@@ -139,7 +139,7 @@ http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c3a9cf55-44d4-4991-9e3d-89b31e37eea3">
 
 
-##### Map tasks
+#### Map tasks
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/c94ba8a6-19a7-4268-9d31-639eebbffcda">
 
@@ -149,7 +149,7 @@ http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/d32e0bd8-658a-414f-8061-07970b84f0e6">
 
-##### Reduce tasks
+#### Reduce tasks
 
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6bcf33a9-d5d0-4996-92e5-0fa8e27bf94f">
 
@@ -164,7 +164,9 @@ http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955
 | ip-xxxx-63-90.xxxx  | 0, 13,  14, 15| 0, 1| |
 
 
-#### Resource Manager Web UI
+<br>
+
+### Resource Manager Web UI
 
 <img width="1416" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/34ab5b87-303e-455a-96e2-9860ee9d8781">
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/de45b913-6ac0-48cf-84aa-ca85d4281fc5">
@@ -173,7 +175,7 @@ http://ec2-52-72-29-130.compute-1.amazonaws.com:19888/jobhistory/job/job_1717955
 <img width="1432" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/62ea968e-9321-4041-99fd-588a27a94068">
 
 
-#### YARN timeline Server Web UI
+### YARN timeline Server Web UI
 
 <img width="1417" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/86ba2a8c-0660-4bed-aea9-815c1cc85045">
 <img width="1413" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/767506e5-0fdd-4c1a-8357-70ad6f916b05">
