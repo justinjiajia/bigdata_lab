@@ -55,7 +55,6 @@ wget https://archive.org/download/encyclopaediabri34751gut/pg34751.txt
 wget https://archive.org/download/encyclopaediabri35236gut/pg35236.txt
 wget -O nytimes.txt https://raw.githubusercontent.com/justinjiajia/datafiles/main/nytimes_news_articles.txt
 cd ..
-hadoop fs -ls /
 hadoop fs -mkdir /<Your ITSC Account>
 hadoop fs -put data /<Your ITSC Account>
 hadoop fs -df -h /<Your ITSC Account>/data
