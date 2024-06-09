@@ -259,7 +259,7 @@ jigsaw-toxic-comment-classification-challenge.zip
 
 #### Download a specific data file 
 
-E.g., *HI-Small_Trans.csv* at https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml
+E.g., *HI-Small_Trans.csv* (475.66 MB) at https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml
 
 ```shell
 [hadoop@xxxx ~]$ kaggle datasets download -h
