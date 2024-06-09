@@ -42,8 +42,7 @@
 nano data_prep.sh
 ```
 
-First, change all occurrences of `<Your ITSC Account>` in the code snippet below to your ITSC account string.
-Then, copy and paste it into the *data_prep.sh* file:
+Copy and paste the code snippet below  into the *data_prep.sh* file, and change all occurrences of `<Your ITSC Account>` to your ITSC account string:
 
 ```shell
 #!/bin/bash
