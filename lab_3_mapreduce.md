@@ -5,9 +5,9 @@
 
 - Application: Hadoop
   
-- 1 primary instance; type: `m4.large`
+- Primary instance: type: `m4.large`, quantity: 1
 
-- 3 core instances; type: `m4.large`
+- Core instance: type: `m4.large`, quantity: 3
 
 - Software configurations
     ```json
