@@ -11,13 +11,13 @@
 
 | Instance | file | block | 
 |------|-----------|--------|
-| ip-xxxx-58-44.xxxx| nytimes.txt   | block 0 |
-| ip-xxxx-58-44.xxxx| nytimes.txt   | block 1 |
-| ip-xxxx-58-44.xxxx| nytimes.txt   | block 2 |
-| ip-xxxx-58-44.xxxx| pg31156.txt   | block 0 |
-| ip-xxxx-58-44.xxxx| pg34751.txt  | block 0 |
+| ip-xxxx-58-44.xxxx| nytimes.txt  | block 0 |
+| ip-xxxx-58-44.xxxx| nytimes.txt  | block 1 |
+| ip-xxxx-58-44.xxxx| nytimes.txt  | block 2 |
+| ip-xxxx-58-44.xxxx| pg31156.txt  | block 0 |
+| ip-xxxx-58-44.xxxx| pg34751.txt | block 0 |
 | ip-xxxx-58-44.xxxx| pg35236.txt   | block 0 |
-| ip-xxxx-61-223.xxxx| nytimes.txt   | block 0 |
+| ip-xxxx-61-223.xxxx| nytimes.txt  | block 0 |
 | ip-xxxx-61-223.xxxx | nytimes.txt  | block 1 |
 | ip-xxxx-61-223.xxxx | pg31156.txt   | block 0 |
 | ip-xxxx-61-223.xxxx | pg34751.txt  | block 0 |
@@ -146,6 +146,38 @@ http://<primary_node_DNS>:19888/jobhistory/job/<job_id>
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7b51091d-100c-4e58-bfab-4ebf0da71bf0">
 
 
-Map tasks:
+18 Map tasks:
 
-<img width="1419" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/15623e6c-766c-4b46-a2a3-7023b712fd43">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/15623e6c-766c-4b46-a2a3-7023b712fd43">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/91c59479-6fe7-4b19-9184-66bd3abe984b">
+
+
+<img width="1432" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/fd276f59-7741-4985-b2bf-86cbbea0548d">
+
+
+| Instance | Map tasks | 
+|------|-----------|--------|
+| ip-xxxx-58-44.xxxx| 2, 3, 4, 5|  
+| ip-xxxx-61-223.xxxx | 6, 7, 8, 9|
+| ip-xxxx-62-71.xxxx| 0, 1, 10   | 
+| ip-xxxx-63-3.xxxx | 11, 12, 13, 14, 15, 16|
+
+| ip-xxxx-58-44.xxxx| nytimes.txt  | block 0 |
+| ip-xxxx-58-44.xxxx| nytimes.txt  | block 1 |
+| ip-xxxx-58-44.xxxx| nytimes.txt  | block 2 |
+| ip-xxxx-58-44.xxxx| pg31156.txt  | block 0 |
+| ip-xxxx-58-44.xxxx| pg34751.txt | block 0 |
+| ip-xxxx-58-44.xxxx| pg35236.txt   | block 0 |
+| ip-xxxx-61-223.xxxx| nytimes.txt  | block 0 |
+| ip-xxxx-61-223.xxxx | nytimes.txt  | block 1 |
+| ip-xxxx-61-223.xxxx | pg31156.txt   | block 0 |
+| ip-xxxx-61-223.xxxx | pg34751.txt  | block 0 |
+| ip-xxxx-61-223.xxxx | pg35236.txt  | block 0 |
+| ip-xxxx-62-71.xxxx| nytimes.txt   | block 0 |
+| ip-xxxx-62-71.xxxx| nytimes.txt   | block 1 |
+| ip-xxxx-62-71.xxxx| nytimes.txt   | block 2 |
+| ip-xxxx-62-71.xxxx| pg35236.txt   | block 0 |
+| ip-xxxx-63-3.xxxx | nytimes.txt   | block 2 |
+| ip-xxxx-63-3.xxxx | pg31156.txt | block 0 |
+| ip-xxxx-63-3.xxxx | pg34751.txt | block 0 |
