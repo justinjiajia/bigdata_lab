@@ -2,7 +2,7 @@
 
 - EMR release: 7.1.0 
 
-- Application: Hadoop
+- Application: Hadoop, Spark, and Hive
   
 - Primary instance: type: `m4.large`, quantity: 1
 
