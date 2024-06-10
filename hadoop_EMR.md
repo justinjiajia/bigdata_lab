@@ -200,15 +200,15 @@ org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: 
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
 ```
 
-- RMCommunicator Allocator: The component responsible for resource allocation and communication with the ResourceManager.
+- **RMCommunicator Allocator**: the component responsible for resource allocation and communication with the ResourceManager.
 - `PendingReds:2`: There are 2 reduce tasks pending.
 - `ScheduledMaps:16`: There are 16 map tasks scheduled.
-- ScheduledReds: 0: There are no reduce tasks scheduled yet.
-- AssignedMaps: 0: No map tasks have been assigned to containers yet.
-- AssignedReds: 0: No reduce tasks have been assigned to containers yet.
-- CompletedMaps: 0: No map tasks have been completed yet.
-- CompletedReds: 0: No reduce tasks have been completed yet.
-- ContAlloc: 0: No containers have been allocated yet.
+- `ScheduledReds:0`: There are no reduce tasks scheduled yet.
+- `AssignedMaps:0`: No map tasks have been assigned to containers yet.
+- `AssignedReds:0`: No reduce tasks have been assigned to containers yet.
+- `CompletedMaps:0`: No map tasks have been completed yet.
+- `CompletedReds:0`: No reduce tasks have been completed yet.
+- `ContAlloc:0`: No containers have been allocated yet.
 - ContRel: 0: No containers have been released yet.
 - HostLocal: 0: No tasks have been assigned to containers on the same node as the data.
 - RackLocal: 0: No tasks have been assigned to containers on the same rack as the data.
@@ -219,10 +219,21 @@ org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: 
 - finishedContainers=0: No containers have finished their tasks in this iteration.
 - resourcelimit=<memory:21504, vCores:15>: The total resources available for allocation are 21,504 MB of memory and 15 vCores.
 - `knownNMs=4`: There are 4 NodeManagers known to the ResourceManager.
-- `Recalculating schedule: The ResourceManager is recalculating the resource allocation and scheduling based on the current state and resource requests.
+- `Recalculating schedule`: The ResourceManager is recalculating the resource allocation and scheduling based on the current state and resource requests.
 - `headroom=<memory:21504, vCores:15>`: There are 21,504 MB of memory and 15 vCores available for allocation to applications.
 - `Reduce slow start threshold not met`: Indicates that the required fraction of completed map tasks (as specified by `mapreduce.job.reduce.slowstart.completedmaps`) has not been reached, so reduce tasks are not yet being scheduled.
 - `mapreduce.job.reduce.slowstart.completedmaps` is a configuration parameter that controls when the reduce tasks are allowed to start executing relative to the progress of the map tasks. The default value is 0.05. So, 0.05*16=0.8, and it rounds up to 1.
+
+
+
+#### Entity: [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: 
+
+Before: `headroom=<memory:21504, vCores:15>`
+After: `headroom=<memory:0, vCores:1>`
+
+$\frac{21504}{1536 \text{per map container} = 14$  containers
+
+
 ```
 Got allocated containers 14
 Assigned container container_1717955085543_0001_01_000002 to attempt_1717955085543_0001_m_000000_0
@@ -243,6 +254,7 @@ Recalculating schedule, headroom=<memory:0, vCores:1>
 Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
 After Scheduling: PendingReds:2 ScheduledMaps:2 ScheduledReds:0 AssignedMaps:14 AssignedReds:0 CompletedMaps:0 CompletedReds:0 ContAlloc:14 ContRel:0 HostLocal:14 RackLocal:0
 ```
+
 
 
 ###### Summary of the allocation of containers to tasks
