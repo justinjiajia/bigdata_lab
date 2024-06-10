@@ -1,5 +1,7 @@
 
 
+### Hadoop configuration files on EMR
+
 
 Hadoop's configuration is driven by two types of important configuration files: 
 
@@ -15,6 +17,25 @@ Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
 
 
 <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
+
+
+```shell
+[hadoop@ipxxxx ~]$ ls /usr/lib/hadoop/etc/hadoop
+capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
+capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
+configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
+container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
+container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
+[hadoop@ipxxxx ~]$ ls /etc/hadoop/conf
+capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
+capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
+configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
+container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
+container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
+```
+
+There are 2 configuration directories: /etc/hadoop/conf for user-specific/cluster-specific settings, and /usr/lib/hadoop/etc/hadoop for default settings provided by the Hadoop distribution. According to GPT-4o, configuration files in /etc/hadoop/conf take precedence and override those in `/usr/lib/hadoop/etc/hadoop` (verify!!!!).
+
 
 ```shell
 [hadoop@ipxxxx ~]$ ls  /usr/lib/hadoop-mapreduce | grep mapreduce-client
@@ -40,7 +61,7 @@ hadoop-mapreduce-client-uploader.jar
 [hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default
 mapred-default.xml
 [hadoop@ipxxxx ~]$ jar xf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar mapred-default.xml
-[hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5   slow
+[hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5 slow
 ```
 ```xml
   <name>mapreduce.job.speculative.slowtaskthreshold</name>
@@ -61,27 +82,17 @@ mapred-default.xml
   </description>
 </property>
 ```
-```shell
-[hadoop@ipxxxx ~]$ ls /usr/lib/hadoop/etc/hadoop
-capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
-capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
-configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
-container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
-container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
-[hadoop@ipxxxx ~]$ ls /etc/hadoop/conf
-capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
-capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
-configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
-container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
-container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
-```
 
-There are 2 configuration directories: /etc/hadoop/conf for user-specific/cluster-specific settings, and /usr/lib/hadoop/etc/hadoop for default settings provided by the Hadoop distribution. According to GPT-4o, configuration files in /etc/hadoop/conf take precedence and override those in `/usr/lib/hadoop/etc/hadoop` (verify!!!!).
- 
+
+
+ Key properties set in `mapred-default.xml`:
  
  <img width="644" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3dfc8113-e328-4ce8-8fb0-aa900f15e242">
 
  <img width="625" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e7d6e56b-c4de-4ba2-96cb-6fb44da1ee14">
+
+
+
 
 
 Key information:
