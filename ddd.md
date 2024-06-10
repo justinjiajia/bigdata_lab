@@ -1,6 +1,7 @@
 
 Key information:
 
+```
 user.dir: /mnt/yarn/usercache/hadoop/appcache/application_1717955085543_0001/container_1717955085543_0001_01_000001
 user.name: yarn
 ...
@@ -28,9 +29,9 @@ job_1717955085543_0001Job Transitioned from INITED to SETUP
 ...
 org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
 org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: DISABLED
+```
 
-
-
+```
 [AsyncDispatcher event handler] job_1717955085543_0001Job Transitioned from SETUP to RUNNING
 [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Resource capability of task type MAP is set to <memory:1536, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
 [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_m_000000 Task Transitioned from NEW to SCHEDULED
@@ -40,7 +41,7 @@ org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: 
 [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_r_000000 Task Transitioned from NEW to SCHEDULED
 [eventHandlingThread] Event Writer setup for JobId: job_1717955085543_0001, File: hdfs://ip-172-31-53-255.ec2.internal:8020/tmp/hadoop-yarn/staging/hadoop/.staging/job_1717955085543_0001/job_1717955085543_0001_1.jhist
 [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_r_000001 Task Transitioned from NEW to SCHEDULED
-
+```
 
 
 ##### [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: from NEW to UNASSIGNED
@@ -56,9 +57,10 @@ org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_17179550855
 
 ##### [Thread-88] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator
 
+```
 mapResourceRequest:<memory:1536, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
 reduceResourceRequest:<memory:3072, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
-
+```
 
 
 ##### [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator
@@ -92,6 +94,8 @@ After Scheduling: PendingReds:2 ScheduledMaps:2 ScheduledReds:0 AssignedMaps:14 
 ###### Summary of the allocation of containers to tasks
 
 first allocate 14 containers:
+
+```
 container 2 <---> map task 0
 container 3 <---> map task 13
 container 4 <---> map task 14
@@ -106,7 +110,7 @@ container 12 <---> map task 9
 container 13 <---> map task 10
 container 14 <---> map task 5
 container 15 <---> map task 6
-
+```
  
 
 
@@ -164,18 +168,22 @@ There are 10 container launcher threads in the thread pool (of MRAppMaster?). Th
 
 Lauching a container prints the following information:
 
+```
 [ContainerLauncher #0] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: Processing the event EventType: CONTAINER_REMOTE_LAUNCH for container container_1717955085543_0001_01_000002 taskAttempt attempt_1717955085543_0001_m_000000_0
 [ContainerLauncher #0] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: Launching attempt_1717955085543_0001_m_000000_0
 [ContainerLauncher #0] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: Shuffle port returned by ContainerManager for attempt_1717955085543_0001_m_000000_0 : 13562
+```
 
 Then container launcher #0 is allocated to launch a different container.
 
 Then the designated task gets launched within the container (Note the difference between TaskAttempt and Task):
 
+```shell
 [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: TaskAttempt: [attempt_1717955085543_0001_m_000000_0] using containerId: [container_1717955085543_0001_01_000002 on NM: [ip-172-31-63-90.ec2.internal:8041]
 [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_m_000000_0 TaskAttempt Transitioned from ASSIGNED to RUNNING
 [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.speculate.DefaultSpeculator: ATTEMPT_START task_1717955085543_0001_m_000000
 [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_m_000000 Task Transitioned from SCHEDULED to RUNNING
+```
 
 Task launch seems to occur asynchronously among containers.
 
@@ -183,6 +191,7 @@ Task launch seems to occur asynchronously among containers.
 
 ##### [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerRequestor
 
+```
 getResources() for application_1717955085543_0001: ask=6 release= 0 newContainers=0 finishedContainers=0 resourcelimit=<memory:0, vCores:1> knownNMs=4
 Recalculating schedule, headroom=<memory:0, vCores:1>
 Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
@@ -200,25 +209,25 @@ Recalculating schedule, headroom=<memory:0, vCores:1>
 Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
 Recalculating schedule, headroom=<memory:0, vCores:1>
 Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
+```
 
 
 
 
 
 
-
-
-
-
+```
 [Socket Reader #1 for port 0] SecurityLogger.org.apache.hadoop.ipc.Server: Auth successful for job_1717955085543_0001 (auth:SIMPLE) from ip-172-31-52-162.ec2.internal:38426 / 172.31.52.162:38426
 [IPC Server handler 2 on default port 34655] org.apache.hadoop.mapred.TaskAttemptListenerImpl: JVM with ID : jvm_1717955085543_0001_m_000015 asked for a task
 [IPC Server handler 2 on default port 34655] org.apache.hadoop.mapred.TaskAttemptListenerImpl: JVM with ID: jvm_1717955085543_0001_m_000015 given task: attempt_1717955085543_0001_m_000006_0
+```
 
 jvm_1717955085543_0001_m_000015 (container 15; ip-xxxx-52-162.xxxx) given task: attempt_1717955085543_0001_m_000006_0
 
 
 ####
 
+```
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Recalculating schedule, headroom=<memory:0, vCores:1>
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
 2024-06-09 18:16:48,106 INFO [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Recalculating schedule, headroom=<memory:0, vCores:1>
@@ -241,7 +250,7 @@ jvm_1717955085543_0001_m_000015 (container 15; ip-xxxx-52-162.xxxx) given task: 
 ...
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Recalculating schedule, headroom=<memory:0, vCores:1>
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
-
+```
 
 ###
 
@@ -299,8 +308,9 @@ for each completed task:
 
 ###
 
+```
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Got allocated containers 2
-
+```
 
 
 
@@ -314,16 +324,19 @@ for each completed task:
 
 the order of events is a bit different from those for the previous tasks
 
+```
 *[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_m_000011_0 TaskAttempt Transitioned from UNASSIGNED to ASSIGNED
 [ContainerLauncher #5] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: Processing the event EventType: CONTAINER_REMOTE_LAUNCH for container container_1717955085543_0001_01_000016 taskAttempt attempt_1717955085543_0001_m_000011_0
 [ContainerLauncher #5] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: Launching attempt_1717955085543_0001_m_000011_0
 *[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Assigned container container_1717955085543_0001_01_000016 to attempt_1717955085543_0001_m_000011_0
+```
 
+```
 *[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_m_000012_0 TaskAttempt Transitioned from UNASSIGNED to ASSIGNED
 [ContainerLauncher #6] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: Processing the event EventType: CONTAINER_REMOTE_LAUNCH for container container_1717955085543_0001_01_000017 taskAttempt attempt_1717955085543_0001_m_000012_0
 [ContainerLauncher #6] org.apache.hadoop.mapreduce.v2.app.launcher.ContainerLauncherImpl: Launching attempt_1717955085543_0001_m_000012_0
 *[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Assigned container container_1717955085543_0001_01_000017 to attempt_1717955085543_0001_m_000012_0
-
+```
 
 #####
 
