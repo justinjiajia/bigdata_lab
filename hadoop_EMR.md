@@ -1,4 +1,14 @@
 
+
+The setting found in `/etc/hadoop/conf/mapred-site.xml` 
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/787d2e16-7f53-45b0-b724-00bcaf3fa67c">
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
+
+
+
+
+ 
 Key information:
 
 ```
@@ -31,7 +41,7 @@ org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: FileOutputCommitter 
 org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: DISABLED
 ```
 
-##### Task Configarations and Schedulding
+#### Task Configarations and Schedulding
 
 
 [A]: [AsyncDispatcher event handler] 
@@ -52,27 +62,43 @@ org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: 
 [A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_m_000015_0 TaskAttempt Transitioned from NEW to UNASSIGNED
 [A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_r_000000_0 TaskAttempt Transitioned from NEW to UNASSIGNED
 [A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_r_000001_0 TaskAttempt Transitioned from NEW to UNASSIGNED
+[Thread-88] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: mapResourceRequest:<memory:1536, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
+[Thread-88] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: reduceResourceRequest:<memory:3072, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
 ```
 
+all tasks get scheduled.
 
 
-
-
-##### [Thread-88] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator
-
-```
-mapResourceRequest:<memory:1536, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
-reduceResourceRequest:<memory:3072, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
-```
-
-
-##### [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator
+#### 
 
 ```shell
-Before Scheduling: PendingReds:2 ScheduledMaps:16 ScheduledReds:0 AssignedMaps:0 AssignedReds:0 CompletedMaps:0 CompletedReds:0 ContAlloc:0 ContRel:0 HostLocal:0 RackLocal:0
-getResources() for application_1717955085543_0001: ask=6 release= 0 newContainers=0 finishedContainers=0 resourcelimit=<memory:21504, vCores:15> knownNMs=4
-Recalculating schedule, headroom=<memory:21504, vCores:15>
-Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Before Scheduling: PendingReds:2 ScheduledMaps:16 ScheduledReds:0 AssignedMaps:0 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: AssignedReds:0 CompletedMaps:0 CompletedReds:0 ContAlloc:0 ContRel:0 HostLocal:0 RackLocal:0
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: getResources() for application_1717955085543_0001: ask=6 release= 0 newContainers=0 finishedContainers=0 resourcelimit=<memory:21504, vCores:15> knownNMs=4
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Recalculating schedule, headroom=<memory:21504, vCores:15>
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
+```
+- `PendingReds:2`: There are 2 reduce tasks pending.
+- `ScheduledMaps:16`: There are 16 map tasks scheduled.
+- ScheduledReds: 0: There are no reduce tasks scheduled yet.
+- AssignedMaps: 0: No map tasks have been assigned to containers yet.
+- AssignedReds: 0: No reduce tasks have been assigned to containers yet.
+- CompletedMaps: 0: No map tasks have been completed yet.
+- CompletedReds: 0: No reduce tasks have been completed yet.
+- ContAlloc: 0: No containers have been allocated yet.
+- ContRel: 0: No containers have been released yet.
+- HostLocal: 0: No tasks have been assigned to containers on the same node as the data.
+- RackLocal: 0: No tasks have been assigned to containers on the same rack as the data.
+- `getResources() for application_1717955085543_0001`: This log entry is related to the resource requests and allocations for the specific application.
+- `ask=6`: The application is requesting 6 containers.
+- `release=0`: No containers are being released back to the ResourceManager.
+- `newContainers=0`: No new containers have been allocated in this scheduling iteration.
+- finishedContainers=0: No containers have finished their tasks in this iteration.
+- resourcelimit=<memory:21504, vCores:15>: The total resources available for allocation are 21,504 MB of memory and 15 vCores.
+- `knownNMs=4`: There are 4 NodeManagers known to the ResourceManager.
+- `Recalculating schedule: The ResourceManager is recalculating the resource allocation and scheduling based on the current state and resource requests.
+- `headroom=<memory:21504, vCores:15>`: There are 21,504 MB of memory and 15 vCores available for allocation to applications.
+
+```
 Got allocated containers 14
 Assigned container container_1717955085543_0001_01_000002 to attempt_1717955085543_0001_m_000000_0
 Assigned container container_1717955085543_0001_01_000003 to attempt_1717955085543_0001_m_000013_0
