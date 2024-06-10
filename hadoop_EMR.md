@@ -8,9 +8,74 @@ Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
 <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
 
 
+> Hadoop's configuration is driven by two types of important configuration files: 
+- Read-only default configuration: core-default.xml, hdfs-default.xml, yarn-default.xml, and mapred-default.xml. The actual files are located in different JAR files.
+- Site-specific configuration: core-site.xml, hdfs-site.xml, yarn-site.xml and mapred-site.xml. 
 
+```shell
+[hadoop@ipxxxx ~]$ ls  /usr/lib/hadoop-mapreduce | grep mapreduce-client
+hadoop-mapreduce-client-app-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-app.jar
+hadoop-mapreduce-client-common-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-common.jar
+hadoop-mapreduce-client-core-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-core.jar
+hadoop-mapreduce-client-hs-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-hs-plugins-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-hs-plugins.jar
+hadoop-mapreduce-client-hs.jar
+hadoop-mapreduce-client-jobclient-3.3.6-amzn-3-tests.jar
+hadoop-mapreduce-client-jobclient-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-jobclient.jar
+hadoop-mapreduce-client-nativetask-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-nativetask.jar
+hadoop-mapreduce-client-shuffle-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-shuffle.jar
+hadoop-mapreduce-client-uploader-3.3.6-amzn-3.jar
+hadoop-mapreduce-client-uploader.jar
+[hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default
+mapred-default.xml
+[hadoop@ipxxxx ~]$ jar xf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar mapred-default.xml
+[hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5   slow 
+  <name>mapreduce.job.speculative.slowtaskthreshold</name>
+  <value>1.0</value>
+  <description>The number of standard deviations by which a task's
+  ave progress-rates must be lower than the average of all running tasks'
+  for the task to be considered too slow.
+  </description>
+</property>
 
+<property>
+  <name>mapreduce.job.ubertask.enable</name>
+--
+  <name>mapreduce.job.reduce.slowstart.completedmaps</name>
+  <value>0.05</value>
+  <description>Fraction of the number of maps in the job which should be
+  complete before reduces are scheduled for the job.
+  </description>
+</property>
+[hadoop@ipxxxx ~]$ ls /usr/lib/hadoop/etc/hadoop
+capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
+capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
+configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
+container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
+container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
+[hadoop@ipxxxx ~]$ ls /etc/hadoop/conf
+capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
+capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
+configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
+container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
+container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
+```
+
+There are 2 configuration directories: /etc/hadoop/conf for user-specific/cluster-specific settings, and /usr/lib/hadoop/etc/hadoop for default settings provided by the Hadoop distribution. According to GPT-4o, configuration files in /etc/hadoop/conf take precedence and override those in `/usr/lib/hadoop/etc/hadoop` (verify!!!!).
  
+ 
+ <img width="644" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3dfc8113-e328-4ce8-8fb0-aa900f15e242">
+
+ <img width="625" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e7d6e56b-c4de-4ba2-96cb-6fb44da1ee14">
+
+
 Key information:
 
 ```
@@ -68,7 +133,7 @@ org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: 
 [Thread-88] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: reduceResourceRequest:<memory:3072, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
 ```
 
-all tasks get scheduled.
+
 
 
 #### 
@@ -79,6 +144,8 @@ all tasks get scheduled.
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Recalculating schedule, headroom=<memory:21504, vCores:15>
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
 ```
+
+- RMCommunicator Allocator: The component responsible for resource allocation and communication with the ResourceManager.
 - `PendingReds:2`: There are 2 reduce tasks pending.
 - `ScheduledMaps:16`: There are 16 map tasks scheduled.
 - ScheduledReds: 0: There are no reduce tasks scheduled yet.
