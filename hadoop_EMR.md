@@ -1,6 +1,6 @@
 
 
-### Hadoop configuration files on EMR
+# Hadoop configuration files on EMR
 
 
 Hadoop's configuration is driven by two types of important configuration files: 
@@ -128,7 +128,7 @@ Each entry shows both the effective value and where it is defined. E.g.:
 
 
 
-
+# Log analysis
 
 
 Key information:
