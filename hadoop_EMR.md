@@ -1,16 +1,20 @@
 
 
+
+Hadoop's configuration is driven by two types of important configuration files: 
+
+- Read-only default configuration: core-default.xml, hdfs-default.xml, yarn-default.xml, and mapred-default.xml. The actual files are located in different JAR files.
+
+- Site-specific configuration: core-site.xml, hdfs-site.xml, yarn-site.xml and mapred-site.xml. 
+
+
+
 Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
 
 <img width="360" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/787d2e16-7f53-45b0-b724-00bcaf3fa67c">
 
 
 <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
-
-
-> Hadoop's configuration is driven by two types of important configuration files: 
-- Read-only default configuration: core-default.xml, hdfs-default.xml, yarn-default.xml, and mapred-default.xml. The actual files are located in different JAR files.
-- Site-specific configuration: core-site.xml, hdfs-site.xml, yarn-site.xml and mapred-site.xml. 
 
 ```shell
 [hadoop@ipxxxx ~]$ ls  /usr/lib/hadoop-mapreduce | grep mapreduce-client
@@ -36,7 +40,9 @@ hadoop-mapreduce-client-uploader.jar
 [hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default
 mapred-default.xml
 [hadoop@ipxxxx ~]$ jar xf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar mapred-default.xml
-[hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5   slow 
+[hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5   slow
+```
+```xml
   <name>mapreduce.job.speculative.slowtaskthreshold</name>
   <value>1.0</value>
   <description>The number of standard deviations by which a task's
@@ -54,6 +60,8 @@ mapred-default.xml
   complete before reduces are scheduled for the job.
   </description>
 </property>
+```
+```shell
 [hadoop@ipxxxx ~]$ ls /usr/lib/hadoop/etc/hadoop
 capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
 capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
