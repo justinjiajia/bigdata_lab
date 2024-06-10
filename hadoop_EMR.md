@@ -94,12 +94,39 @@ The detailed configurations can be found from the ResourceManager's Web UI:
 
 <img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/80e385ee-84ba-4452-a67a-67f3500beff7">
 
+Each entry shows both the effective value and where it is defined. E.g.:
 
-<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0423cd4f-3b72-49ca-872a-b5cf0facdd95">
+```xml
+<property>
+<name>mapreduce.job.maps</name>
+<value>16</value>
+<final>false</final>
+<source>mapred-site.xml</source>
+</property>
+...
+<property>
+<name>mapreduce.map.memory.mb</name>
+<value>1536</value>
+<final>false</final>
+<source>mapred-site.xml</source>
+</property>
+...
+<property>
+<name>mapreduce.job.reduce.slowstart.completedmaps</name>
+<value>0.05</value>
+<final>false</final>
+<source>mapred-default.xml</source>
+</property>
+...
+<property>
+<name>mapreduce.reduce.memory.mb</name>
+<value>3072</value>
+<final>false</final>
+<source>mapred-site.xml</source>
+</property>
+```
 
-<img width="500" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6c768952-dd0e-4da9-89fc-3b3e2b1c5421">
 
-Each entry shows both the effective value and where it is defined.
 
 
 
