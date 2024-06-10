@@ -62,8 +62,6 @@ hadoop-mapreduce-client-uploader.jar
 mapred-default.xml
 [hadoop@ipxxxx ~]$ jar xf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar mapred-default.xml
 [hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5 slow
-```
-```xml
   <name>mapreduce.job.speculative.slowtaskthreshold</name>
   <value>1.0</value>
   <description>The number of standard deviations by which a task's
