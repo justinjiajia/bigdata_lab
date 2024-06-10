@@ -221,7 +221,8 @@ org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: 
 - `knownNMs=4`: There are 4 NodeManagers known to the ResourceManager.
 - `Recalculating schedule: The ResourceManager is recalculating the resource allocation and scheduling based on the current state and resource requests.
 - `headroom=<memory:21504, vCores:15>`: There are 21,504 MB of memory and 15 vCores available for allocation to applications.
-
+- `Reduce slow start threshold not met`: Indicates that the required fraction of completed map tasks (as specified by `mapreduce.job.reduce.slowstart.completedmaps`) has not been reached, so reduce tasks are not yet being scheduled.
+- `mapreduce.job.reduce.slowstart.completedmaps` is a configuration parameter that controls when the reduce tasks are allowed to start executing relative to the progress of the map tasks. The default value is 0.05. So, 0.05*16=0.8, and it rounds up to 1.
 ```
 Got allocated containers 14
 Assigned container container_1717955085543_0001_01_000002 to attempt_1717955085543_0001_m_000000_0
