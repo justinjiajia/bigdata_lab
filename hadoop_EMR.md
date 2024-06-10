@@ -1,6 +1,6 @@
 
 
-The setting found in `/etc/hadoop/conf/mapred-site.xml` 
+Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
 
 <img width="360" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/787d2e16-7f53-45b0-b724-00bcaf3fa67c">
 
