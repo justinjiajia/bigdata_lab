@@ -91,9 +91,13 @@ mapred-default.xml
 
 
 The detailed configurations can be found from the ResourceManager's Web UI:
-<img width="320" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/80e385ee-84ba-4452-a67a-67f3500beff7">
-<img width="429" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0423cd4f-3b72-49ca-872a-b5cf0facdd95">
-<img width="515" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6c768952-dd0e-4da9-89fc-3b3e2b1c5421">
+
+<img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/80e385ee-84ba-4452-a67a-67f3500beff7">
+
+
+<img width="400" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/0423cd4f-3b72-49ca-872a-b5cf0facdd95">
+
+<img width="500" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6c768952-dd0e-4da9-89fc-3b3e2b1c5421">
 
 Each entry shows both the effective value and where it is defined.
 
