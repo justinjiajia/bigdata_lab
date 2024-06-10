@@ -5,9 +5,9 @@
 
 Hadoop's configuration is driven by two types of important configuration files: 
 
-- Read-only default configuration: core-default.xml, hdfs-default.xml, yarn-default.xml, and mapred-default.xml. The actual files are located in different JAR files.
+- Read-only default configuration: *core-default.xml*, *hdfs-default.xml*, *yarn-default.xml*, and *mapred-default.xml*. The actual files are located in different JAR files in `/usr/lib/`.
 
-- Site-specific configuration: core-site.xml, hdfs-site.xml, yarn-site.xml and mapred-site.xml. 
+- Site-specific configuration: *core-site.xml*, *hdfs-site.xml*, *yarn-site.xml*, and *mapred-site.xml*. 
 
 
 
@@ -34,11 +34,11 @@ container-executor.cfg          hadoop-metrics2.properties          httpfs-env.s
 container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
 ```
 
-There are 2 configuration directories: /etc/hadoop/conf for user-specific/cluster-specific settings, and /usr/lib/hadoop/etc/hadoop for default settings provided by the Hadoop distribution. According to GPT-4o, configuration files in /etc/hadoop/conf take precedence and override those in `/usr/lib/hadoop/etc/hadoop` (verify!!!!).
+There are 2 configuration directories: `/etc/hadoop/conf` for user-specific/cluster-specific settings, and `/usr/lib/hadoop/etc/hadoop` for default settings provided by the Hadoop distribution. According to GPT-4o, configuration files in `/etc/hadoop/conf` take precedence and override those in `/usr/lib/hadoop/etc/hadoop` (verify!!!!).
 
 
 ```shell
-[hadoop@ipxxxx ~]$ ls  /usr/lib/hadoop-mapreduce | grep mapreduce-client
+[hadoop@ipxxxx ~]$ ls /usr/lib/hadoop-mapreduce | grep mapreduce-client
 hadoop-mapreduce-client-app-3.3.6-amzn-3.jar
 hadoop-mapreduce-client-app.jar
 hadoop-mapreduce-client-common-3.3.6-amzn-3.jar
