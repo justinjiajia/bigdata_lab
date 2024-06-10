@@ -31,28 +31,31 @@ org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: FileOutputCommitter 
 org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: DISABLED
 ```
 
+##### Task Configarations and Schedulding
+
+
+[A]: [AsyncDispatcher event handler] 
+[e]: [eventHandlingThread]
+
 ```
-[AsyncDispatcher event handler] job_1717955085543_0001Job Transitioned from SETUP to RUNNING
-[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Resource capability of task type MAP is set to <memory:1536, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
-[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_m_000000 Task Transitioned from NEW to SCHEDULED
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.JobImpl: job_1717955085543_0001Job Transitioned from SETUP to RUNNING
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Resource capability of task type MAP is set to <memory:1536, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_m_000000 Task Transitioned from NEW to SCHEDULED
 ...
-[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_m_000015 Task Transitioned from NEW to SCHEDULED
-[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Resource capability of task type REDUCE is set to <memory:3072, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
-[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_r_000000 Task Transitioned from NEW to SCHEDULED
-[eventHandlingThread] Event Writer setup for JobId: job_1717955085543_0001, File: hdfs://ip-172-31-53-255.ec2.internal:8020/tmp/hadoop-yarn/staging/hadoop/.staging/job_1717955085543_0001/job_1717955085543_0001_1.jhist
-[AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_r_000001 Task Transitioned from NEW to SCHEDULED
-```
-
-
-##### [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: from NEW to UNASSIGNED
-
-```shell
-org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_m_000000_0 TaskAttempt Transitioned from NEW to UNASSIGNED
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_m_000015 Task Transitioned from NEW to SCHEDULED
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Resource capability of task type REDUCE is set to <memory:3072, max memory:9223372036854775807, vCores:1, max vCores:2147483647>
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_r_000000 Task Transitioned from NEW to SCHEDULED
+[e] Event Writer setup for JobId: job_1717955085543_0001, File: hdfs://ip-172-31-53-255.ec2.internal:8020/tmp/hadoop-yarn/staging/hadoop/.staging/job_1717955085543_0001/job_1717955085543_0001_1.jhist
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_1717955085543_0001_r_000001 Task Transitioned from NEW to SCHEDULED
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_m_000000_0 TaskAttempt Transitioned from NEW to UNASSIGNED
 ...
-org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_m_000015_0 TaskAttempt Transitioned from NEW to UNASSIGNED
-org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_r_000000_0 TaskAttempt Transitioned from NEW to UNASSIGNED
-org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_r_000001_0 TaskAttempt Transitioned from NEW to UNASSIGNED
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_m_000015_0 TaskAttempt Transitioned from NEW to UNASSIGNED
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_r_000000_0 TaskAttempt Transitioned from NEW to UNASSIGNED
+[A] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_1717955085543_0001_r_000001_0 TaskAttempt Transitioned from NEW to UNASSIGNED
 ```
+
+
+
 
 
 ##### [Thread-88] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator
