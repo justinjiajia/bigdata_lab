@@ -10,15 +10,16 @@
 
   - scheduleStats.updateAndLogIfChanged("Before Scheduling: "); [Definition of this method](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L1595)
     
-  - List<Container> allocatedContainers = getResources();
+  - `List<Container> allocatedContainers = getResources();` in class `RMContainerAllocator`, which implements class `RMContainerRequestor`
 
-    - makeRemoteRequest():  Recalculating schedule
-    ```
-    LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
+    - `makeRemoteRequest()` in class `RMContainerRequestor`; note `makeRemoteRequest()` is invoked within `getResources()`
+      
+      - ```
+        LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
                   + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
               allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
               availableResources, clusterNmCount);
-    ```
+        ```
     
   - `scheduledRequests.assign(allocatedContainers)`
     
