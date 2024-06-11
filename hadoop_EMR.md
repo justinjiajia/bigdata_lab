@@ -169,6 +169,7 @@ org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: 
 
 
 [A]: [AsyncDispatcher event handler] 
+
 [e]: [eventHandlingThread]
 
 ```
@@ -204,7 +205,7 @@ Create and schedule all tasks and then create 1 attempt per task
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
 ```
 
-- **RMCommunicator Allocator**: the component responsible for resource allocation and communication with the ResourceManager.
+- **RMCommunicator Allocator**: A component in MRAppMaster; Responsible for resource allocation and communication with the ResourceManager. 
 - `PendingReds:2`: There are 2 reduce tasks pending.
 - `ScheduledMaps:16`: There are 16 map tasks scheduled.
 - `ScheduledReds:0`: There are no reduce tasks scheduled yet.
@@ -223,17 +224,64 @@ Create and schedule all tasks and then create 1 attempt per task
 - finishedContainers=0: No containers have finished their tasks in this iteration.
 - resourcelimit=<memory:21504, vCores:15>: The total resources available for allocation are 21,504 MB of memory and 15 vCores.
 - `knownNMs=4`: There are 4 NodeManagers known to the ResourceManager.
-- `Recalculating schedule`: The ResourceManager is recalculating the resource allocation and scheduling based on the current state and resource requests.
+- `Recalculating schedule`: initiated by the RMCommunicator Allocator. The ResourceManager is recalculating the resource allocation and scheduling based on the current state and resource requests.
 - `headroom=<memory:21504, vCores:15>`: There are 21,504 MB of memory and 15 vCores available for allocation to applications.
 - `Reduce slow start threshold not met`: Indicates that the required fraction of completed map tasks (as specified by `mapreduce.job.reduce.slowstart.completedmaps`) has not been reached, so reduce tasks are not yet being scheduled.
 - `mapreduce.job.reduce.slowstart.completedmaps` is a configuration parameter that controls when the reduce tasks are allowed to start executing relative to the progress of the map tasks. The default value is 0.05. So, 0.05*16=0.8, and it rounds up to 1.
 
 
 
+#### Code for the MRAppMaster's interaction with the ResourceManager? (org/apache/hadoop/mapreduce/v2/app/rm/)
+
+https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMCommunicator.java
+
+https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java
+
+```java
+/**
+ * Keeps the data structures to send container requests to RM.
+ */
+public abstract class RMContainerRequestor extends RMCommunicator {
+...
+}
+```
+
+https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java
+
+```java
+/**
+ * Allocates the container from the ResourceManager scheduler.
+ */
+public class RMContainerAllocator extends RMContainerRequestor
+    implements ContainerAllocator {
+   ...
+}
+```
+
+https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/MRAppMaster.java
+
+```java
+    protected void serviceStart() throws Exception {
+      if (job.isUber()) {
+        MRApps.setupDistributedCacheLocal(getConfig());
+        this.containerAllocator = new LocalContainerAllocator(
+            this.clientService, this.context, nmHost, nmPort, nmHttpPort
+            , containerID);
+      } else {
+        this.containerAllocator = new RMContainerAllocator(
+            this.clientService, this.context, preemptionPolicy);
+      }
+      ((Service)this.containerAllocator).init(getConfig());
+      ((Service)this.containerAllocator).start();
+      super.serviceStart();
+    }
+```
+
 ## Assign Containers to Task Attempts
 
 
 Before: `headroom=<memory:21504, vCores:15>`
+
 After: `headroom=<memory:0, vCores:1>`
 
 21504 / (1536 per map container) = 14 containers
