@@ -327,44 +327,6 @@ public abstract class RMContainerRequestor extends RMCommunicator {
 
 https://github.com/apache/hadoop/blob/trunk/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/ResourceRequest.java
 
-```java
-public abstract class ResourceRequest implements Comparable<ResourceRequest> {
-  ...
-  @Public
-  @Stable
-  public static class ResourceRequestComparator implements
-      java.util.Comparator<ResourceRequest>, Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    public int compare(ResourceRequest r1, ResourceRequest r2) {
-
-      // Compare priority, host and capability
-      int ret = r1.getPriority().compareTo(r2.getPriority());
-      if (ret == 0) {
-        ret = Long.compare(
-            r1.getAllocationRequestId(), r2.getAllocationRequestId());
-      }
-      if (ret == 0) {
-        String h1 = r1.getResourceName();
-        String h2 = r2.getResourceName();
-        ret = h1.compareTo(h2);
-      }
-      if (ret == 0) {
-        ret = r1.getExecutionTypeRequest()
-            .compareTo(r2.getExecutionTypeRequest());
-      }
-      if (ret == 0) {
-        ret = r1.getCapability().compareTo(r2.getCapability());
-      }
-      return ret;
-    }
-  }
-...
-}
-```
-
 
 https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java
 
