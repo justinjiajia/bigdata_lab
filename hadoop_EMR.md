@@ -205,7 +205,7 @@ Create and schedule all tasks and then create 1 attempt per task
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
 ```
 
-- **RMCommunicator Allocator**: A component in MRAppMaster; Responsible for resource allocation and communication with the ResourceManager. 
+- **RMCommunicator Allocator**: A component in MRAppMaster; Responsible for resource allocation and communication with the ResourceManager. Note that `RMContainerAllocator` is a specific implementation of `RMCommunicator`. 
 - `PendingReds:2`: There are 2 reduce tasks pending.
 - `ScheduledMaps:16`: There are 16 map tasks scheduled.
 - `ScheduledReds:0`: There are no reduce tasks scheduled yet.
@@ -235,16 +235,136 @@ Create and schedule all tasks and then create 1 attempt per task
 
 https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMCommunicator.java
 
+
+```
+import org.apache.hadoop.yarn.api.ApplicationMasterProtocol;
+...
+/**
+ * Registers/unregisters to RM and sends heartbeats to RM.
+ */
+public abstract class RMCommunicator extends AbstractService
+    implements RMHeartbeatHandler {
+  ...
+  protected ApplicationMasterProtocol scheduler;
+  ...
+
+
+```
 https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java
 
 ```java
+...
+import org.apache.hadoop.yarn.api.protocolrecords.AllocateResponse;
+...
+import org.apache.hadoop.yarn.api.records.ResourceRequest.ResourceRequestComparator;
+...
 /**
  * Keeps the data structures to send container requests to RM.
  */
 public abstract class RMContainerRequestor extends RMCommunicator {
+  ...
+  private static final ResourceRequestComparator RESOURCE_REQUEST_COMPARATOR =
+      new ResourceRequestComparator();
+  ...
+  // use custom comparator to make sure ResourceRequest objects differing only in 
+  // numContainers dont end up as duplicates
+  private final Set<ResourceRequest> ask = new TreeSet<ResourceRequest>(
+      RESOURCE_REQUEST_COMPARATOR);
+  private final Set<ContainerId> release = new TreeSet<ContainerId>();
+  // pendingRelease holds history or release requests.request is removed only if
+  // RM sends completedContainer.
+  // How it different from release? --> release is for per allocate() request.
+  protected Set<ContainerId> pendingRelease = new TreeSet<ContainerId>();
+
+  ...
+  protected AllocateResponse makeRemoteRequest() throws YarnException,
+      IOException {
+    applyRequestLimits();
+    ResourceBlacklistRequest blacklistRequest =
+        ResourceBlacklistRequest.newInstance(new ArrayList<String>(blacklistAdditions),
+            new ArrayList<String>(blacklistRemovals));
+    AllocateRequest allocateRequest =
+        AllocateRequest.newInstance(lastResponseID,
+          super.getApplicationProgress(), new ArrayList<ResourceRequest>(ask),
+          new ArrayList<ContainerId>(release), blacklistRequest);
+    AllocateResponse allocateResponse = scheduler.allocate(allocateRequest);
+    lastResponseID = allocateResponse.getResponseId();
+    availableResources = allocateResponse.getAvailableResources();
+    lastClusterNmCount = clusterNmCount;
+    clusterNmCount = allocateResponse.getNumClusterNodes();
+    int numCompletedContainers =
+        allocateResponse.getCompletedContainersStatuses().size();
+
+    if (ask.size() > 0 || release.size() > 0) {
+      LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
+              + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
+          allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
+          availableResources, clusterNmCount);
+    }
+
+    ask.clear();
+    release.clear();
+
+    if (numCompletedContainers > 0) {
+      // re-send limited requests when a container completes to trigger asking
+      // for more containers
+      requestLimitsToUpdate.addAll(requestLimits.keySet());
+    }
+
+    if (blacklistAdditions.size() > 0 || blacklistRemovals.size() > 0) {
+      LOG.info("Update the blacklist for " + applicationId +
+          ": blacklistAdditions=" + blacklistAdditions.size() +
+          " blacklistRemovals=" +  blacklistRemovals.size());
+    }
+    blacklistAdditions.clear();
+    blacklistRemovals.clear();
+    return allocateResponse;
+  }
+
+  ...
+}
+```
+
+https://github.com/apache/hadoop/blob/trunk/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/ResourceRequest.java
+
+```java
+public abstract class ResourceRequest implements Comparable<ResourceRequest> {
+  ...
+  @Public
+  @Stable
+  public static class ResourceRequestComparator implements
+      java.util.Comparator<ResourceRequest>, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public int compare(ResourceRequest r1, ResourceRequest r2) {
+
+      // Compare priority, host and capability
+      int ret = r1.getPriority().compareTo(r2.getPriority());
+      if (ret == 0) {
+        ret = Long.compare(
+            r1.getAllocationRequestId(), r2.getAllocationRequestId());
+      }
+      if (ret == 0) {
+        String h1 = r1.getResourceName();
+        String h2 = r2.getResourceName();
+        ret = h1.compareTo(h2);
+      }
+      if (ret == 0) {
+        ret = r1.getExecutionTypeRequest()
+            .compareTo(r2.getExecutionTypeRequest());
+      }
+      if (ret == 0) {
+        ret = r1.getCapability().compareTo(r2.getCapability());
+      }
+      return ret;
+    }
+  }
 ...
 }
 ```
+
 
 https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java
 
@@ -259,6 +379,8 @@ public class RMContainerAllocator extends RMContainerRequestor
 ```
 
 https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/MRAppMaster.java
+
+the MRAppMaster creates a RMContainerAllocator for the non-uber mode. 
 
 ```java
     protected void serviceStart() throws Exception {
