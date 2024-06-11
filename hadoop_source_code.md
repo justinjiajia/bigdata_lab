@@ -33,12 +33,12 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
       - `AllocateResponse allocateResponse = scheduler.allocate(allocateRequest);`
   
       - Logging step at [line 216](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L216) 
-       ```
-       LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
-                 + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
-             allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
-             availableResources, clusterNmCount);
-       ```
+        ```
+        LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
+                  + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
+              allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
+              availableResources, clusterNmCount);
+        ```
        
       - `return allocateResponse;`
        
