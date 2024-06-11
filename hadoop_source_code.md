@@ -301,6 +301,8 @@ public abstract class RMContainerRequestor extends RMCommunicator {
 }
 ```
 
+A TreeSet constructor lets us define the order in which the elements get sorted by using a Comparable or Comparator (https://www.baeldung.com/java-tree-set)
+
 https://github.com/apache/hadoop/blob/trunk/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/api/records/ResourceRequest.java
 
 
