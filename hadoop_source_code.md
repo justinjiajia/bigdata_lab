@@ -46,9 +46,9 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
        
         - `return allocateResponse;`
 
-        - `Resource newHeadRoom = getAvailableResources();`
+      - `Resource newHeadRoom = getAvailableResources();`
     
-        - `List<Container> newContainers = response.getAllocatedContainers();` 
+      - `List<Container> newContainers = response.getAllocatedContainers();` 
            
 - `scheduledRequests.assign(allocatedContainers);`
 
