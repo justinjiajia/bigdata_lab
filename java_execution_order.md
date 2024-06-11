@@ -76,10 +76,15 @@ and got this output:
 > instance - grandparent
 
 > constructor - grandparent
+
 > instance - parent
+
 > constructor - parent
+
 > instance - child
+
 > constructor - child
+
 > END
 
 ```java
