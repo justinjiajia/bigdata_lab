@@ -16,13 +16,13 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
 
 - `List<Container> allocatedContainers = getResources();` at [line 286](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L286)
 
-  - `getResources()` at[line 780](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L780)
+  - `getResources()` at [line 780](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L780)
     
     - `Resource headRoom = Resources.clone(getAvailableResources());` at [line 785](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L785)
    
       - `getAvailableResources()` at [line 390](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L390) in Class `RMContainerRequestor`
     
-        - `return availableResources == null ? Resources.none() : availableResources;` where availableResources is claimed as `private Resource availableResources;`
+        - `return availableResources == null ? Resources.none() : availableResources;` where `availableResources` is claimed as `private Resource availableResources;`
 
       - `headRoom` is `null` initially
 
@@ -33,6 +33,8 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
       - `makeRemoteRequest()` at [line 197](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L197) in Class `RMContainerRequestor`
  
         - `AllocateResponse allocateResponse = scheduler.allocate(allocateRequest);`
+       
+        - `availableResources = allocateResponse.getAvailableResources();`
   
         - Logging step at [line 216](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L216) 
         ```
@@ -43,7 +45,11 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
         ```
        
         - `return allocateResponse;`
-       
+
+        - `Resource newHeadRoom = getAvailableResources();`
+    
+        - `List<Container> newContainers = response.getAllocatedContainers();` 
+           
 - `scheduledRequests.assign(allocatedContainers);`
 
 - `scheduleReduces(getJob().getTotalMaps(), completedMaps, scheduledRequests.maps.size(), scheduledRequests.reduces.size(), assignedRequests.maps.size(), assignedRequests.reduces.size(), mapResourceRequest, reduceResourceRequest, pendingReduces.size(), maxReduceRampupLimit, reduceSlowStart);`
