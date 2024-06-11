@@ -246,6 +246,11 @@ public abstract class RMContainerRequestor extends RMCommunicator {
   // How it different from release? --> release is for per allocate() request.
   protected Set<ContainerId> pendingRelease = new TreeSet<ContainerId>();
 
+  private final Map<ResourceRequest,ResourceRequest> requestLimits =
+      new TreeMap<ResourceRequest,ResourceRequest>(RESOURCE_REQUEST_COMPARATOR);
+  private final Set<ResourceRequest> requestLimitsToUpdate =
+      new TreeSet<ResourceRequest>(RESOURCE_REQUEST_COMPARATOR);
+
   ...
   protected AllocateResponse makeRemoteRequest() throws YarnException,
       IOException {
@@ -291,6 +296,35 @@ public abstract class RMContainerRequestor extends RMCommunicator {
     return allocateResponse;
   }
 
+  private void applyRequestLimits() {
+    Iterator<ResourceRequest> iter = requestLimits.values().iterator();
+    while (iter.hasNext()) {
+      ResourceRequest reqLimit = iter.next();
+      int limit = reqLimit.getNumContainers();
+      Map<String, Map<Resource, ResourceRequest>> remoteRequests =
+          remoteRequestsTable.get(reqLimit.getPriority());
+      Map<Resource, ResourceRequest> reqMap = (remoteRequests != null)
+          ? remoteRequests.get(ResourceRequest.ANY) : null;
+      ResourceRequest req = (reqMap != null)
+          ? reqMap.get(reqLimit.getCapability()) : null;
+      if (req == null) {
+        continue;
+      }
+      // update an existing ask or send a new one if updating
+      if (ask.remove(req) || requestLimitsToUpdate.contains(req)) {
+        ResourceRequest newReq = req.getNumContainers() > limit
+            ? reqLimit : req;
+        ask.add(newReq);
+        LOG.info("Applying ask limit of " + newReq.getNumContainers()
+            + " for priority:" + reqLimit.getPriority()
+            + " and capability:" + reqLimit.getCapability());
+      }
+      if (limit == Integer.MAX_VALUE) {
+        iter.remove();
+      }
+    }
+    requestLimitsToUpdate.clear();
+  }
   ...
 
   protected Resource getAvailableResources() {
@@ -319,7 +353,11 @@ import org.slf4j.LoggerFactory;
 public class RMContainerAllocator extends RMContainerRequestor
     implements ContainerAllocator {
   ...
+  
   static final Logger LOG = LoggerFactory.getLogger(RMContainerAllocator.class);
+  
+  public static final 
+  float DEFAULT_COMPLETED_MAPS_PERCENT_FOR_REDUCE_SLOWSTART = 0.05f;
   ...
   @Override
   protected synchronized void heartbeat() throws Exception {
@@ -744,4 +782,158 @@ the MRAppMaster creates a RMContainerAllocator for the non-uber mode.
       ((Service)this.containerAllocator).start();
       super.serviceStart();
     }
+```
+
+
+
+```
+  @Override
+  protected void serviceInit(Configuration conf) throws Exception {
+    super.serviceInit(conf);
+    reduceSlowStart = conf.getFloat(
+        MRJobConfig.COMPLETED_MAPS_FOR_REDUCE_SLOWSTART, 
+        DEFAULT_COMPLETED_MAPS_PERCENT_FOR_REDUCE_SLOWSTART);
+    maxReduceRampupLimit = conf.getFloat(
+        MRJobConfig.MR_AM_JOB_REDUCE_RAMPUP_UP_LIMIT, 
+        MRJobConfig.DEFAULT_MR_AM_JOB_REDUCE_RAMP_UP_LIMIT);
+    maxReducePreemptionLimit = conf.getFloat(
+        MRJobConfig.MR_AM_JOB_REDUCE_PREEMPTION_LIMIT,
+        MRJobConfig.DEFAULT_MR_AM_JOB_REDUCE_PREEMPTION_LIMIT);
+    reducerUnconditionalPreemptionDelayMs = 1000 * conf.getInt(
+        MRJobConfig.MR_JOB_REDUCER_UNCONDITIONAL_PREEMPT_DELAY_SEC,
+        MRJobConfig.DEFAULT_MR_JOB_REDUCER_UNCONDITIONAL_PREEMPT_DELAY_SEC);
+    reducerNoHeadroomPreemptionDelayMs = conf.getInt(
+        MRJobConfig.MR_JOB_REDUCER_PREEMPT_DELAY_SEC,
+        MRJobConfig.DEFAULT_MR_JOB_REDUCER_PREEMPT_DELAY_SEC) * 1000;//sec -> ms
+    maxRunningMaps = conf.getInt(MRJobConfig.JOB_RUNNING_MAP_LIMIT,
+        MRJobConfig.DEFAULT_JOB_RUNNING_MAP_LIMIT);
+    maxRunningReduces = conf.getInt(MRJobConfig.JOB_RUNNING_REDUCE_LIMIT,
+        MRJobConfig.DEFAULT_JOB_RUNNING_REDUCE_LIMIT);
+    RackResolver.init(conf);
+    retryInterval = getConfig().getLong(MRJobConfig.MR_AM_TO_RM_WAIT_INTERVAL_MS,
+                                MRJobConfig.DEFAULT_MR_AM_TO_RM_WAIT_INTERVAL_MS);
+    mapNodeLabelExpression = conf.get(MRJobConfig.MAP_NODE_LABEL_EXP);
+    reduceNodeLabelExpression = conf.get(MRJobConfig.REDUCE_NODE_LABEL_EXP);
+    // Init startTime to current time. If all goes well, it will be reset after
+    // first attempt to contact RM.
+    retrystartTime = System.currentTimeMillis();
+    this.scheduledRequests.setNumOpportunisticMapsPercent(
+        conf.getInt(MRJobConfig.MR_NUM_OPPORTUNISTIC_MAPS_PERCENT,
+            MRJobConfig.DEFAULT_MR_NUM_OPPORTUNISTIC_MAPS_PERCENT));
+    LOG.info(this.scheduledRequests.getNumOpportunisticMapsPercent() +
+        "% of the mappers will be scheduled using OPPORTUNISTIC containers");
+  }
+```
+
+https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/java/org/apache/hadoop/mapreduce/MRJobConfig.java
+
+```java
+  public static final String COMPLETED_MAPS_FOR_REDUCE_SLOWSTART = "mapreduce.job.reduce.slowstart.completedmaps";
+
+  public static final String MR_PREFIX = "yarn.app.mapreduce.";
+
+  public static final String MR_AM_PREFIX = MR_PREFIX + "am.";
+
+  /**
+   * Limit reduces starting until a certain percentage of maps have finished.
+   *  Percentage between 0.0 and 1.0
+   */
+  public static final String MR_AM_JOB_REDUCE_RAMPUP_UP_LIMIT = 
+    MR_AM_PREFIX  + "job.reduce.rampup.limit";
+  public static final float DEFAULT_MR_AM_JOB_REDUCE_RAMP_UP_LIMIT = 0.5f;
+
+  /** 
+   * Limit on the number of reducers that can be preempted to ensure that at
+   *  least one map task can run if it needs to. Percentage between 0.0 and 1.0
+   */
+  public static final String MR_AM_JOB_REDUCE_PREEMPTION_LIMIT = 
+    MR_AM_PREFIX  + "job.reduce.preemption.limit";
+  public static final float DEFAULT_MR_AM_JOB_REDUCE_PREEMPTION_LIMIT = 0.5f;
+
+  /**
+   * Duration to wait before forcibly preempting a reducer to allow
+   * allocating new mappers, even when YARN reports positive headroom.
+   */
+  public static final String MR_JOB_REDUCER_UNCONDITIONAL_PREEMPT_DELAY_SEC =
+      "mapreduce.job.reducer.unconditional-preempt.delay.sec";
+
+  public static final int
+      DEFAULT_MR_JOB_REDUCER_UNCONDITIONAL_PREEMPT_DELAY_SEC = 5 * 60;
+
+  /**
+   * Duration to wait before preempting a reducer, when there is no headroom
+   * to allocate new mappers.
+   */
+  public static final String MR_JOB_REDUCER_PREEMPT_DELAY_SEC =
+      "mapreduce.job.reducer.preempt.delay.sec";
+  public static final int DEFAULT_MR_JOB_REDUCER_PREEMPT_DELAY_SEC = 0;
+
+  public static final String JOB_RUNNING_MAP_LIMIT =
+      "mapreduce.job.running.map.limit";
+  public static final int DEFAULT_JOB_RUNNING_MAP_LIMIT = 0;
+
+  public static final String JOB_RUNNING_REDUCE_LIMIT =
+      "mapreduce.job.running.reduce.limit";
+  public static final int DEFAULT_JOB_RUNNING_REDUCE_LIMIT = 0;
+
+  /**
+   * Number of OPPORTUNISTIC Containers per 100 containers that will be
+   * requested by the MRAppMaster. The Default value is 0, which implies all
+   * maps will be guaranteed. A value of 100 means all maps will be requested
+   * as opportunistic. For any other value say 'x', the FIRST 'x' maps
+   * requested by the AM will be opportunistic. If the total number of maps
+   * for the job is less than 'x', then ALL maps will be OPPORTUNISTIC
+   */
+  public static final String MR_NUM_OPPORTUNISTIC_MAPS_PERCENT =
+      "mapreduce.job.num-opportunistic-maps-percent";
+  public static final int DEFAULT_MR_NUM_OPPORTUNISTIC_MAPS_PERCENT = 0;
+
+  /**
+   *  Node Label expression applicable for map containers.
+   */
+  public static final String MAP_NODE_LABEL_EXP = "mapreduce.map.node-label-expression";
+
+  /**
+   * Node Label expression applicable for reduce containers.
+   */
+  public static final String REDUCE_NODE_LABEL_EXP = "mapreduce.reduce.node-label-expression";
+```
+
+
+
+https://github.com/apache/hadoop/blob/trunk/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/conf/Configuration.java
+
+
+```java
+ * <p>Unless explicitly turned off, Hadoop by default specifies two 
+ * resources, loaded in-order from the classpath: <ol>
+ * <li><tt>
+ * <a href="{@docRoot}/../hadoop-project-dist/hadoop-common/core-default.xml">
+ * core-default.xml</a></tt>: Read-only defaults for hadoop.</li>
+ * <li><tt>core-site.xml</tt>: Site-specific configuration for a given hadoop
+ * installation.</li>
+ * </ol>
+/** 
+   * Get the value of the <code>name</code> property as an <code>int</code>.
+   *   
+   * If no such property exists, the provided default value is returned,
+   * or if the specified value is not a valid <code>int</code>,
+   * then an error is thrown.
+   * 
+   * @param name property name.
+   * @param defaultValue default value.
+   * @throws NumberFormatException when the value is invalid
+   * @return property value as an <code>int</code>, 
+   *         or <code>defaultValue</code>. 
+   */
+  public int getInt(String name, int defaultValue) {
+    String valueString = getTrimmed(name);
+    if (valueString == null)
+      return defaultValue;
+    String hexString = getHexDigits(valueString);
+    if (hexString != null) {
+      return Integer.parseInt(hexString, 16);
+    }
+    return Integer.parseInt(valueString);
+  }
 ```
