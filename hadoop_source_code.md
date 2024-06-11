@@ -6,26 +6,33 @@
 [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Got allocated containers 14
 ```
 
-- heartbeat()
+class `RMContainerAllocator` implements class `RMContainerRequestor`
+ 
+[`heartbeat()`](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L283)
 
-  - scheduleStats.updateAndLogIfChanged("Before Scheduling: "); [Definition of this method](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L1595)
-    
-  - `List<Container> allocatedContainers = getResources();` in class `RMContainerAllocator`, which implements class `RMContainerRequestor`
+- `scheduleStats.updateAndLogIfChanged("Before Scheduling: ")`; [Definition of this method](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L1595)
 
-    - `makeRemoteRequest()` in class `RMContainerRequestor`; note `makeRemoteRequest()` is invoked within `getResources()`
-      
-      - ```
-        LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
-                  + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
-              allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
-              availableResources, clusterNmCount);
-        ```
-    
-  - `scheduledRequests.assign(allocatedContainers)`
-    
-  - `scheduleReduces(getJob().getTotalMaps(), completedMaps, scheduledRequests.maps.size(), scheduledRequests.reduces.size(), assignedRequests.maps.size(), assignedRequests.reduces.size(), mapResourceRequest, reduceResourceRequest, pendingReduces.size(), maxReduceRampupLimit, reduceSlowStart);`
+- `List<Container> allocatedContainers = getResources();` 
 
-    - `LOG.info("Recalculating schedule, headroom=" + headRoom);`
+  - [`makeRemoteRequest()`](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L197) defined in class `RMContainerRequestor`; invoked by `getResources()`
+  
+    - ```
+      LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
+                + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
+            allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
+            availableResources, clusterNmCount);
+      ```
+
+- `scheduledRequests.assign(allocatedContainers)`
+
+- `scheduleReduces(getJob().getTotalMaps(), completedMaps, scheduledRequests.maps.size(), scheduledRequests.reduces.size(), assignedRequests.maps.size(), assignedRequests.reduces.size(), mapResourceRequest, reduceResourceRequest, pendingReduces.size(), maxReduceRampupLimit, reduceSlowStart);`
+
+  - [`LOG.info("Recalculating schedule, headroom=" + headRoom);`](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L656)
+  - ```
+    LOG.info("Reduce slow start threshold not met. " +
+              "completedMapsForReduceSlowstart " + 
+            completedMapsForReduceSlowstart);
+    ```
 
 
 
