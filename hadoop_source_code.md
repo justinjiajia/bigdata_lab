@@ -1,15 +1,24 @@
 
 
-heartbeat(): print message and the scheduling status via `scheduleStats.updateAndLogIfChanged("Before Scheduling: ");` [Definition of this method](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L1595)
--> getResources()
--> makeRemoteRequest():  Recalculating schedule
-```
-LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
-              + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
-          allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
-          availableResources, clusterNmCount);
-```
-->
+- heartbeat()
+
+  - scheduleStats.updateAndLogIfChanged("Before Scheduling: "); [Definition of this method](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L1595)
+    
+  - List<Container> allocatedContainers = getResources();
+
+    - makeRemoteRequest():  Recalculating schedule
+    ```
+    LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
+                  + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
+              allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
+              availableResources, clusterNmCount);
+    ```
+ - `scheduledRequests.assign(allocatedContainers)`
+ - `scheduleReduces(getJob().getTotalMaps(), completedMaps, scheduledRequests.maps.size(), scheduledRequests.reduces.size(), assignedRequests.maps.size(), assignedRequests.reduces.size(), mapResourceRequest, reduceResourceRequest, pendingReduces.size(), maxReduceRampupLimit, reduceSlowStart);`
+  - `LOG.info("Recalculating schedule, headroom=" + headRoom);`
+
+
+
 
 
 
@@ -281,7 +290,9 @@ public class RMContainerAllocator extends RMContainerRequestor
     }
     return newContainers;
   }
-    @Private
+
+  ...
+  @Private
   public void scheduleReduces(
       int totalMaps, int completedMaps,
       int scheduledMaps, int scheduledReduces,
