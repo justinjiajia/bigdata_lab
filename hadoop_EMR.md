@@ -112,6 +112,13 @@ Each entry shows both the effective value and where it is defined. E.g.:
 </property>
 ...
 <property>
+<name>yarn.app.mapreduce.am.containerlauncher.threadpool-initial-size</name>
+<value>10</value>
+<final>false</final>
+<source>mapred-default.xml</source>
+</property>
+...
+<property>
 <name>mapreduce.job.reduce.slowstart.completedmaps</name>
 <value>0.05</value>
 <final>false</final>
