@@ -228,6 +228,138 @@ public class RMContainerAllocator extends RMContainerRequestor
     return newContainers;
   }
 
+  ...
+
+  class ScheduledRequests {
+    
+    private final LinkedList<TaskAttemptId> earlierFailedMaps = 
+      new LinkedList<TaskAttemptId>();
+    
+    /** Maps from a host to a list of Map tasks with data on the host */
+    private final Map<String, LinkedList<TaskAttemptId>> mapsHostMapping = 
+      new HashMap<String, LinkedList<TaskAttemptId>>();
+    private final Map<String, LinkedList<TaskAttemptId>> mapsRackMapping = 
+      new HashMap<String, LinkedList<TaskAttemptId>>();
+    @VisibleForTesting
+    final Map<TaskAttemptId, ContainerRequest> maps =
+      new LinkedHashMap<TaskAttemptId, ContainerRequest>();
+    int mapsMod100 = 0;
+    int numOpportunisticMapsPercent = 0;
+
+    ...
+        // this method will change the list of allocatedContainers.
+    private void assign(List<Container> allocatedContainers) {
+      Iterator<Container> it = allocatedContainers.iterator();
+      LOG.info("Got allocated containers " + allocatedContainers.size());
+      containersAllocated += allocatedContainers.size();
+      int reducePending = reduces.size();
+      while (it.hasNext()) {
+        Container allocated = it.next();
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Assigning container " + allocated.getId()
+              + " with priority " + allocated.getPriority() + " to NM "
+              + allocated.getNodeId());
+        }
+        
+        // check if allocated container meets memory requirements 
+        // and whether we have any scheduled tasks that need 
+        // a container to be assigned
+        boolean isAssignable = true;
+        Priority priority = allocated.getPriority();
+        Resource allocatedResource = allocated.getResource();
+        if (PRIORITY_FAST_FAIL_MAP.equals(priority) 
+            || PRIORITY_MAP.equals(priority)
+            || PRIORITY_OPPORTUNISTIC_MAP.equals(priority)) {
+          if (ResourceCalculatorUtils.computeAvailableContainers(allocatedResource,
+              mapResourceRequest, getSchedulerResourceTypes()) <= 0
+              || maps.isEmpty()) {
+            LOG.info("Cannot assign container " + allocated 
+                + " for a map as either "
+                + " container memory less than required " + mapResourceRequest
+                + " or no pending map tasks - maps.isEmpty=" 
+                + maps.isEmpty()); 
+            isAssignable = false; 
+          }
+        } 
+        else if (PRIORITY_REDUCE.equals(priority)) {
+          if (ResourceCalculatorUtils.computeAvailableContainers(allocatedResource,
+              reduceResourceRequest, getSchedulerResourceTypes()) <= 0
+              || (reducePending <= 0)) {
+            LOG.info("Cannot assign container " + allocated
+                + " for a reduce as either "
+                + " container memory less than required " + reduceResourceRequest
+                + " or no pending reduce tasks.");
+            isAssignable = false;
+          } else {
+            reducePending--;
+          }
+        } else {
+          LOG.warn("Container allocated at unwanted priority: " + priority + 
+              ". Returning to RM...");
+          isAssignable = false;
+        }
+        
+        if(!isAssignable) {
+          // release container if we could not assign it 
+          containerNotAssigned(allocated);
+          it.remove();
+          continue;
+        }
+        
+        // do not assign if allocated container is on a  
+        // blacklisted host
+        String allocatedHost = allocated.getNodeId().getHost();
+        if (isNodeBlacklisted(allocatedHost)) {
+          // we need to request for a new container 
+          // and release the current one
+          LOG.info("Got allocated container on a blacklisted "
+              + " host "+allocatedHost
+              +". Releasing container " + allocated);
+
+          // find the request matching this allocated container 
+          // and replace it with a new one 
+          ContainerRequest toBeReplacedReq = 
+              getContainerReqToReplace(allocated);
+          if (toBeReplacedReq != null) {
+            LOG.info("Placing a new container request for task attempt " 
+                + toBeReplacedReq.attemptID);
+            ContainerRequest newReq = 
+                getFilteredContainerRequest(toBeReplacedReq);
+            decContainerReq(toBeReplacedReq);
+            if (toBeReplacedReq.attemptID.getTaskId().getTaskType() ==
+                TaskType.MAP) {
+              maps.put(newReq.attemptID, newReq);
+            }
+            else {
+              reduces.put(newReq.attemptID, newReq);
+            }
+            addContainerReq(newReq);
+          }
+          else {
+            LOG.info("Could not map allocated container to a valid request."
+                + " Releasing allocated container " + allocated);
+          }
+          
+          // release container if we could not assign it 
+          containerNotAssigned(allocated);
+          it.remove();
+          continue;
+        }
+      }
+
+      assignContainers(allocatedContainers);
+       
+      // release container if we could not assign it 
+      it = allocatedContainers.iterator();
+      while (it.hasNext()) {
+        Container allocated = it.next();
+        LOG.info("Releasing unassigned container " + allocated);
+        containerNotAssigned(allocated);
+      }
+    }
+    ...
+    }
+
 }
 ```
 
