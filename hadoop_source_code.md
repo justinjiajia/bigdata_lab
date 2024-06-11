@@ -1,4 +1,10 @@
-
+```
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Before Scheduling: PendingReds:2 ScheduledMaps:16 ScheduledReds:0 AssignedMaps:0 AssignedReds:0 CompletedMaps:0 CompletedReds:0 ContAlloc:0 ContRel:0 HostLocal:0 RackLocal:0
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerRequestor: getResources() for application_1717955085543_0001: ask=6 release= 0 newContainers=0 finishedContainers=0 resourcelimit=<memory:21504, vCores:15> knownNMs=4
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Recalculating schedule, headroom=<memory:21504, vCores:15>
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Reduce slow start threshold not met. completedMapsForReduceSlowstart 1
+[RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Got allocated containers 14
+```
 
 - heartbeat()
 
@@ -13,9 +19,12 @@
               allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
               availableResources, clusterNmCount);
     ```
- - `scheduledRequests.assign(allocatedContainers)`
- - `scheduleReduces(getJob().getTotalMaps(), completedMaps, scheduledRequests.maps.size(), scheduledRequests.reduces.size(), assignedRequests.maps.size(), assignedRequests.reduces.size(), mapResourceRequest, reduceResourceRequest, pendingReduces.size(), maxReduceRampupLimit, reduceSlowStart);`
-  - `LOG.info("Recalculating schedule, headroom=" + headRoom);`
+    
+  - `scheduledRequests.assign(allocatedContainers)`
+    
+  - `scheduleReduces(getJob().getTotalMaps(), completedMaps, scheduledRequests.maps.size(), scheduledRequests.reduces.size(), assignedRequests.maps.size(), assignedRequests.reduces.size(), mapResourceRequest, reduceResourceRequest, pendingReduces.size(), maxReduceRampupLimit, reduceSlowStart);`
+
+    - `LOG.info("Recalculating schedule, headroom=" + headRoom);`
 
 
 
