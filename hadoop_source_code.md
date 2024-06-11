@@ -1,12 +1,24 @@
 
 
+heartbeat(): print message and the scheduling status via `scheduleStats.updateAndLogIfChanged("Before Scheduling: ");` [Definition of this method](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java#L1595)
+-> getResources()
+-> makeRemoteRequest():  Recalculating schedule
+```
+LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
+              + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
+          allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
+          availableResources, clusterNmCount);
+```
+->
+
+
 
 #### Code for the MRAppMaster's interaction with the ResourceManager? (org/apache/hadoop/mapreduce/v2/app/rm/)
 
 https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMCommunicator.java
 
 
-```
+```java
 import org.apache.hadoop.yarn.api.ApplicationMasterProtocol;
 ...
 /**
@@ -107,13 +119,18 @@ https://github.com/apache/hadoop/blob/trunk/hadoop-yarn-project/hadoop-yarn/hado
 https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerAllocator.java
 
 ```java
+...
+import org.slf4j.LoggerFactory;
+...
+
 /**
  * Allocates the container from the ResourceManager scheduler.
  */
 public class RMContainerAllocator extends RMContainerRequestor
     implements ContainerAllocator {
   ...
-
+  static final Logger LOG = LoggerFactory.getLogger(RMContainerAllocator.class);
+  ...
   @Override
   protected synchronized void heartbeat() throws Exception {
     scheduleStats.updateAndLogIfChanged("Before Scheduling: ");
@@ -264,7 +281,123 @@ public class RMContainerAllocator extends RMContainerRequestor
     }
     return newContainers;
   }
+    @Private
+  public void scheduleReduces(
+      int totalMaps, int completedMaps,
+      int scheduledMaps, int scheduledReduces,
+      int assignedMaps, int assignedReduces,
+      Resource mapResourceReqt, Resource reduceResourceReqt,
+      int numPendingReduces,
+      float maxReduceRampupLimit, float reduceSlowStart) {
+    
+    if (numPendingReduces == 0) {
+      return;
+    }
+    
+    // get available resources for this job
+    Resource headRoom = getAvailableResources();
 
+    LOG.info("Recalculating schedule, headroom=" + headRoom);
+    
+    //check for slow start
+    if (!getIsReduceStarted()) {//not set yet
+      int completedMapsForReduceSlowstart = (int)Math.ceil(reduceSlowStart * 
+                      totalMaps);
+      if(completedMaps < completedMapsForReduceSlowstart) {
+        LOG.info("Reduce slow start threshold not met. " +
+              "completedMapsForReduceSlowstart " + 
+            completedMapsForReduceSlowstart);
+        return;
+      } else {
+        LOG.info("Reduce slow start threshold reached. Scheduling reduces.");
+        setIsReduceStarted(true);
+      }
+    }
+    
+    //if all maps are assigned, then ramp up all reduces irrespective of the
+    //headroom
+    if (scheduledMaps == 0 && numPendingReduces > 0) {
+      LOG.info("All maps assigned. " +
+          "Ramping up all remaining reduces:" + numPendingReduces);
+      scheduleAllReduces();
+      return;
+    }
+
+    float completedMapPercent = 0f;
+    if (totalMaps != 0) {//support for 0 maps
+      completedMapPercent = (float)completedMaps/totalMaps;
+    } else {
+      completedMapPercent = 1;
+    }
+    
+    Resource netScheduledMapResource =
+        Resources.multiply(mapResourceReqt, (scheduledMaps + assignedMaps));
+
+    Resource netScheduledReduceResource =
+        Resources.multiply(reduceResourceReqt,
+          (scheduledReduces + assignedReduces));
+
+    Resource finalMapResourceLimit;
+    Resource finalReduceResourceLimit;
+
+    // ramp up the reduces based on completed map percentage
+    Resource totalResourceLimit = getResourceLimit();
+
+    Resource idealReduceResourceLimit =
+        Resources.multiply(totalResourceLimit,
+          Math.min(completedMapPercent, maxReduceRampupLimit));
+    Resource ideaMapResourceLimit =
+        Resources.subtract(totalResourceLimit, idealReduceResourceLimit);
+
+    // check if there aren't enough maps scheduled, give the free map capacity
+    // to reduce.
+    // Even when container number equals, there may be unused resources in one
+    // dimension
+    if (ResourceCalculatorUtils.computeAvailableContainers(ideaMapResourceLimit,
+      mapResourceReqt, getSchedulerResourceTypes()) >= (scheduledMaps + assignedMaps)) {
+      // enough resource given to maps, given the remaining to reduces
+      Resource unusedMapResourceLimit =
+          Resources.subtract(ideaMapResourceLimit, netScheduledMapResource);
+      finalReduceResourceLimit =
+          Resources.add(idealReduceResourceLimit, unusedMapResourceLimit);
+      finalMapResourceLimit =
+          Resources.subtract(totalResourceLimit, finalReduceResourceLimit);
+    } else {
+      finalMapResourceLimit = ideaMapResourceLimit;
+      finalReduceResourceLimit = idealReduceResourceLimit;
+    }
+
+    LOG.info("completedMapPercent " + completedMapPercent
+        + " totalResourceLimit:" + totalResourceLimit
+        + " finalMapResourceLimit:" + finalMapResourceLimit
+        + " finalReduceResourceLimit:" + finalReduceResourceLimit
+        + " netScheduledMapResource:" + netScheduledMapResource
+        + " netScheduledReduceResource:" + netScheduledReduceResource);
+
+    int rampUp =
+        ResourceCalculatorUtils.computeAvailableContainers(Resources.subtract(
+                finalReduceResourceLimit, netScheduledReduceResource),
+            reduceResourceReqt, getSchedulerResourceTypes());
+
+    if (rampUp > 0) {
+      rampUp = Math.min(rampUp, numPendingReduces);
+      LOG.info("Ramping up " + rampUp);
+      rampUpReduces(rampUp);
+    } else if (rampUp < 0) {
+      int rampDown = -1 * rampUp;
+      rampDown = Math.min(rampDown, scheduledReduces);
+      LOG.info("Ramping down " + rampDown);
+      rampDownReduces(rampDown);
+    }
+  }
+
+  @Private
+  public void scheduleAllReduces() {
+    for (ContainerRequest req : pendingReduces) {
+      scheduledRequests.addReduce(req);
+    }
+    pendingReduces.clear();
+  }
   ...
 
   class ScheduledRequests {
