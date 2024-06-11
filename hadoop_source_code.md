@@ -3,6 +3,7 @@ find more references on the inner workings of
 [`AllocateResponse allocateResponse = scheduler.allocate(allocateRequest);`](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L207C5-L207C77)
 
 https://segmentfault.com/a/1190000003043821
+https://johnjianfang.blogspot.com/2014/09/blacklisted-node-in-hadoop-two.html
 
 RMContainerAllocator其最终父类是RMCommunicator，它实现了RMHeartbeatHandler接口
 
