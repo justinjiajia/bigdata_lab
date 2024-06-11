@@ -22,7 +22,7 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
    
       - `getAvailableResources()` at [line 390](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L390) in Class `RMContainerRequestor`
     
-        - `return availableResources == null ? Resources.none() : availableResources;` where `availableResources` is claimed as `private Resource availableResources;`
+        - `return availableResources == null ? Resources.none() : availableResources;` where `availableResources` is claimed as `private Resource availableResources;` without initialization
 
       - `headRoom` is `null` initially
 
@@ -47,8 +47,20 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
         - `return allocateResponse;`
 
     - `Resource newHeadRoom = getAvailableResources();`
+
+      - `getAvailableResources()` at [line 390](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L390) in Class `RMContainerRequestor`
     
-    - `List<Container> newContainers = response.getAllocatedContainers();` 
+        - `return availableResources == null ? Resources.none() : availableResources;` where `availableResources` is not `null`
+          
+      - `newHeadRoom` is different from `HeadRoom`
+    
+    - `List<Container> newContainers = response.getAllocatedContainers();`
+      
+      - `response.getAllocatedContainers()` should return the same value as the previous logging step
+     
+    - `recalculateReduceSchedule = true;` because `!headRoom.equals(newHeadRoom)` is `true`
+   
+    -  `return newContainers;`
            
 - `scheduledRequests.assign(allocatedContainers);`
 
