@@ -28,18 +28,20 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
    
   - `response = makeRemoteRequest();`
  
-    - [`makeRemoteRequest()`;] at [line 197](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L197) in Class `RMContainerRequestor`
+    - `makeRemoteRequest()` at [line 197](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L197) in Class `RMContainerRequestor`
  
       - `AllocateResponse allocateResponse = scheduler.allocate(allocateRequest);`
   
       - Logging step at [line 216](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L216) 
-      ```
-      LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
-                + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
-            allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
-            availableResources, clusterNmCount);
-      ```
-
+       ```
+       LOG.info("applicationId={}: ask={} release={} newContainers={} finishedContainers={}"
+                 + " resourceLimit={} knownNMs={}", applicationId, ask.size(), release.size(),
+             allocateResponse.getAllocatedContainers().size(), numCompletedContainers,
+             availableResources, clusterNmCount);
+       ```
+       
+      - `return allocateResponse;`
+       
 - `scheduledRequests.assign(allocatedContainers);`
 
 - `scheduleReduces(getJob().getTotalMaps(), completedMaps, scheduledRequests.maps.size(), scheduledRequests.reduces.size(), assignedRequests.maps.size(), assignedRequests.reduces.size(), mapResourceRequest, reduceResourceRequest, pendingReduces.size(), maxReduceRampupLimit, reduceSlowStart);`
