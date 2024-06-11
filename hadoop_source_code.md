@@ -61,6 +61,8 @@ class `RMContainerAllocator` implements class `RMContainerRequestor`
     - `recalculateReduceSchedule = true;` because `!headRoom.equals(newHeadRoom)` is `true`
    
     -  `return newContainers;`
+
+  - `allocatedContainers` refers to this returned object
            
 - `scheduledRequests.assign(allocatedContainers);`
 
