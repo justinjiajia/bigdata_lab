@@ -65,7 +65,7 @@ class Child extends Parent {
 and got this output:
 
 
->START
+> START
 
 > static - grandparent
 
@@ -111,13 +111,18 @@ public class Test {
     } 
 } 
  ```
-OUTPUT
-======
-static block executed 
-main started
-block executed
-constructor executed
-fun executed
+
+OUTPUT:
+
+> static block executed
+> 
+> main started
+> 
+> block executed
+>
+> constructor executed
+> 
+> fun executed
 
 A class or interface type T will be initialized immediately before the first occurrence of any one of the following:
 
