@@ -1,8 +1,6 @@
 
 
 ```java
-package pkg;
-
 public class LoadTest {
     public static void main(String[] args) {
         System.out.println("START");
