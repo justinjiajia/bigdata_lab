@@ -1,3 +1,12 @@
+
+# Where to find hadoop source code
+
+https://github.com/apache/hadoop/
+
+
+---
+
+
 find more references on the inner workings of 
 
 [`AllocateResponse allocateResponse = scheduler.allocate(allocateRequest);`](https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app/src/main/java/org/apache/hadoop/mapreduce/v2/app/rm/RMContainerRequestor.java#L207C5-L207C77)
