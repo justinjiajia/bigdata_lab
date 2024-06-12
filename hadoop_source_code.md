@@ -1,21 +1,11 @@
 
-# Where to find hadoop source code
+
+ 
+
+## Where to find hadoop source code
+
 
 https://github.com/apache/hadoop/
-
-EMR instances only include the pre-compiled JAR files that contain the class files necessary to run Hadoop and its associated services.
-
-### What EMR Instances Include
-
-- Compiled JAR Files:
-  EMR instances come with the necessary Hadoop binaries in the form of JAR files. These JAR files include the compiled classes for Hadoop, HDFS, YARN, and other components. The JAR files are usually located in directories like /usr/lib/hadoop, /usr/lib/hadoop-hdfs, /usr/lib/hadoop-yarn, etc.
-
-- Configuration Files:
-  EMR instances also include configuration files, typically found in directories such as /etc/hadoop/conf. These files (e.g., core-site.xml, hdfs-site.xml, yarn-site.xml) are used to configure Hadoop settings.
-
-- Libraries and Dependencies:
-  Additional libraries and dependencies required by Hadoop are included as JAR files.
-  EMR includes libraries for integration with other AWS services, such as Amazon S3, Amazon DynamoDB, and Amazon CloudWatch. These are also provided as compiled JAR files.
 
 ---
 
