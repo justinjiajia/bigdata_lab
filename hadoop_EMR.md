@@ -11,7 +11,7 @@ In Hadoop, the `CLASSPATH` is used to locate and load classes and resources, inc
 ```
 
 When a resource (like a configuration file) is requested, the first occurrence found in the `CLASSPATH` is used.
-E.g., if *core-site.xml* is present in multiple locations within the `CLASSPATH`, the one appearing first is loaded.
+E.g., *core-site.xml* is present in multiple locations within the `CLASSPATH` (e.g., `/etc/hadoop/conf`, `/usr/lib/hadoop/lib/*`), and the one appearing first is loaded.
 
 
 Hadoop's configuration is driven by two types of configuration files: 
