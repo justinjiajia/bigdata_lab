@@ -674,7 +674,7 @@ Click the link in the Logs field, and replace the private DNS with the public DN
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/efacec64-a94d-4c89-840e-4f7d9d47969e">
 
 
-The sizes of containers for map tasks, reduce tasks, and MRAPPMaster are determined by the following configurations:
+The sizes of containers for map tasks, reduce tasks, and MRAppMaster are determined by the following configurations:
 
 ```xml
 <property>
