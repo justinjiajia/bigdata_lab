@@ -124,20 +124,32 @@ OUTPUT:
 > 
 > fun executed
 
-A class or interface type T will be initialized immediately before the first occurrence of any one of the following:
 
-T is a class and an instance of T is created.
 
-A static method declared by T is invoked.
 
-A static field declared by T is assigned.
 
-A static field declared by T is used and the field is not a constant variable (§4.12.4).
-
-T is a top level class (§7.6) and an assert statement (§14.10) lexically nested within T (§8.1.3) is executed.
-
+##  Initialization of Classes and Interfaces
 
 https://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html#jls-12.4
+
+Initialization of a class consists of executing its static initializers and the initializers for static fields (class variables) declared in the class.
+
+Initialization of an interface consists of executing the initializers for fields (constants) declared in the interface.
+
+###  When Initialization Occurs in Java
+
+A class or interface type T will be initialized immediately before the first occurrence of any one of the following:
+
+- T is a class and an instance of T is created.
+
+- A static method declared by T is invoked.
+
+- A static field declared by T is assigned.
+
+- A static field declared by T is used and the field is not a constant variable (§4.12.4).
+
+- T is a top level class (§7.6) and an assert statement (§14.10) lexically nested within T (§8.1.3) is executed.
+
 When a class is initialized, its superclasses are initialized (if they have not been previously initialized), as well as any superinterfaces (§8.1.5) that declare any default methods (§9.4.3) (if they have not been previously initialized). 
 Initialization of an interface does not, of itself, cause initialization of any of its superinterfaces.
 
