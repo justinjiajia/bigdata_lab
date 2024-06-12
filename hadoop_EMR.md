@@ -12,7 +12,7 @@ In Hadoop, the `CLASSPATH` is used to locate and load classes and resources, inc
 
 Hadoop's configuration is driven by two types of configuration files: 
 
-- Read-only default configuration: *core-default.xml*, *hdfs-default.xml*, *yarn-default.xml*, and *mapred-default.xml*. The actual files are in different JAR files in `/usr/lib/`.
+- Read-only default configuration: *core-default.xml*, *hdfs-default.xml*, *yarn-default.xml*, and *mapred-default.xml*. They can be located in different JAR files in `/usr/lib/`.
 
 - Site-specific configuration: *core-site.xml*, *hdfs-site.xml*, *yarn-site.xml*, and *mapred-site.xml*.
 
@@ -58,7 +58,7 @@ https://github.com/apache/hadoop/blob/trunk/hadoop-tools/hadoop-extras/src/main/
 
 - Within a single configuration file, properties defined later can override earlier properties.
 
-- Across multiple configuration files, properties in site-specific files (core-site.xml, hdfs-site.xml) override properties in default files (core-default.xml, hdfs-default.xml). User-specified configurations, if loaded afterward, can override both default and site-specific configurations.
+- Across multiple configuration files, properties in site-specific files (e.g., *core-site.xml*, *hdfs-site.xml*) override properties in default files (e.g., *core-default.xml*, *hdfs-default.xml*). User-specified configurations, if loaded afterward, can override both default and site-specific configurations.
 
 
 ### Default configuration files
