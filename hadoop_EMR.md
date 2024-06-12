@@ -154,7 +154,7 @@ Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
 <img width="350" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/787d2e16-7f53-45b0-b724-00bcaf3fa67c">
 
 
-<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
+<img width="650" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
 
 
 
