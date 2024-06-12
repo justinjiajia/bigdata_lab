@@ -43,13 +43,17 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.11+7-LTS-207, mixed mode, sharing)
 
 - Other classes are skipped.
 
+- When being loaded, it runs static definitions and blocks sequentially
+
+- Finally invoke `main()` (must be static)
+
 
 
 
 class `LoadTest` is public, should be declared in a file named *LoadTest.java*
 
 
-#####  public class LoadTest -> class Parent  -> class Grandparent  -> class Child ->class IAmAClassThatIsNeverUsed
+#####  public class LoadTest -> class Parent  -> class Grandparent  -> class Child -> class ClassNeverUsed
 
 ```java
 
@@ -119,26 +123,22 @@ class Parent extends Grandparent {
     }
 }
 
-class IAmAClassThatIsNeverUsed {
+class ClassNeverUsed {
     // Constructor
-    public IAmAClassThatIsNeverUsed() {
-        System.out.println("constructor - IAACTINU");
+    public ClassNeverUsed() {
+        System.out.println("constructor - NeverUsed");
     }
 
     // Instance init block
     {
-        System.out.println("instance - IAACTINU");
+        System.out.println("instance - NeverUsed");
     }
 
     // Static init block
     static {
-        System.out.println("static - IAACTINU");
+        System.out.println("static - NeverUsed");
     }
 }
-
-
-
-
 ```
 
 OUTPUT:
@@ -168,20 +168,12 @@ OUTPUT:
 > END
 
 
-#####
+#####  public class LoadTest (empty) -> class Child  -> class Grandparent  -> class Parent 
 
 ```java
-
 public class LoadTest {
 
-
-    public static void main(String[] args) {
-        System.out.println("START");
-        new Child();
-        System.out.println("END");
-    }
 }
-
 
 class Child extends Parent {
     // Constructor
@@ -234,102 +226,16 @@ class Parent extends Grandparent {
     }
 }
 ```
-OUTPUT:
 
-> START
-> 
-> static - grandparent
-> 
-> static - parent
-> 
-> static - child
-> 
-> instance - grandparent
-> 
-> constructor - grandparent
-> 
-> instance - parent
-> 
-> constructor - parent
-> 
-> instance - child
-> 
-> constructor - child
-> 
-> END
-
-
-```java
-
-public class LoadTest {
-
-}
-
-
-class Child extends Parent {
-    // Constructor
-    public Child() {
-        System.out.println("constructor - child");
-    }
-
-    // Static init block
-    static {
-        System.out.println("static - child");
-    }
-
-    // Instance init block
-    {
-        System.out.println("instance - child");
-    }
-}
-
-class Grandparent {
-    // Static init block
-    static {
-        System.out.println("static - grandparent");
-    }
-
-    // Instance init block
-    {
-        System.out.println("instance - grandparent");
-    }
-
-    // Constructor
-    public Grandparent() {
-        System.out.println("constructor - grandparent");
-    }
-}
-
-class Parent extends Grandparent {
-    // Instance init block
-    {
-        System.out.println("instance - parent");
-    }
-
-    // Constructor
-    public Parent() {
-        System.out.println("constructor - parent");
-    }
-
-    // Static init block
-    static {
-        System.out.println("static - parent");
-    }
-}
-```
 OUTPUT:
 
 > error: can't find main(String[]) method in class: LoadTest
 
 
-```
+#####  class Child (with static `main()` but without static block) -> public class LoadTest -> class Grandparent  -> class Parent 
 
+```java
 class Child extends Parent {
-    // Constructor
-    public Child() {
-        System.out.println("constructor - child");
-    }
-
 
     public static void main(String[] args){
         System.out.println("static - child");
@@ -351,9 +257,6 @@ public class LoadTest {
     }
 }
 
-
-
-
 class Grandparent {
     // Static init block
     static {
@@ -387,22 +290,22 @@ class Parent extends Grandparent {
         System.out.println("static - parent");
     }
 }
-
 ```
 
-static - grandparent
-static - parent
-static - child
+OUTPUT:
 
+> static - grandparent
+>
+> static - parent
+>
+> static - child
+
+
+#####  class Child (with a static method but not `main()`) -> public class LoadTest -> class Grandparent  -> class Parent 
 
 ```java
 
 class Child extends Parent {
-    // Constructor
-    public Child() {
-        System.out.println("constructor - child");
-    }
-
 
     public static void test(String[] args){
         System.out.println("static - child");
@@ -424,9 +327,6 @@ public class LoadTest {
     }
 }
 
-
-
-
 class Grandparent {
     // Static init block
     static {
@@ -460,13 +360,16 @@ class Parent extends Grandparent {
         System.out.println("static - parent");
     }
 }
-
 ```
 
+OUTPUT:
 
-static - grandparent
-static - parent
-error: can't find main(String[]) method in class: Child
+> static - grandparent
+>
+> static - parent
+>
+> error: can't find main(String[]) method in class: Child
+
 
 #####    class Parent  -> public class LoadTest -> class Grandparent   -> class Child
 
