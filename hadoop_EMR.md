@@ -54,9 +54,12 @@ hadoop-mapreduce-client-shuffle-3.3.6-amzn-3.jar
 hadoop-mapreduce-client-shuffle.jar
 hadoop-mapreduce-client-uploader-3.3.6-amzn-3.jar
 hadoop-mapreduce-client-uploader.jar
+
 [hadoop@ip-xxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default
 mapred-default.xml
+
 [hadoop@ip-xxxx ~]$ jar xf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar mapred-default.xml
+
 [hadoop@ip-xxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5 slow
   <name>mapreduce.job.speculative.slowtaskthreshold</name>
   <value>1.0</value>
@@ -95,6 +98,7 @@ capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-sit
 configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
 container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
 container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
+
 [hadoop@ip-xxxx ~]$ ls /etc/hadoop/conf
 capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
 capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
