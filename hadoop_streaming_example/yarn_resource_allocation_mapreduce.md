@@ -1,5 +1,35 @@
 
-- 1 primary; 4 core
+# EMR settings
+
+- EMR release: 7.1.0 
+
+- Application: Hadoop
+  
+- Primary instance: type: `m4.large`, quantity: 1
+
+- Core instance: type: `m4.large`, quantity: 4
+  
+
+- Software configurations
+    ```json
+    [
+        {
+            "classification":"core-site",
+            "properties": {
+                "hadoop.http.staticuser.user": "hadoop"
+            }
+        },
+        {
+            "classification": "hdfs-site",
+            "properties": {
+                "dfs.blocksize": "16M",
+                "dfs.replication": "3"
+            }
+        }
+    ]
+    ```
+    
+
 
 ```shell
 wget -O nytimes.txt https://raw.githubusercontent.com/justinjiajia/datafiles/main/nytimes_news_articles.txt
