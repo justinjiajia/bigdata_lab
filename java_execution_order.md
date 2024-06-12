@@ -734,7 +734,137 @@ OUTPUT:
 > fun executed
 
 
+*Example.java* have 2 public classes
 
+```java
+public class ExampleSubclass extends Example {
+
+    {
+        step(11);
+    }
+
+    public static int step_3 = step(3);
+    public int step_12 = step(12);
+
+    static {
+        step(4);
+    }
+
+    public ExampleSubclass(int unused) {
+        super(step(7));
+        step(13);
+    }
+
+    public static void main(String[] args) {
+        step(5);
+        new ExampleSubclass(step(6));
+        step(14);
+    }
+}
+
+public class Example {
+
+    static {
+        step(1);
+    }
+
+    public static int step_2 = step(2);
+    public int step_8 = step(8);
+
+    public Example(int unused) {
+        super();
+        step(10);
+    }
+
+    {
+        step(9);
+    }
+
+    // Just for demonstration purposes:
+    public static int step(int step) {
+        System.out.println("Step " + step);
+        return step;
+    }
+}
+```
+
+
+OUTPUT:
+
+Step 1
+Step 2
+Step 3
+Step 4
+Step 5
+Step 6
+Step 7
+Step 8
+Step 9
+Step 10
+Step 11
+Step 12
+Step 13
+Step 14
+
+
+```java
+public class Example {
+
+    static {
+        step(1);
+    }
+
+    public static int step_2 = step(2);
+    public int step_8 = step(8);
+
+    public Example(int unused) {
+        super();
+        step(10);
+    }
+
+    {
+        step(9);
+    }
+
+    // Just for demonstration purposes:
+    public static int step(int step) {
+        System.out.println("Step " + step);
+        return step;
+    }
+}
+
+
+public class ExampleSubclass extends Example {
+
+    {
+        step(11);
+    }
+
+    public static int step_3 = step(3);
+    public int step_12 = step(12);
+
+    static {
+        step(4);
+    }
+
+    public ExampleSubclass(int unused) {
+        super(step(7));
+        step(13);
+    }
+
+    public static void main(String[] args) {
+        step(5);
+        new ExampleSubclass(step(6));
+        step(14);
+    }
+}
+```
+
+OUTPUT:
+
+Step 1
+Step 2
+error: can't find main(String[]) method in class: Example
 
 
 
