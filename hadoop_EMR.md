@@ -23,6 +23,8 @@ Hadoop's configuration is driven by two types of configuration files:
 Default configuration files (e.g., *core-default.xml*, *hdfs-default.xml*, etc.) are loaded first. Site-specific configuration files (e.g., *core-site.xml*, *hdfs-site.xml*, etc.) are loaded next. Any user-specified configuration files are loaded last.
 
 
+<br>
+
 ### Why are they loaded in this order?
 
 
@@ -37,7 +39,6 @@ It seems that the order is indicated by Java code:
       addDefaultResource("core-site.xml");
       ...
   ```
-<br>
 
 - [HdfsConfiguration.java#L33](https://github.com/apache/hadoop/blob/trunk/hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/HdfsConfiguration.java#L33C1-L41C4)
 
@@ -65,6 +66,8 @@ It seems that the order is indicated by Java code:
 https://github.com/apache/hadoop/blob/trunk/hadoop-tools/hadoop-extras/src/main/java/org/apache/hadoop/mapred/tools/GetGroups.java#L35
 
 
+<br>
+
 ### Precedence of configuration settings
 
 - Within a single configuration file, properties defined later can override earlier properties.
@@ -72,10 +75,11 @@ https://github.com/apache/hadoop/blob/trunk/hadoop-tools/hadoop-extras/src/main/
 - Across multiple configuration files, properties in site-specific files (e.g., *core-site.xml*, *hdfs-site.xml*) override properties in default files (e.g., *core-default.xml*, *hdfs-default.xml*). User-specified configurations, if loaded afterward, can override both default and site-specific configurations.
 
 
+<br>
 
 ## Locations of configuration files
 
-<rr>
+<br>
 
 ##  Default configuration files
 
@@ -172,6 +176,7 @@ Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
 <img width="650" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
 
 
+<br>
 
 ### Effective Configurations
 
