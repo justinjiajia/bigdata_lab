@@ -38,12 +38,15 @@ hadoop fs -put  nytimes.txt /input
 
 <img width="1178" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e62eaa0f-0755-40d5-864a-c34da7df2951">
 
-| Instance | file | block | 
-|------|-----------|--------|
+The file is divided into 3 blocks.
+
+
+| Instance | block | 
+|------|--------|
 | ip-xxxx-52-142.xxxx| block 1 |
 | ip-xxxx-52-162.xxxx| block 0 |
 | ip-xxxx-52-162.xxxx| block 2 |
-| ip-xxxx-57-35.xxxx   | block 0 |
+| ip-xxxx-57-35.xxxx  | block 0 |
 | ip-xxxx-57-35.xxxx  | block 1 |
 | ip-xxxx-63-90.xxxx  | block 2 |
 
