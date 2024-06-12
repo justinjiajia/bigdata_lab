@@ -50,13 +50,9 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.11+7-LTS-207, mixed mode, sharing)
 
 
 
-class `LoadTest` is public, should be declared in a file named *LoadTest.java*
-
-
 #####  public class LoadTest -> class Parent  -> class Grandparent  -> class Child -> class ClassNeverUsed
 
 ```java
-
 public class LoadTest {
 
     // Static init block
