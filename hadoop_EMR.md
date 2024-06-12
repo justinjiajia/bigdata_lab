@@ -20,7 +20,7 @@ Hadoop's configuration is driven by two types of configuration files:
 
 - Site-specific configuration: *core-site.xml*, *hdfs-site.xml*, *yarn-site.xml*, and *mapred-site.xml*.
 
-Default configuration files (e.g., core-default.xml, hdfs-default.xml) are loaded first. Site-specific configuration files (e.g., core-site.xml, hdfs-site.xml) are loaded next. Any user-specified configuration files are loaded last.
+Default configuration files (e.g., *core-default.xml*, *hdfs-default.xml*, etc.) are loaded first. Site-specific configuration files (e.g., *core-site.xml*, *hdfs-site.xml*, etc.) are loaded next. Any user-specified configuration files are loaded last.
 
 
 ### Why are they loaded in this order?
