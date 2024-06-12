@@ -28,8 +28,9 @@ Initialization of an interface does not, of itself, cause initialization of any 
 ## Experiments
 
 
-the public class or the 1st class with a static block or a static function definition, which comes first, is loaded first.
-and if it is a derived class, all its superclasses are loaded first according to hierarchical order
+The public class or the 1st class with a static block or a static function definition, which comes first, is loaded first.
+and if it is a derived class, all its superclasses are loaded first according to hierarchical order.
+Other classes are skipped.
 
 ```shell
  % java --version
