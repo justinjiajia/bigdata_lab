@@ -226,4 +226,21 @@ Each entry shows both the effective value and where it is defined. E.g.:
 
 Administrators typically define parameters as final in `core-site.xml` for values that user applications may not alter.
 
+<br>
+
+
+## What EMR Instances Include
+
+- Compiled JAR Files:
+  EMR instances come with the necessary Hadoop binaries in the form of JAR files. These JAR files include the compiled classes for Hadoop, HDFS, YARN, and other components. The JAR files are usually located in directories like /usr/lib/hadoop, /usr/lib/hadoop-hdfs, /usr/lib/hadoop-yarn, etc.
+
+- Configuration Files:
+  EMR instances also include configuration files, typically found in directories such as /etc/hadoop/conf. These files (e.g., core-site.xml, hdfs-site.xml, yarn-site.xml) are used to configure Hadoop settings.
+
+- Libraries and Dependencies:
+  Additional libraries and dependencies required by Hadoop are included as JAR files.
+  EMR includes libraries for integration with other AWS services, such as Amazon S3, Amazon DynamoDB, and Amazon CloudWatch. These are also provided as compiled JAR files.
+
+- EMR instances typically do not contain the raw Java source code of Hadoop. To find the source code, visit: https://github.com/apache/hadoop/
+
 
