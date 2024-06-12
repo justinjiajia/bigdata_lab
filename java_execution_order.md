@@ -1,4 +1,35 @@
 
+##  Initialization of Classes and Interfaces
+
+https://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html#jls-12.4
+
+Initialization of a class consists of executing its static initializers and the initializers for static fields (class variables) declared in the class.
+
+Initialization of an interface consists of executing the initializers for fields (constants) declared in the interface.
+
+###  When Initialization Occurs in Java
+
+A class or interface type T will be initialized immediately before the first occurrence of any one of the following:
+
+- T is a class and an instance of T is created.
+
+- A static method declared by T is invoked.
+
+- A static field declared by T is assigned.
+
+- A static field declared by T is used and the field is not a constant variable (§4.12.4).
+
+- T is a top level class (§7.6) and an assert statement (§14.10) lexically nested within T (§8.1.3) is executed.
+
+When a class is initialized, its superclasses are initialized (if they have not been previously initialized), as well as any superinterfaces (§8.1.5) that declare any default methods (§9.4.3) (if they have not been previously initialized). 
+Initialization of an interface does not, of itself, cause initialization of any of its superinterfaces.
+
+
+## Experiments
+
+
+the public class or the 1st class with a static block or a static function definition, which comes first, is loaded first.
+and if it is a derived class, all its superclasses are loaded first according to hierarchical order
 
 ```shell
  % java --version
@@ -11,10 +42,17 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.11+7-LTS-207, mixed mode, sharing)
 class `LoadTest` is public, should be declared in a file named *LoadTest.java*
 
 
-#####  public class LoadTest -> class Parent  -> class Grandparent   -> class Child
+#####  public class LoadTest -> class Parent  -> class Grandparent  -> class Child ->class IAmAClassThatIsNeverUsed
 
 ```java
+
 public class LoadTest {
+
+    // Static init block
+    static {
+        System.out.println("static - loadtest");
+    }
+
     public static void main(String[] args) {
         System.out.println("START");
         new Child();
@@ -22,20 +60,21 @@ public class LoadTest {
     }
 }
 
-class Parent extends Grandparent {
-    // Instance init block
-    {
-        System.out.println("instance - parent");
-    }
 
+class Child extends Parent {
     // Constructor
-    public Parent() {
-        System.out.println("constructor - parent");
+    public Child() {
+        System.out.println("constructor - child");
     }
 
     // Static init block
     static {
-        System.out.println("static - parent");
+        System.out.println("static - child");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - child");
     }
 }
 
@@ -56,6 +95,87 @@ class Grandparent {
     }
 }
 
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
+    }
+}
+
+class IAmAClassThatIsNeverUsed {
+    // Constructor
+    public IAmAClassThatIsNeverUsed() {
+        System.out.println("constructor - IAACTINU");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - IAACTINU");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - IAACTINU");
+    }
+}
+
+
+
+
+```
+
+OUTPUT:
+
+> static - loadtest
+> 
+> START
+> 
+> static - grandparent
+> 
+> static - parent
+> 
+> static - child
+> 
+> instance - grandparent
+> 
+> constructor - grandparent
+> 
+> instance - parent
+> 
+> constructor - parent
+> 
+> instance - child
+> 
+> constructor - child
+> 
+> END
+
+
+#####
+
+```java
+
+public class LoadTest {
+
+
+    public static void main(String[] args) {
+        System.out.println("START");
+        new Child();
+        System.out.println("END");
+    }
+}
+
+
 class Child extends Parent {
     // Constructor
     public Child() {
@@ -70,6 +190,40 @@ class Child extends Parent {
     // Instance init block
     {
         System.out.println("instance - child");
+    }
+}
+
+class Grandparent {
+    // Static init block
+    static {
+        System.out.println("static - grandparent");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - grandparent");
+    }
+
+    // Constructor
+    public Grandparent() {
+        System.out.println("constructor - grandparent");
+    }
+}
+
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
     }
 }
 ```
@@ -96,6 +250,216 @@ OUTPUT:
 > constructor - child
 > 
 > END
+
+
+```java
+
+public class LoadTest {
+
+}
+
+
+class Child extends Parent {
+    // Constructor
+    public Child() {
+        System.out.println("constructor - child");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - child");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - child");
+    }
+}
+
+class Grandparent {
+    // Static init block
+    static {
+        System.out.println("static - grandparent");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - grandparent");
+    }
+
+    // Constructor
+    public Grandparent() {
+        System.out.println("constructor - grandparent");
+    }
+}
+
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
+    }
+}
+```
+OUTPUT:
+
+> error: can't find main(String[]) method in class: LoadTest
+
+
+```
+
+class Child extends Parent {
+    // Constructor
+    public Child() {
+        System.out.println("constructor - child");
+    }
+
+
+    public static void main(String[] args){
+        System.out.println("static - child");
+    }
+
+}
+
+public class LoadTest {
+
+    // Static init block
+    static {
+        System.out.println("static - loadtest");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("START");
+        new Child();
+        System.out.println("END");
+    }
+}
+
+
+
+
+class Grandparent {
+    // Static init block
+    static {
+        System.out.println("static - grandparent");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - grandparent");
+    }
+
+    // Constructor
+    public Grandparent() {
+        System.out.println("constructor - grandparent");
+    }
+}
+
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
+    }
+}
+
+```
+
+static - grandparent
+static - parent
+static - child
+
+
+```java
+
+class Child extends Parent {
+    // Constructor
+    public Child() {
+        System.out.println("constructor - child");
+    }
+
+
+    public static void test(String[] args){
+        System.out.println("static - child");
+    }
+
+}
+
+public class LoadTest {
+
+    // Static init block
+    static {
+        System.out.println("static - loadtest");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("START");
+        new Child();
+        System.out.println("END");
+    }
+}
+
+
+
+
+class Grandparent {
+    // Static init block
+    static {
+        System.out.println("static - grandparent");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - grandparent");
+    }
+
+    // Constructor
+    public Grandparent() {
+        System.out.println("constructor - grandparent");
+    }
+}
+
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
+    }
+}
+
+```
+
+
+static - grandparent
+static - parent
+error: can't find main(String[]) method in class: Child
 
 #####    class Parent  -> public class LoadTest -> class Grandparent   -> class Child
 
@@ -400,6 +764,40 @@ OUTPUT:
 >
 > false
 
+
+```java
+class Test {
+    public static void main(String[] args) {
+        One o = new One();
+        Two t = new Two();
+        System.out.println((Object)o == (Object)t);
+    }
+}
+
+class Super {
+    static { System.out.println("Super "); }
+}
+
+class One {
+    static { System.out.println("One "); }
+}
+
+class Two extends Super {
+    static { System.out.println("Two "); }
+}
+```
+
+
+OUTPUT:
+
+> One
+>
+> Super
+>
+> Two
+>
+>false
+
 ```java
 public class Test { 
     static {
@@ -423,7 +821,7 @@ public class Test {
         new Test().fun();
     } 
 } 
- ```
+```
 
 OUTPUT:
 
@@ -441,30 +839,6 @@ OUTPUT:
 
 
 
-##  Initialization of Classes and Interfaces
-
-https://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html#jls-12.4
-
-Initialization of a class consists of executing its static initializers and the initializers for static fields (class variables) declared in the class.
-
-Initialization of an interface consists of executing the initializers for fields (constants) declared in the interface.
-
-###  When Initialization Occurs in Java
-
-A class or interface type T will be initialized immediately before the first occurrence of any one of the following:
-
-- T is a class and an instance of T is created.
-
-- A static method declared by T is invoked.
-
-- A static field declared by T is assigned.
-
-- A static field declared by T is used and the field is not a constant variable (§4.12.4).
-
-- T is a top level class (§7.6) and an assert statement (§14.10) lexically nested within T (§8.1.3) is executed.
-
-When a class is initialized, its superclasses are initialized (if they have not been previously initialized), as well as any superinterfaces (§8.1.5) that declare any default methods (§9.4.3) (if they have not been previously initialized). 
-Initialization of an interface does not, of itself, cause initialization of any of its superinterfaces.
 
 
 https://medium.com/@mk8961052/different-ways-of-the-order-of-constructor-execution-in-java-308815a6fabf
