@@ -54,7 +54,7 @@ primary node: ip-xxxx-53-255.xxxx
 
 # Run a word count application
 
-Refer to [lab_4_hadoop_streaming.md](~/lab_4_hadoop_streaming.md) for the code used by mappers and reducers
+Refer to [this manual](lab_4_hadoop_streaming.md) for the code used by mappers and reducers
 
 
 ```shell
