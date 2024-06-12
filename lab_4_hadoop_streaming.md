@@ -71,7 +71,11 @@ or
 sh data_prep.sh
 ```
 
+<br>
+
 # Create program files for Mapper and Reducer
+
+<br>
 
 ## Mapper code
 
@@ -94,11 +98,14 @@ for line in sys.stdin:
         print(f"{word}\t{1}")
 ```
 
+<br>
+
 ## Reducer code
 
 ```shell
 nano reducer.py
 ```
+
 Copy and paste the code below into the *reducer.py* file:
 
 
@@ -123,6 +130,7 @@ if word == current_word:
    print(f"{current_word}\t{current_count}")
 ```
 
+<br>
 
 # Test the programs locally (Optional)
 
@@ -131,6 +139,8 @@ if word == current_word:
 $ chmod +x mapper.py reducer.py
 $ echo "foo FOO2 quux. lab foo Ba1r Quux" | ~/mapper.py | sort -k 1,1 | ~/reducer.py
 ```
+
+<br>
 
 # Submit the job
 
@@ -142,23 +152,27 @@ $ mapred streaming -D mapreduce.job.reduces=2 \
   -mapper mapper.py -reducer reducer.py
 ```
 
-----------------------------------------------------------------------------
+<br>
 
+# View the output
 
+```shell
 hadoop fs -cat /<Your ITSC Account>/program_output_1/part-* > combinedresult.txt
 head -n20 combinedresult.txt
 tail -n20 combinedresult.txt
+```
 
-----------------------------------------------------------------------------
+<br>
 
-mapred streaming -D mapreduce.job.reduces=2 \
--files mapper.py,reducer.py \
--input /<Your ITSC Account>/data \
--output /<Your ITSC Account>/program_output_2 \
--mapper mapper.py \
--reducer reducer.py \
--combiner reducer.py
+# Use of combiners
 
+
+```shell
+$ mapred streaming -D mapreduce.job.reduces=2 \
+  -files mapper.py,reducer.py \
+  -input /<Your ITSC Account>/data -output /<Your ITSC Account>/program_output_2 \
+  -mapper mapper.py -reducer reducer.py -combiner reducer.py
+```
 
 
 
