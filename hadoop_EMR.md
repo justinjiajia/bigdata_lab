@@ -3,42 +3,38 @@
 # Hadoop configuration files on EMR
 
 
-Hadoop's configuration is driven by two types of important configuration files: 
-
-- Read-only default configuration: *core-default.xml*, *hdfs-default.xml*, *yarn-default.xml*, and *mapred-default.xml*. The actual files are located in different JAR files in `/usr/lib/`.
-
-- Site-specific configuration: *core-site.xml*, *hdfs-site.xml*, *yarn-site.xml*, and *mapred-site.xml*. 
-
-
-
-Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
-
-<img width="360" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/787d2e16-7f53-45b0-b724-00bcaf3fa67c">
-
-
-<img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
-
+In Hadoop, the `CLASSPATH` is used to locate and load classes and resources, including configuration files, from various directories and JAR files. 
 
 ```shell
-[hadoop@ipxxxx ~]$ ls /usr/lib/hadoop/etc/hadoop
-capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
-capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
-configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
-container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
-container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
-[hadoop@ipxxxx ~]$ ls /etc/hadoop/conf
-capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
-capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
-configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
-container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
-container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
+[hadoop@ip-xxxx ~]$ hadoop classpath
+/etc/hadoop/conf:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/.//*:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/.//*:/usr/lib/hadoop-mapreduce/.//*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-lzo/lib/hadoop-lzo-0.4.19.jar:/usr/lib/hadoop-lzo/lib/hadoop-lzo.jar:/usr/lib/hadoop-lzo/lib/native:/usr/share/aws/aws-java-sdk/LICENSE.txt:/usr/share/aws/aws-java-sdk/NOTICE.txt:/usr/share/aws/aws-java-sdk/README.md:/usr/share/aws/aws-java-sdk/aws-java-sdk-bundle-1.12.656.jar:/usr/share/aws/aws-java-sdk-v2/LICENSE.txt:/usr/share/aws/aws-java-sdk-v2/NOTICE.txt:/usr/share/aws/aws-java-sdk-v2/README.md:/usr/share/aws/aws-java-sdk-v2/aws-sdk-java-bundle-2.23.18.jar:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/animal-sniffer-annotations-1.14.jar:/usr/share/aws/emr/emrfs/lib/annotations-16.0.2.jar:/usr/share/aws/emr/emrfs/lib/aopalliance-1.0.jar:/usr/share/aws/emr/emrfs/lib/bcprov-ext-jdk15on-1.66.jar:/usr/share/aws/emr/emrfs/lib/checker-qual-2.5.2.jar:/usr/share/aws/emr/emrfs/lib/emrfs-hadoop-assembly-2.62.0.jar:/usr/share/aws/emr/emrfs/lib/error_prone_annotations-2.1.3.jar:/usr/share/aws/emr/emrfs/lib/findbugs-annotations-3.0.1.jar:/usr/share/aws/emr/emrfs/lib/j2objc-annotations-1.1.jar:/usr/share/aws/emr/emrfs/lib/javax.inject-1.jar:/usr/share/aws/emr/emrfs/lib/jmespath-java-1.12.656.jar:/usr/share/aws/emr/emrfs/lib/jsr305-3.0.2.jar:/usr/share/aws/emr/emrfs/auxlib/*:/usr/share/aws/emr/ddb/lib/emr-ddb-hadoop.jar:/usr/share/aws/emr/goodies/lib/emr-hadoop-goodies.jar:/usr/share/aws/emr/kinesis/lib/emr-kinesis-hadoop.jar:/usr/share/aws/emr/cloudwatch-sink/lib/cloudwatch-sink-2.10.0.jar:/usr/share/aws/emr/cloudwatch-sink/lib/cloudwatch-sink.jar
 ```
 
-There are 2 configuration directories: `/etc/hadoop/conf` for user-specific/cluster-specific settings, and `/usr/lib/hadoop/etc/hadoop` for default settings provided by the Hadoop distribution. According to GPT-4o, configuration files in `/etc/hadoop/conf` take precedence and override those in `/usr/lib/hadoop/etc/hadoop` (verify!!!!).
+Hadoop's configuration is driven by two types of configuration files: 
 
+- Read-only default configuration: *core-default.xml*, *hdfs-default.xml*, *yarn-default.xml*, and *mapred-default.xml*. The actual files are in different JAR files in `/usr/lib/`.
+
+- Site-specific configuration: *core-site.xml*, *hdfs-site.xml*, *yarn-site.xml*, and *mapred-site.xml*.
+
+Default configuration files (e.g., core-default.xml, hdfs-default.xml) are loaded first. Site-specific configuration files (e.g., core-site.xml, hdfs-site.xml) are loaded next. Any user-specified configuration files are loaded last.
+
+
+### Precedence of Configuration Settings
+
+- Within a single configuration file, properties defined later can override earlier properties.
+
+- Across multiple configuration files, properties in site-specific files (core-site.xml, hdfs-site.xml) override properties in default files (core-default.xml, hdfs-default.xml). User-specified configurations, if loaded afterward, can override both default and site-specific configurations.
+
+
+### Default configuration files
 
 ```shell
-[hadoop@ipxxxx ~]$ ls /usr/lib/hadoop-mapreduce | grep mapreduce-client
+[hadoop@ip-xxxx ~]$ jar tf /usr/lib/hadoop/hadoop-common.jar | grep default
+core-default.xml
+```
+
+```shell
+[hadoop@ip-xxxx ~]$ ls /usr/lib/hadoop-mapreduce | grep mapreduce-client
 hadoop-mapreduce-client-app-3.3.6-amzn-3.jar
 hadoop-mapreduce-client-app.jar
 hadoop-mapreduce-client-common-3.3.6-amzn-3.jar
@@ -58,10 +54,10 @@ hadoop-mapreduce-client-shuffle-3.3.6-amzn-3.jar
 hadoop-mapreduce-client-shuffle.jar
 hadoop-mapreduce-client-uploader-3.3.6-amzn-3.jar
 hadoop-mapreduce-client-uploader.jar
-[hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default
+[hadoop@ip-xxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default
 mapred-default.xml
-[hadoop@ipxxxx ~]$ jar xf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar mapred-default.xml
-[hadoop@ipxxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5 slow
+[hadoop@ip-xxxx ~]$ jar xf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar mapred-default.xml
+[hadoop@ip-xxxx ~]$ jar tf /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-core.jar | grep default | xargs  cat | grep -A 5 slow
   <name>mapreduce.job.speculative.slowtaskthreshold</name>
   <value>1.0</value>
   <description>The number of standard deviations by which a task's
@@ -81,13 +77,48 @@ mapred-default.xml
 </property>
 ```
 
-
-
  Key properties set in `mapred-default.xml`:
  
  <img width="644" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3dfc8113-e328-4ce8-8fb0-aa900f15e242">
 
  <img width="625" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e7d6e56b-c4de-4ba2-96cb-6fb44da1ee14">
+
+
+### Site-specific configuration files
+
+
+
+```shell
+[hadoop@ip-xxxx ~]$ ls /usr/lib/hadoop/etc/hadoop
+capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
+capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
+configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
+container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
+container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
+[hadoop@ip-xxxx ~]$ ls /etc/hadoop/conf
+capacity-scheduler.xml          container-log4j.properties.default  hdfs-env.sh              httpfs-site.xml           mapred-queues.xml.template  ssl-server.xml.example
+capacity-scheduler.xml.default  core-site.xml                       hdfs-rbf-site.xml        log4j.properties          mapred-site.xml             taskcontroller.cfg
+configuration.xsl               hadoop-env.sh                       hdfs-site.xml            log4j.properties.default  ssl-client.xml              workers
+container-executor.cfg          hadoop-metrics2.properties          httpfs-env.sh            mapred-env.sh             ssl-client.xml.example      yarn-env.sh
+container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
+```
+
+When a resource (like a configuration file) is requested, the first occurrence found in the `CLASSPATH` is used.
+E.g., if *core-site.xml* is present in multiple locations within the `CLASSPATH`, the one appearing first is loaded.
+Note: `/etc/hadoop/conf` precedes `/usr/lib/hadoop/lib/*`.  
+
+
+
+
+Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
+
+<img width="360" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/787d2e16-7f53-45b0-b724-00bcaf3fa67c">
+
+
+<img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
+
+
+
 
 
 The detailed configurations can be found from the ResourceManager's Web UI:
