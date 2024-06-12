@@ -38,7 +38,7 @@ hadoop fs -put  nytimes.txt /input
 
 <img width="1178" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e62eaa0f-0755-40d5-864a-c34da7df2951">
 
-The file is divided into 3 blocks.
+The file is divided into 3 blocks, which are spread across 4 core instances.
 
 
 | Instance | block | 
