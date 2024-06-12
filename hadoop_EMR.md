@@ -18,6 +18,41 @@ Hadoop's configuration is driven by two types of configuration files:
 
 Default configuration files (e.g., core-default.xml, hdfs-default.xml) are loaded first. Site-specific configuration files (e.g., core-site.xml, hdfs-site.xml) are loaded next. Any user-specified configuration files are loaded last.
 
+E.g., in [Configuration.java#L786](https://github.com/apache/hadoop/blob/trunk/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/conf/Configuration.java#L786C1-L789C41)
+
+```java
+  static {
+    // Add default resources
+    addDefaultResource("core-default.xml");
+    addDefaultResource("core-site.xml");
+    ...
+```
+
+in [HdfsConfiguration.java#L33](https://github.com/apache/hadoop/blob/trunk/hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/HdfsConfiguration.java#L33C1-L41C4)
+
+```java
+  static {
+    ...
+    // adds the default resources
+    Configuration.addDefaultResource("hdfs-default.xml");
+    Configuration.addDefaultResource("hdfs-rbf-default.xml");
+    Configuration.addDefaultResource("hdfs-site.xml");
+    Configuration.addDefaultResource("hdfs-rbf-site.xml");
+  }
+```
+
+in [YarnConfiguration.java#L100](https://github.com/apache/hadoop/blob/trunk/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/conf/YarnConfiguration.java#L100)
+```java
+  static {
+    ...
+    Configuration.addDefaultResource(YARN_DEFAULT_CONFIGURATION_FILE);
+    Configuration.addDefaultResource(YARN_SITE_CONFIGURATION_FILE);
+    Configuration.addDefaultResource(RESOURCE_TYPES_CONFIGURATION_FILE);
+  }
+```
+
+https://github.com/apache/hadoop/blob/trunk/hadoop-tools/hadoop-extras/src/main/java/org/apache/hadoop/mapred/tools/GetGroups.java#L35
+
 
 ### Precedence of Configuration Settings
 
@@ -169,6 +204,10 @@ Each entry shows both the effective value and where it is defined. E.g.:
 </property>
 ```
 
+Administrators typically define parameters as final in `core-site.xml` for values that user applications may not alter.
+
+
+ 
 <br>
 
 # Log analysis
