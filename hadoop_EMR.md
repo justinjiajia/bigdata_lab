@@ -117,9 +117,9 @@ mapred-default.xml
 
  Key properties set in `mapred-default.xml`:
  
- <img width="644" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3dfc8113-e328-4ce8-8fb0-aa900f15e242">
+ <img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/3dfc8113-e328-4ce8-8fb0-aa900f15e242">
 
- <img width="625" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e7d6e56b-c4de-4ba2-96cb-6fb44da1ee14">
+ <img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/e7d6e56b-c4de-4ba2-96cb-6fb44da1ee14">
 
 
 ### Site-specific configuration files
@@ -151,10 +151,10 @@ Note: `/etc/hadoop/conf` precedes `/usr/lib/hadoop/lib/*`.
 
 Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
 
-<img width="360" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/787d2e16-7f53-45b0-b724-00bcaf3fa67c">
+<img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/787d2e16-7f53-45b0-b724-00bcaf3fa67c">
 
 
-<img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
+<img width="600" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/2b00fe35-11ce-4caa-80b8-0848254512d9">
 
 
 
