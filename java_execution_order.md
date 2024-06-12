@@ -1,4 +1,43 @@
 
+
+```java
+public class Test { 
+    static {
+        System.out.println("static block executed");
+    }
+ 
+    {
+        System.out.println("block executed");
+    }
+ 
+    public Test() {
+        System.out.println("constructor executed");
+    }
+ 
+    public void fun() {
+        System.out.println("fun executed");
+    }
+ 
+    public static void main(String args[ ])  {
+        System.out.println("main started");
+        new Test().fun();
+    } 
+} 
+```
+
+OUTPUT:
+
+> static block executed
+> 
+> main started
+> 
+> block executed
+>
+> constructor executed
+> 
+> fun executed
+>
+> 
 ##  Initialization of Classes and Interfaces
 
 https://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html#jls-12.4
@@ -692,45 +731,8 @@ OUTPUT:
 >
 >false
 
-```java
-public class Test { 
-    static {
-        System.out.println("static block executed");
-    }
- 
-    {
-        System.out.println("block executed");
-    }
- 
-    public Test() {
-        System.out.println("constructor executed");
-    }
- 
-    public void fun() {
-        System.out.println("fun executed");
-    }
- 
-    public static void main(String args[ ])  {
-        System.out.println("main started");
-        new Test().fun();
-    } 
-} 
-```
-
-OUTPUT:
-
-> static block executed
-> 
-> main started
-> 
-> block executed
->
-> constructor executed
-> 
-> fun executed
 
 
-*Example.java* have 2 public classes
 
 ```java
 public class ExampleSubclass extends Example {
