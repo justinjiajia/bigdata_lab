@@ -52,6 +52,10 @@ The file is divided into 3 blocks, which are spread across 4 core instances.
 
 primary node: ip-xxxx-53-255.xxxx
 
+# Run a word count application
+
+Refer to [lab_4_hadoop_streaming.md](~/lab_4_hadoop_streaming.md) for the code used by mappers and reducers
+
 
 ```shell
 [hadoop@ip-xxxx ~]$ mapred streaming -D mapreduce.job.reduces=2 -files mapper.py,reducer.py -input /input -output /output_1 -mapper mapper.py -reducer reducer.py
