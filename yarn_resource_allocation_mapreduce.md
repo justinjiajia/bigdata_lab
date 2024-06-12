@@ -17,10 +17,12 @@ hadoop fs -put  nytimes.txt /input
 | ip-xxxx-57-35.xxxx   | block 0 |
 | ip-xxxx-57-35.xxxx  | block 1 |
 | ip-xxxx-63-90.xxxx  | block 2 |
- 
+
+primary node: ip-xxxx-53-255.xxxx
+
 
 ```shell
-[hadoop@ip-172-31-53-255 ~]$ mapred streaming -D mapreduce.job.reduces=2 -files mapper.py,reducer.py -input /input -output /output_1 -mapper mapper.py -reducer reducer.py
+[hadoop@ip-xxxx ~]$ mapred streaming -D mapreduce.job.reduces=2 -files mapper.py,reducer.py -input /input -output /output_1 -mapper mapper.py -reducer reducer.py
 packageJobJar: [] [/usr/lib/hadoop/hadoop-streaming-3.3.6-amzn-3.jar] /tmp/streamjob12540940317434631248.jar tmpDir=null
 2024-06-09 18:16:22,825 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at ip-172-31-53-255.ec2.internal/172.31.53.255:8032
 2024-06-09 18:16:23,030 INFO client.AHSProxy: Connecting to Application History server at ip-172-31-53-255.ec2.internal/172.31.53.255:10200
