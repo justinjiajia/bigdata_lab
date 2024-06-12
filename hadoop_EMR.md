@@ -1,6 +1,6 @@
 
 
-# Hadoop configuration files on EMR
+## Hadoop configuration files on EMR
 
 
 In Hadoop, the `CLASSPATH` is used to locate and load classes and resources, including configuration files, from various directories and JAR files. 
@@ -10,6 +10,10 @@ In Hadoop, the `CLASSPATH` is used to locate and load classes and resources, inc
 /etc/hadoop/conf:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/.//*:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/.//*:/usr/lib/hadoop-mapreduce/.//*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-lzo/lib/hadoop-lzo-0.4.19.jar:/usr/lib/hadoop-lzo/lib/hadoop-lzo.jar:/usr/lib/hadoop-lzo/lib/native:/usr/share/aws/aws-java-sdk/LICENSE.txt:/usr/share/aws/aws-java-sdk/NOTICE.txt:/usr/share/aws/aws-java-sdk/README.md:/usr/share/aws/aws-java-sdk/aws-java-sdk-bundle-1.12.656.jar:/usr/share/aws/aws-java-sdk-v2/LICENSE.txt:/usr/share/aws/aws-java-sdk-v2/NOTICE.txt:/usr/share/aws/aws-java-sdk-v2/README.md:/usr/share/aws/aws-java-sdk-v2/aws-sdk-java-bundle-2.23.18.jar:/usr/share/aws/emr/emrfs/conf:/usr/share/aws/emr/emrfs/lib/animal-sniffer-annotations-1.14.jar:/usr/share/aws/emr/emrfs/lib/annotations-16.0.2.jar:/usr/share/aws/emr/emrfs/lib/aopalliance-1.0.jar:/usr/share/aws/emr/emrfs/lib/bcprov-ext-jdk15on-1.66.jar:/usr/share/aws/emr/emrfs/lib/checker-qual-2.5.2.jar:/usr/share/aws/emr/emrfs/lib/emrfs-hadoop-assembly-2.62.0.jar:/usr/share/aws/emr/emrfs/lib/error_prone_annotations-2.1.3.jar:/usr/share/aws/emr/emrfs/lib/findbugs-annotations-3.0.1.jar:/usr/share/aws/emr/emrfs/lib/j2objc-annotations-1.1.jar:/usr/share/aws/emr/emrfs/lib/javax.inject-1.jar:/usr/share/aws/emr/emrfs/lib/jmespath-java-1.12.656.jar:/usr/share/aws/emr/emrfs/lib/jsr305-3.0.2.jar:/usr/share/aws/emr/emrfs/auxlib/*:/usr/share/aws/emr/ddb/lib/emr-ddb-hadoop.jar:/usr/share/aws/emr/goodies/lib/emr-hadoop-goodies.jar:/usr/share/aws/emr/kinesis/lib/emr-kinesis-hadoop.jar:/usr/share/aws/emr/cloudwatch-sink/lib/cloudwatch-sink-2.10.0.jar:/usr/share/aws/emr/cloudwatch-sink/lib/cloudwatch-sink.jar
 ```
 
+When a resource (like a configuration file) is requested, the first occurrence found in the `CLASSPATH` is used.
+E.g., if *core-site.xml* is present in multiple locations within the `CLASSPATH`, the one appearing first is loaded.
+
+
 Hadoop's configuration is driven by two types of configuration files: 
 
 - Read-only default configuration: *core-default.xml*, *hdfs-default.xml*, *yarn-default.xml*, and *mapred-default.xml*. They can be located in different JAR files in `/usr/lib/`.
@@ -18,50 +22,62 @@ Hadoop's configuration is driven by two types of configuration files:
 
 Default configuration files (e.g., core-default.xml, hdfs-default.xml) are loaded first. Site-specific configuration files (e.g., core-site.xml, hdfs-site.xml) are loaded next. Any user-specified configuration files are loaded last.
 
-E.g., in [Configuration.java#L786](https://github.com/apache/hadoop/blob/trunk/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/conf/Configuration.java#L786C1-L789C41)
 
-```java
-  static {
-    // Add default resources
-    addDefaultResource("core-default.xml");
-    addDefaultResource("core-site.xml");
-    ...
-```
+### Why are they loaded in this order?
 
-in [HdfsConfiguration.java#L33](https://github.com/apache/hadoop/blob/trunk/hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/HdfsConfiguration.java#L33C1-L41C4)
 
-```java
-  static {
-    ...
-    // adds the default resources
-    Configuration.addDefaultResource("hdfs-default.xml");
-    Configuration.addDefaultResource("hdfs-rbf-default.xml");
-    Configuration.addDefaultResource("hdfs-site.xml");
-    Configuration.addDefaultResource("hdfs-rbf-site.xml");
-  }
-```
+It seems that the order is indicated by Java code:
 
-in [YarnConfiguration.java#L100](https://github.com/apache/hadoop/blob/trunk/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/conf/YarnConfiguration.java#L100)
-```java
-  static {
-    ...
-    Configuration.addDefaultResource(YARN_DEFAULT_CONFIGURATION_FILE);
-    Configuration.addDefaultResource(YARN_SITE_CONFIGURATION_FILE);
-    Configuration.addDefaultResource(RESOURCE_TYPES_CONFIGURATION_FILE);
-  }
-```
+- [Configuration.java#L786](https://github.com/apache/hadoop/blob/trunk/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/conf/Configuration.java#L786C1-L789C41)
+
+  ```java
+    static {
+      // Add default resources
+      addDefaultResource("core-default.xml");
+      addDefaultResource("core-site.xml");
+      ...
+  ```
+<br>
+
+- [HdfsConfiguration.java#L33](https://github.com/apache/hadoop/blob/trunk/hadoop-hdfs-project/hadoop-hdfs-client/src/main/java/org/apache/hadoop/hdfs/HdfsConfiguration.java#L33C1-L41C4)
+
+  ```java
+    static {
+      ...
+      // adds the default resources
+      Configuration.addDefaultResource("hdfs-default.xml");
+      Configuration.addDefaultResource("hdfs-rbf-default.xml");
+      Configuration.addDefaultResource("hdfs-site.xml");
+      Configuration.addDefaultResource("hdfs-rbf-site.xml");
+    }
+  ```
+
+- [YarnConfiguration.java#L100](https://github.com/apache/hadoop/blob/trunk/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api/src/main/java/org/apache/hadoop/yarn/conf/YarnConfiguration.java#L100)
+  ```java
+    static {
+      ...
+      Configuration.addDefaultResource(YARN_DEFAULT_CONFIGURATION_FILE);
+      Configuration.addDefaultResource(YARN_SITE_CONFIGURATION_FILE);
+      Configuration.addDefaultResource(RESOURCE_TYPES_CONFIGURATION_FILE);
+    }
+  ```
 
 https://github.com/apache/hadoop/blob/trunk/hadoop-tools/hadoop-extras/src/main/java/org/apache/hadoop/mapred/tools/GetGroups.java#L35
 
 
-### Precedence of Configuration Settings
+### Precedence of configuration settings
 
 - Within a single configuration file, properties defined later can override earlier properties.
 
 - Across multiple configuration files, properties in site-specific files (e.g., *core-site.xml*, *hdfs-site.xml*) override properties in default files (e.g., *core-default.xml*, *hdfs-default.xml*). User-specified configurations, if loaded afterward, can override both default and site-specific configurations.
 
 
-### Default configuration files
+
+## Locations of configuration files
+
+<rr>
+
+##  Default configuration files
 
 ```shell
 [hadoop@ip-xxxx ~]$ jar tf /usr/lib/hadoop/hadoop-common.jar | grep default
@@ -142,9 +158,8 @@ container-executor.cfg          hadoop-metrics2.properties          httpfs-env.s
 container-log4j.properties      hadoop-policy.xml                   httpfs-signature.secret  mapred-env.sh.default     ssl-server.xml              yarn-site.xml
 ```
 
-When a resource (like a configuration file) is requested, the first occurrence found in the `CLASSPATH` is used.
-E.g., if *core-site.xml* is present in multiple locations within the `CLASSPATH`, the one appearing first is loaded.
-Note: `/etc/hadoop/conf` precedes `/usr/lib/hadoop/lib/*`.  
+
+Note: `/etc/hadoop/conf` precedes `/usr/lib/hadoop/lib/*` in `ClASSPATH`.  
 
 
 
