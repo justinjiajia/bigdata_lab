@@ -37,13 +37,13 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.11+7-LTS-207, mixed mode, sharing)
 
 ### Observations
 
-- The public class or the 1st class with a static block or a static function definition, which comes first, is loaded first.
+- The public class or the 1st class with a static block or a static definition, which comes first, is loaded first.
 
 - If the loaded class is a derived one, all its superclasses are loaded first according to hierarchical order.
 
 - Other classes are skipped.
 
-- When being loaded, it runs static definitions and blocks sequentially
+- When classes are loaded in sequence, Java runs static definitions and blocks sequentially
 
 - Finally invoke `main()` (must be static)
 
