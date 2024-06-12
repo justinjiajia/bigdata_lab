@@ -181,6 +181,8 @@ https://spark.apache.org/docs/latest/configuration.html
 ### Analyze livejournal data
 
 
+
+
 ```python
 lines = sc.textFile("hdfs:///input/soc-LiveJournal1Adj.txt")
 friend_lists = lines.map(lambda x: x.strip().split("\t")).filter(lambda x: len(x) == 2).mapValues(lambda x: x.split(","))
@@ -250,6 +252,8 @@ output_pairs.saveAsTextFile("hdfs:///rec_pairs_output")
 <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/9f729d62-f674-4cc0-b556-104204f68364">
 
 
+Print the lineage of `output_pairs` afterwards:
+
 ```python
 print(output_pairs.toDebugString().decode())
 (4) PythonRDD[20] at RDD at PythonRDD.scala:53 []
@@ -275,6 +279,8 @@ print(output_pairs.toDebugString().decode())
           |  hdfs:///input/soc-LiveJournal1Adj.txt MapPartitionsRDD[3] at textFile at NativeMethodAccessorImpl.java:0 []
           |  hdfs:///input/soc-LiveJournal1Adj.txt HadoopRDD[2] at textFile at NativeMethodAccessorImpl.java:0 []
 ```
+
+Submit another job to see if the cached data would affect job execution:
 
 ```python
 output_pairs.saveAsTextFile("hdfs:///rec_pairs_output_1")
