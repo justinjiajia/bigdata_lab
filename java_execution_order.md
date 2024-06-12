@@ -37,15 +37,15 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.11+7-LTS-207, mixed mode, sharing)
 
 ### Observations
 
-- The public class or the 1st class with a static block or a static definition, which comes first, is loaded first.
+- When multiple class definition exists in the same file, only the 1st class is loaded.
 
 - If the loaded class is a derived one, all its superclasses are loaded first according to hierarchical order.
 
-- Other classes are skipped.
+- For loaded classes, Java runs their static definitions and blocks sequentially.
 
-- When classes are loaded in sequence, Java runs static definitions and blocks sequentially
+- All other classes are ignored.
 
-- Finally invoke `main()` (must be static)
+- Finally, Java invokes `main()` (must be declared with the `static` keyword).
 
 
 
@@ -311,6 +311,72 @@ class Child extends Parent {
         System.out.println("static - child");
     }
 
+}
+
+public class LoadTest {
+
+    // Static init block
+    static {
+        System.out.println("static - loadtest");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("START");
+        new Child();
+        System.out.println("END");
+    }
+}
+
+class Grandparent {
+    // Static init block
+    static {
+        System.out.println("static - grandparent");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - grandparent");
+    }
+
+    // Constructor
+    public Grandparent() {
+        System.out.println("constructor - grandparent");
+    }
+}
+
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
+    }
+}
+```
+
+OUTPUT:
+
+> static - grandparent
+>
+> static - parent
+>
+> error: can't find main(String[]) method in class: Child
+
+
+#####  class Child (no static definitions and blocks) -> public class LoadTest -> class Grandparent  -> class Parent 
+
+```java
+
+class Child extends Parent {
+    String a = null;
 }
 
 public class LoadTest {
