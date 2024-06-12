@@ -119,9 +119,10 @@ Key properties set in `/etc/hadoop/conf/mapred-site.xml`:
 
 
 
+### Effective Configurations
 
 
-The detailed configurations can be found from the ResourceManager's Web UI:
+The detail of effective configurations can be found from the ResourceManager's Web UI:
 
 <img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/80e385ee-84ba-4452-a67a-67f3500beff7">
 
