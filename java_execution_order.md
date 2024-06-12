@@ -1,5 +1,18 @@
 
 
+```shell
+ % java --version
+java 17.0.11 2024-04-16 LTS
+Java(TM) SE Runtime Environment (build 17.0.11+7-LTS-207)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.11+7-LTS-207, mixed mode, sharing)
+```
+
+
+class `LoadTest` is public, should be declared in a file named *LoadTest.java*
+
+
+#####  public class LoadTest -> class Parent  -> class Grandparent   -> class Child
+
 ```java
 public class LoadTest {
     public static void main(String[] args) {
@@ -60,8 +73,7 @@ class Child extends Parent {
     }
 }
 ```
-and got this output:
-
+OUTPUT:
 
 > START
 > 
@@ -84,6 +96,309 @@ and got this output:
 > constructor - child
 > 
 > END
+
+#####    class Parent  -> public class LoadTest -> class Grandparent   -> class Child
+
+```java
+
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
+    }
+}
+
+public class LoadTest {
+
+    // Static init block
+    static {
+        System.out.println("static - loadtest");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("START");
+        new Child();
+        System.out.println("END");
+    }
+}
+
+class Grandparent {
+    // Static init block
+    static {
+        System.out.println("static - grandparent");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - grandparent");
+    }
+
+    // Constructor
+    public Grandparent() {
+        System.out.println("constructor - grandparent");
+    }
+}
+
+class Child extends Parent {
+    // Constructor
+    public Child() {
+        System.out.println("constructor - child");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - child");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - child");
+    }
+}
+```
+
+
+OUTPUT:
+
+> static - grandparent
+>
+> static - parent
+>
+> error: can't find main(String[]) method in class: Parent
+
+
+##### class Child -> class Parent -> public class LoadTest -> class Grandparent
+
+```java
+class Child extends Parent {
+    // Constructor
+    public Child() {
+        System.out.println("constructor - child");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - child");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - child");
+    }
+}
+
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
+    }
+}
+
+public class LoadTest {
+
+    // Static init block
+    static {
+        System.out.println("static - loadtest");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("START");
+        new Child();
+        System.out.println("END");
+    }
+}
+
+class Grandparent {
+    // Static init block
+    static {
+        System.out.println("static - grandparent");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - grandparent");
+    }
+
+    // Constructor
+    public Grandparent() {
+        System.out.println("constructor - grandparent");
+    }
+}
+```
+
+OUTPUT:
+
+> static - grandparent
+>
+> static - parent
+>
+> static - child
+>
+> error: can't find main(String[]) method in class: Child
+
+
+##### class Child -> class Grandparent -> class Parent -> public class LoadTest 
+
+```java
+class Child extends Parent {
+    // Constructor
+    public Child() {
+        System.out.println("constructor - child");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - child");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - child");
+    }
+}
+
+class Grandparent {
+    // Static init block
+    static {
+        System.out.println("static - grandparent");
+    }
+
+    // Instance init block
+    {
+        System.out.println("instance - grandparent");
+    }
+
+    // Constructor
+    public Grandparent() {
+        System.out.println("constructor - grandparent");
+    }
+}
+
+class Parent extends Grandparent {
+    // Instance init block
+    {
+        System.out.println("instance - parent");
+    }
+
+    // Constructor
+    public Parent() {
+        System.out.println("constructor - parent");
+    }
+
+    // Static init block
+    static {
+        System.out.println("static - parent");
+    }
+}
+
+public class LoadTest {
+
+    // Static init block
+    static {
+        System.out.println("static - loadtest");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("START");
+        new Child();
+        System.out.println("END");
+    }
+}
+```
+
+OUTPUT:
+
+> static - grandparent
+>
+> static - parent
+>
+> static - child
+>
+> error: can't find main(String[]) method in class: Child
+
+
+*hello.java*
+
+```java
+class Super {
+    static { System.out.println("Super "); }
+}
+
+class One {
+    static { System.out.println("One "); }
+}
+
+class Two extends Super {
+    static { System.out.println("Two "); }
+}
+
+class Test {
+    public static void main(String[] args) {
+        One o = null;
+        Two t = new Two();
+        System.out.println((Object)o == (Object)t);
+    }
+}
+```
+
+OUTPUT:
+
+> Super
+>
+> error: can't find main(String[]) method in class: Super
+
+
+```java
+
+class Test {
+    public static void main(String[] args) {
+        One o = null;
+        Two t = new Two();
+        System.out.println((Object)o == (Object)t);
+    }
+}
+
+class Super {
+    static { System.out.println("Super "); }
+}
+
+class One {
+    static { System.out.println("One "); }
+}
+
+class Two extends Super {
+    static { System.out.println("Two "); }
+}
+
+```
+
+OUTPUT:
+
+> Super
+>
+> Two
+>
+> false
 
 ```java
 public class Test { 
