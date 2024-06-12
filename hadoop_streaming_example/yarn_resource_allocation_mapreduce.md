@@ -663,15 +663,41 @@ Click the link in the Logs field, and replace the private DNS with the public DN
 
 ### YARN timeline Server Web UI
 
-<img width="1417" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/86ba2a8c-0660-4bed-aea9-815c1cc85045">
-<img width="1413" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/767506e5-0fdd-4c1a-8357-70ad6f916b05">
-<img width="1427" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/89028599-19d2-4fa2-a3d4-9a6aed37d915">
-<img width="1428" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b177ccf8-db48-4115-8537-22357db5485b">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/86ba2a8c-0660-4bed-aea9-815c1cc85045">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/767506e5-0fdd-4c1a-8357-70ad6f916b05">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/89028599-19d2-4fa2-a3d4-9a6aed37d915">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/b177ccf8-db48-4115-8537-22357db5485b">
 
-<img width="1430" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/04e02f4e-a849-46b5-bc25-c71a3f7f7960">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/04e02f4e-a849-46b5-bc25-c71a3f7f7960">
 
 
-<img width="1429" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/efacec64-a94d-4c89-840e-4f7d9d47969e">
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/efacec64-a94d-4c89-840e-4f7d9d47969e">
+
+
+The sizes of containers for map tasks, reduce tasks, and MRAPPMaster are determined by the following configurations:
+
+```xml
+<property>
+<name>yarn.app.mapreduce.am.resource.mb</name>
+<value>3072</value>
+<final>false</final>
+<source>mapred-site.xml</source>
+</property>
+...
+<property>
+<name>mapreduce.map.memory.mb</name>
+<value>1536</value>
+<final>false</final>
+<source>mapred-site.xml</source>
+</property>
+...
+<property>
+<name>mapreduce.reduce.memory.mb</name>
+<value>3072</value>
+<final>false</final>
+<source>mapred-site.xml</source>
+</property>
+```
 
 
  <img width="800" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/f2ecfbcd-5191-47e8-8b62-ced4e2b19eef">
