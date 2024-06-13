@@ -1,5 +1,26 @@
 
+### How to modify a file that is owned by `root`?
 
+
+Add `hadoop` to the `root` group:
+
+```
+$ sudo usermod -a -G root hadoop
+$ groups hadoop
+hadoop : hadoop root hdfsadmingroup
+```
+
+Change the owner of the file to `hadoop`
+
+```shell
+$ sudo chown hadoop:root /path/to/file
+```
+
+Once you're done, remember to set it back:
+
+```
+$ sudo chown root:root /path/to/file
+```
 
 
 ### *spark-submit* in */usr/lib/spark/bin*
@@ -116,6 +137,10 @@ fi
 ...
 ```
 
+- Experimented by adding one line of `echo $SPARK_ENV_SH` after `SPARK_ENV_SH="${SPARK_CONF_DIR}/${SPARK_ENV_SH}"`. It printed `/usr/lib/spark/conf/spark-env.sh`, indicating `SPARK_CONF_DIR` is assigned `/usr/lib/spark/conf`
+
 - read and execute the code in *spark-env.sh* under `${SPARK_HOME}"/conf`
   
 - `set -a`: mark variables which are modified or created for export
+
+- 
