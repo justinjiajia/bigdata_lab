@@ -50,7 +50,12 @@ Spark properties mainly can be divided into two kinds:
 [hadoop@ip-xxxx ~]$ ls /etc/spark/conf
 emrfs-site.xml              hive-site.xml      log4j2.properties.template  metrics.properties.template  spark-defaults.conf.template  spark-env.sh.template
 fairscheduler.xml.template  log4j2.properties  metrics.properties          spark-defaults.conf          spark-env.sh                  workers.template
+
+[hadoop@ip-xxxx ~]$  ls /etc/spark/conf
+emrfs-site.xml              hive-site.xml      log4j2.properties.template  metrics.properties.template  spark-defaults.conf.template  spark-env.sh.template
+fairscheduler.xml.template  log4j2.properties  metrics.properties          spark-defaults.conf          spark-env.sh                  workers.template
 ```
+
 
 ```shell
 nano /etc/spark/conf/spark-defaults.conf
@@ -137,6 +142,51 @@ Note: `export SPARK_HOME=${SPARK_HOME:-/usr/lib/spark}`
 
 
 <br>
+
+
+# EMR  configuration API
+
+
+When creating or modifying an EMR cluster, we can use the Configurations parameter to set Spark configurations.
+
+```json
+[
+  {
+    "Classification": "spark-defaults",
+    "Properties": {
+      "spark.executor.cores": "2"
+    }
+  },
+  {
+    "Classification": "spark-env",
+    "Properties": {},
+    "Configurations": [
+      {
+        "Classification": "export",
+        "Properties": {
+          "SPARK_DRIVER_MEMORY": "2g"
+        }
+      }
+    ]
+  }
+]
+```
+
+- Write to both /etc/spark/conf/spark-defaults.conf and /usr/lib/spark/conf/spark-defaults.conf
+
+  The original entry is removed. A new entry is added to the end of the file
+  ```
+  spark.executor.cores        2
+  ```
+
+appears at the end of the file
+
+- Write to both /etc/spark/conf/spark-env.sh and /usr/lib/spark/conf/spark-env.sh
+
+  A new entry is added to the end of the file
+  ```
+  export SPARK_DRIVER_MEMORY=2g
+  ```
 
 
 # Effective Configurations
