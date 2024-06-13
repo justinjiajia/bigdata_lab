@@ -237,6 +237,13 @@ Still, 9 containers are created by YARN.
 
 Even though we've explicitly specified the number of executors to 4, Spark still creates 8 executors (3 cores and 912M mem per executor).
 
+Spark on EMR enables dynamic allocation. The `pyspark` help explains why this is the case:
+
+> Spark on YARN and Kubernetes only:
+  --num-executors NUM         Number of executors to launch (Default: 2).
+                              If dynamic allocation is enabled, the initial number of
+                              executors will be at least NUM.
+
 <img width="700" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/4a444a26-0f3e-410f-ad05-9467a69f8d6a">
 
 
@@ -246,7 +253,7 @@ Even though we've explicitly specified the number of executors to 4, Spark still
 
 It seems that:
 
-- The number of executor is determined by the amount of memory per executor (configured via `--executor-memory`) and the total amount of memory available on the cluster.
+- The number of executors is determined by the amount of memory per executor (configured via `--executor-memory`) and the total amount of memory available on the cluster.
 
 - The number of cores each executor (the multiplier used to scale no. of vcores) owns can be specified by `--executor-cores`
 
