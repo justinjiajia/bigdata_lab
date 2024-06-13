@@ -43,7 +43,8 @@ hadoop fs -put transactions.txt /input
 ```shell
 pyspark --master local[*]
 ```
-Check out [this page](pyspark_options.md) for more launch options 
+
+> Check out [this page](pyspark_options.md) for more launch options 
 
 ## PySpark code to run sequentially
 
@@ -159,7 +160,7 @@ rec_pairs_ordered.saveAsTextFile("hdfs:///output")
 spark-submit --master yarn recommendation.py
 ```
 
-Check out [this page](spark-submit_options.md) for more launch options 
+> Check out [this page](spark-submit_options.md) for more launch options 
 
 
 
