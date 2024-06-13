@@ -121,17 +121,17 @@ build_command() {
 
 -  `"$RUNNER" -Xmx128m $SPARK_LAUNCHER_OPTS -cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main "$@"`
 
-  - The flag `-Xmx` specifies the maximum memory allocation pool for a Java Virtual Machine (JVM)
-    
-  -  Variable `LAUNCH_CLASSPATH` holds a value of `/usr/lib/spark/jars/*`, and variable `SPARK_LAUNCHER_OPTS` holds an empty value. Verified by adding `echo` commands before `build_command()`
-
-  - `-cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main` is located in `/usr/lib/spark/jars/spark-launcher*.jar`. Note `-cp` is used to specify classpath.
-    ```shell
-    [hadoop@ip-xxxx ~]$ jar tf /usr/lib/spark/jars/spark-launcher*.jar | grep Main
-    org/apache/spark/launcher/Main$MainClassOptionParser.class
-    org/apache/spark/launcher/Main$1.class
-    org/apache/spark/launcher/Main.class
-    ```
+    - The flag `-Xmx` specifies the maximum memory allocation pool for a Java Virtual Machine (JVM)
+      
+    -  Variable `LAUNCH_CLASSPATH` holds a value of `/usr/lib/spark/jars/*`, and variable `SPARK_LAUNCHER_OPTS` holds an empty value. Verified by adding `echo` commands before `build_command()`
+  
+    - `-cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main` is located in `/usr/lib/spark/jars/spark-launcher*.jar`. Note `-cp` is used to specify classpath.
+      ```shell
+      [hadoop@ip-xxxx ~]$ jar tf /usr/lib/spark/jars/spark-launcher*.jar | grep Main
+      org/apache/spark/launcher/Main$MainClassOptionParser.class
+      org/apache/spark/launcher/Main$1.class
+      org/apache/spark/launcher/Main.class
+      ```
 
     <br>
 
