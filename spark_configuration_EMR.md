@@ -10,7 +10,7 @@ Spark properties mainly can be divided into two kinds:
 <br>
 
 
-### Spark Configurations
+# Configurations
 
 - Spark properties can be set directly on a `SparkConf` passed to your `SparkContext`. E.g.:
   ```scala
@@ -58,7 +58,7 @@ More defails: https://github.com/justinjiajia/bigdata_lab/blob/main/spark_submit
 
 ## `spark-defaults.conf`
 
-It's not clear why there are two identical copies of configuration files in these two directories.
+It's not clear why there are two identical copies of configuration files:
 
 
 
