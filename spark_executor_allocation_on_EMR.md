@@ -67,7 +67,7 @@ All effective configurations can be found in the configuration tab (URL:`http://
 </property>
 
 ```
- <img width="766" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/85e92972-c24f-4647-89ce-95acd5ca238f">
+ 
 
 
 When launching a shell, make sure to set executors' idle timeout (`spark.dynamicAllocation.executorIdleTimeout`) to a longer time interval (e.g., 10 minutes). 
