@@ -34,6 +34,23 @@ org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter: FileOutputCommitter 
 org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: DISABLED
 ```
 
+
+
+In resource manager web UI's configuration tab, we can find
+
+![image](https://github.com/justinjiajia/bigdata_lab/assets/8945640/8a6b715f-1adc-4eeb-965f-179f0360c13f)
+
+
+
+```
+<property>
+<name>yarn.app.mapreduce.am.containerlauncher.threadpool-initial-size</name>
+<value>10</value>
+<final>false</final>
+<source>mapred-default.xml</source>
+</property>
+```
+
 <br>
 
 ## Task Configarations and Schedulding
