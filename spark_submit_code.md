@@ -76,6 +76,13 @@ fi
 . "${SPARK_HOME}"/bin/load-emr-env.sh 2>/dev/null
 
 ...
+
+# Find Spark jars.
+if [ -d "${SPARK_HOME}/jars" ]; then
+  SPARK_JARS_DIR="${SPARK_HOME}/jars"
+else
+  SPARK_JARS_DIR="${SPARK_HOME}/assembly/target/scala-$SPARK_SCALA_VERSION/jars"
+fi
 ```
 
 - `.` means `source` here: https://ss64.com/bash/source.html
