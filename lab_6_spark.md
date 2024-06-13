@@ -43,6 +43,7 @@ hadoop fs -put transactions.txt /input
 ```shell
 pyspark --master local[*]
 ```
+Check out [this page](pyspark_options.md) for more launch options 
 
 ## PySpark code to run sequentially
 
@@ -158,11 +159,9 @@ rec_pairs_ordered.saveAsTextFile("hdfs:///output")
 spark-submit --master yarn recommendation.py
 ```
 
-> Any values specified as flags or in the properties file will be passed on to the application and merged with those specified through [`SparkConf`](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.SparkConf.html). Properties set directly on the `SparkConf` take highest precedence, then flags passed to `spark-submit` or `spark-shell`, then options in the *spark-defaults.conf* file.
+Check out [this page](spark-submit_options.md) for more launch options 
 
-Check out this <a href="https://spark.apache.org/docs/latest/submitting-applications" target="_blank">page</a> for more launch options 
 
-https://github.com/justinjiajia/bigdata_lab/blob/main/spark-submit_options.md
 
 ## Print the output
 
@@ -170,3 +169,9 @@ https://github.com/justinjiajia/bigdata_lab/blob/main/spark-submit_options.md
 hadoop fs -cat output/part-* | grep "ELE96863"
 ```
 
+<br>
+
+# Reference
+
+https://spark.apache.org/docs/latest/submitting-applications
+https://github.com/justinjiajia/bigdata_lab/blob/main/spark-submit_options.md
