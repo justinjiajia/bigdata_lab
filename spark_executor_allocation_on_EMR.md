@@ -32,31 +32,26 @@
 > Use AWS CLI: https://github.com/justinjiajia/bigdata_lab/blob/main/AWS_CLI_command.md
 
 
-### Web UIs
-
-YARN resource manager Web UI. It shows that we logged in as hadoop. This is because we set `hadoop.http.staticuser.user` to `hadoop` in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
-
- <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/acddf4d5-1bb4-407d-a0ff-3d3c5ac3060f">
-
-
-
- 
-
-The cluster metrics section shows that there are 24 GB memory and 16 vCores.
-It seems that YARN sees 6 GB memory and 4 vCores per core instance. 
-
 SSHing into the primary node of the same instance type to further verifies that there were 2 CPUs (1 core each) at work in each core instance.
 
 <img width="883" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/eb78025d-bd72-4102-9c4b-aa9e9ce506cc">
 
 
 
-This confusion seems to arise from the default configuration for the `yarn.nodemanager.resource.cpu-vcores` property. 
+### Web UIs
+
+YARN resource manager Web UI.  It shows that we logged in as hadoop. This is because we set `hadoop.http.staticuser.user` to `hadoop` in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
+
+ <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/acddf4d5-1bb4-407d-a0ff-3d3c5ac3060f">
+
+
+The cluster metrics section shows that there are 24 GB memory and 16 vCores.
+So, YARN sees 6 GB memory and 4 vCores per core instance. 
+
+These are determined by YARN's configurations. We can find all effective configurations in the configuration tab (URL:`http://<primary-node-dns>:8088/conf`)
 
 <img width="150" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5d49060a-c976-4493-a809-b4a640b6f500">
 
-
-`http://<primary-node-dns>:8088/conf`
 
 ```xml
 <property>
@@ -64,20 +59,27 @@ This confusion seems to arise from the default configuration for the `yarn.nodem
 <value>4</value>
 <final>false</final>
 <source>yarn-site.xml</source>
+...
+<property>
+<name>yarn.nodemanager.resource.memory-mb</name>
+<value>6144</value>
+<final>false</final>
+<source>yarn-site.xml</source>
+</property>
+
 ```
  <img width="766" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/85e92972-c24f-4647-89ce-95acd5ca238f">
 
-More on this confusion: https://repost.aws/questions/QUmbShfKT4ShOy1IX8T6Exng/difference-in-vcore-and-vcpu-ec2-and-emr
 
+When launching a shell, make sure to set executors' idle timeout (`spark.dynamicAllocation.executorIdleTimeout`) to a longer time interval (e.g., 10 minutes). 
 
-When launching a shell, make sure to set executors' idle timeout (`spark.dynamicAllocation.executorIdleTimeout`) to a longer time interval (e.g., 10 minutes).
 The default timeout is 60s. If we were not to configure the property to a longer time interval, idle executors would be automatically removed after 1 minute.
 
 We don't need to specify the `--deploy-mode` flag, because spark shells can only run in client mode. If you try to launch a shell in cluster mode, you'll see an error message as follows: 
 
 <img width="900" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/6606ba7c-8309-4ccf-bfa9-ad135e727266">
 
-Although we see the prompt changes to `>>>` above,  `spark` and `sc` were not successfully initialized.
+In the above screenshot, although we see the prompt changes to `>>>` above,  `spark` and `sc` were not successfully initialized.
 
 <br>
 
