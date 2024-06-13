@@ -175,4 +175,5 @@ hadoop fs -cat output/part-* | grep "ELE96863"
 # Reference
 
 https://spark.apache.org/docs/latest/submitting-applications
+
 https://github.com/justinjiajia/bigdata_lab/blob/main/spark-submit_options.md
