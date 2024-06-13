@@ -42,7 +42,7 @@ In resource manager web UI's configuration tab, we can find
 
 
 
-```
+```xml
 <property>
 <name>mapreduce.job.maps</name>
 <value>16</value>
