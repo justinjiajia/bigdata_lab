@@ -25,7 +25,7 @@ Spark properties mainly can be divided into two kinds:
   
 - `spark-submit` or a shell script will also read configuration options from `conf/spark-defaults.conf`
 
-- If a configuration is not set in the above user-provided sources, it falls back to the default values defined within [Spark's codebase](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala).
+- If a configuration is not set in the above user-provided sources, like `spark.memory.fraction`, it falls back to the default values defined within [Spark's codebase](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala).
 
 
 <br>
