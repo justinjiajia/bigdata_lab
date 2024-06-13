@@ -192,8 +192,16 @@ docker-image-tool.sh  load-emr-env.sh  pyspark
 ```
 
 
-# 
+<br>
 
+# Locations of Compiled JAR files
+
+```shell
+[hadoop@ip-xxxx ~]$ ls /usr/lib/spark/jars
+[hadoop@ip-xxxx ~]$ jar tf /usr/lib/spark/jars/spark-core*.jar 
+```
+
+<br>
 
 # Spark source code of different versions
 
