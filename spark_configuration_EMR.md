@@ -72,7 +72,7 @@ emrfs-site.xml              hive-site.xml      log4j2.properties.template  metri
 fairscheduler.xml.template  log4j2.properties  metrics.properties          spark-defaults.conf          spark-env.sh                  workers.template
 ```
 
-the contents of a pair of same-name files are the same. This can be verified by using `vim -d` or `vimdiff`. E.g.:
+The contents of the same-name files are the same. This can be verified by using `vim -d` or `vimdiff`. E.g.:
 
 ```shell
 vim -d /etc/spark/conf/spark-defaults.conf /usr/lib/spark/conf/spark-defaults.conf
