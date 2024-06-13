@@ -25,7 +25,19 @@ Spark properties mainly can be divided into two kinds:
   
 - `spark-submit` or a shell script will also read configuration options from `conf/spark-defaults.conf`
 
-- If a configuration is not set in the above user-provided sources, like `spark.memory.fraction`, it falls back to the default values defined within [Spark's codebase](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala).
+- If a property is not set in the above user-provided sources, it falls back to the default values defined within Spark's codebase. E.g.,
+
+   - `spark.memory.fraction` defined in [*org/apache/spark/internal/config/package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala)
+     
+       - `package object config {...}`: In Scala, an object is a singleton instance of a class. When the Scala compiler compiles an object, it generates a corresponding class file with a `$` appended to its name.
+    
+       - `import org.apache.spark.internal.config.package$`
+     
+   - `spark.yarn.am.memory` defined in [*org/apache/spark/deploy/yarn/config.scala*](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala) 
+ 
+       - `package object config extends Logging {...}`
+    
+       - `import org.apache.spark.deploy.yarn.config._`: this is a wildcard import. All members (fields, methods, objects, classes, traits, etc.) defined in the `config` package object will be imported into the current scope. 
 
 
 <br>
