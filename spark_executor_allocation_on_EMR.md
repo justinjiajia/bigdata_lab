@@ -145,6 +145,42 @@ in [org/apache/spark/deploy/yarn/config.scala](https://github.com/apache/spark/b
     .createWithDefault(1)
 ```
 
+in [org/apache/spark/internal/config/package.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala)
+```java
+  private[spark] val MEMORY_OFFHEAP_ENABLED = ConfigBuilder("spark.memory.offHeap.enabled")
+    .doc("If true, Spark will attempt to use off-heap memory for certain operations. " +
+      "If off-heap memory use is enabled, then spark.memory.offHeap.size must be positive.")
+    .version("1.6.0")
+    .withAlternative("spark.unsafe.offHeap")
+    .booleanConf
+    .createWithDefault(false)
+
+  private[spark] val EXECUTOR_MIN_MEMORY_OVERHEAD =
+    ConfigBuilder("spark.executor.minMemoryOverhead")
+    .doc("The minimum amount of non-heap memory to be allocated per executor " +
+      "in MiB unless otherwise specified. This value is ignored if " +
+      "spark.executor.memoryOverhead is set directly.")
+    .version("4.0.0")
+    .bytesConf(ByteUnit.MiB)
+    .createWithDefaultString("384m")
+
+  private[spark] val EXECUTOR_MEMORY_OVERHEAD_FACTOR =
+    ConfigBuilder("spark.executor.memoryOverheadFactor")
+      .doc("Fraction of executor memory to be allocated as additional non-heap memory per " +
+        "executor process. This is memory that accounts for things like VM overheads, " +
+        "interned strings, other native overheads, etc. This tends to grow with the container " +
+        "size. This value defaults to 0.10 except for Kubernetes non-JVM jobs, which defaults " +
+        "to 0.40. This is done as non-JVM tasks need more non-JVM heap space and such tasks " +
+        "commonly fail with \"Memory Overhead Exceeded\" errors. This preempts this error " +
+        "with a higher default. This value is ignored if spark.executor.memoryOverhead is set " +
+        "directly.")
+      .version("3.3.0")
+      .doubleConf
+      .checkValue(factor => factor > 0,
+        "Ensure that memory overhead is a double greater than 0")
+      .createWithDefault(0.1)
+```
+
 
 > The maximum memory size of container to running executor is determined by the sum of spark.executor.memoryOverhead, spark.executor.memory, spark.memory.offHeap.size and spark.executor.pyspark.memory. https://spark.apache.org/docs/latest/configuration.html
 
