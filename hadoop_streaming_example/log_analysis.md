@@ -38,7 +38,7 @@ org.apache.hadoop.mapreduce.lib.output.DirectFileOutputCommitter: Direct Write: 
 
 In resource manager web UI's configuration tab, we can find
 
-![image](https://github.com/justinjiajia/bigdata_lab/assets/8945640/8a6b715f-1adc-4eeb-965f-179f0360c13f)
+<img width="300" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/80e385ee-84ba-4452-a67a-67f3500beff7">
 
 
 
