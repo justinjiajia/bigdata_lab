@@ -43,8 +43,10 @@ More details can be found on [this page](https://spark.apache.org/docs/latest/co
 # Order of execution
 
 when run the `spark-submit` script,
-first execute */usr/lib/load-spark-env.sh* to create a set of environment variables
-then run class Main in `/usr/lib/spark/jars/spark-launcher*.jar` to parse the command line flags and load properties set in `/usr/lib/spark/confspark-defaults.conf`
+
+- first execute */usr/lib/load-spark-env.sh* to create a set of environment variables
+
+- then run class Main in `/usr/lib/spark/jars/spark-launcher*.jar` to parse the command line flags and load properties set in `/usr/lib/spark/confspark-defaults.conf`
 
 More defails: https://github.com/justinjiajia/bigdata_lab/blob/main/spark_submit_code.md
 
