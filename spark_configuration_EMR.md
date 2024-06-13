@@ -161,8 +161,10 @@ res0: Array[(String, String)] = Array((spark.eventLog.enabled,true), (spark.driv
 [hadoop@ip-xxxx ~]$ echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master local
 ```
 
-The application web UI at http://<driver>:4040 lists Spark properties in the “Environment” tab. 
 
+Check the effective configurations via the application web UI at `http://<driver>:4040`, which lists Spark properties in the “Environment” tab. 
+
+<br>
 
 # Locations of Spark scripts
 
