@@ -37,7 +37,25 @@ Spark properties mainly can be divided into two kinds:
  
        - `package object config extends Logging {...}`
     
-       - `import org.apache.spark.deploy.yarn.config._`: this is a wildcard import. All members (fields, methods, objects, classes, traits, etc.) defined in the `config` package object will be imported into the current scope. 
+       - `import org.apache.spark.deploy.yarn.config._`: this is a wildcard import. All members (fields, methods, objects, classes, traits, etc.) defined in the `config` package object will be imported into the current scope.
+    
+       - sd
+         ```scala
+         private lazy val IS_HADOOP_PROVIDED: Boolean = {
+           val configPath = "org/apache/spark/deploy/yarn/config.properties"
+           val propertyKey = "spark.yarn.isHadoopProvided"
+           ...
+
+         }
+         ```
+         
+         ```shell
+         $ jar tf /usr/lib/spark/jars/spark-yar* | grep deploy/yarn/config
+         org/apache/spark/deploy/yarn/config.properties
+         org/apache/spark/deploy/yarn/config/
+         org/apache/spark/deploy/yarn/config/package$.class
+         org/apache/spark/deploy/yarn/config/package.class
+         ```
 
 
 <br>
