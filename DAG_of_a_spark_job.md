@@ -33,8 +33,7 @@
 
 
 ```shell
-[hadoop@ip-172-31-57-98 ~]$ echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master local
-[hadoop@ip-172-31-57-98 ~]$ echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master local
+[hadoop@ip-xxxx ~]$ echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master local
 Jun 08, 2024 2:57:54 PM org.apache.spark.launcher.Log4jHotPatchOption staticJavaAgentOption
 WARNING: spark.log4jHotPatch.enabled is set to true, but /usr/share/log4j-cve-2021-44228-hotpatch/jdk17/Log4jHotPatchFat.jar does not exist at the configured location
 
