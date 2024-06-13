@@ -142,6 +142,11 @@ Note: `export SPARK_HOME=${SPARK_HOME:-/usr/lib/spark}`
 # Effective Configurations
 
 
+```shell
+[hadoop@ip-xxxx ~]$ echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master local
+```
+
+
 Check the effective configurations inside a launched shell:
 
 ```shell
@@ -154,15 +159,27 @@ res0: Array[(String, String)] = Array((spark.eventLog.enabled,true), (spark.driv
 ```
 
 ```python
+>>> spark.version
+'3.5.0-amzn-1
 >>> sc.getConf().getAll()
 [('spark.eventLog.enabled', 'true'), ('spark.driver.extraLibraryPath', '/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server'), ('spark.driver.extraClassPath', '/usr/lib/hadoop-lzo/lib/*:/usr/lib/hadoop/hadoop-aws.jar:/usr/share/aws/aws-java-sdk/*:/usr/share/aws/aws-java-sdk-v2/*:/usr/share/aws/emr/goodies/lib/emr-spark-goodies.jar:/usr/share/aws/emr/security/conf:/usr/share/aws/emr/security/lib/*:/usr/share/aws/redshift/jdbc/*:/usr/share/aws/redshift/spark-redshift/lib/*:/usr/share/aws/kinesis/spark-sql-kinesis/lib/*:/usr/share/aws/hmclient/lib/aws-glue-datacatalog-spark-client.jar:/usr/share/java/Hive-JSON-Serde/hive-openx-serde.jar:/usr/share/aws/emr/s3select/lib/emr-s3-select-spark-connector.jar:/docker/usr/lib/hadoop-lzo/lib/*:/docker/usr/lib/hadoop/hadoop-aws.jar:/docker/usr/share/aws/aws-java-sdk/*:/docker/usr/share/aws/aws-java-sdk-v2/*:/docker/usr/share/aws/emr/goodies/lib/emr-spark-goodies.jar:/docker/usr/share/aws/emr/security/conf:/docker/usr/share/aws/emr/security/lib/*:/docker/usr/share/aws/redshift/jdbc/*:/docker/usr/share/aws/redshift/spark-redshift/lib/*:/docker/usr/share/aws/kinesis/spark-sql-kinesis/lib/*:/docker/usr/share/aws/hmclient/lib/aws-glue-datacatalog-spark-client.jar:/docker/usr/share/java/Hive-JSON-Serde/hive-openx-serde.jar:/docker/usr/share/aws/emr/s3select/lib/emr-s3-select-spark-connector.jar'), ('spark.sql.parquet.output.committer.class', 'com.amazon.emr.committer.EmrOptimizedSparkSqlParquetOutputCommitter'), ('spark.blacklist.decommissioning.timeout', '1h'), ('spark.yarn.appMasterEnv.SPARK_PUBLIC_DNS', '$(hostname -f)'), ('spark.app.submitTime', '1718257850660'), ('spark.sql.emr.internal.extensions', 'com.amazonaws.emr.spark.EmrSparkSessionExtensions'), ('spark.app.startTime', '1718257851633'), ('spark.eventLog.dir', 'hdfs:///var/log/spark/apps'), ('spark.sql.warehouse.dir', 'hdfs:///user/spark/warehouse'), ('spark.history.fs.logDirectory', 'hdfs:///var/log/spark/apps'), ('spark.hadoop.yarn.timeline-service.enabled', 'false'), ('spark.executor.extraLibraryPath', '/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server'), ('spark.executor.id', 'driver'), ('spark.executor.extraJavaOptions', "-Djava.net.preferIPv6Addresses=false -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:OnOutOfMemoryError='kill -9 %p' -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.cs=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED -Djdk.reflect.useDirectMethodHandle=false -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:OnOutOfMemoryError='kill -9 %p'"), ('spark.app.name', 'PySparkShell'), ('spark.driver.memory', '2048M'), ('spark.hadoop.mapreduce.output.fs.optimized.committer.enabled', 'true'), ('spark.decommissioning.timeout.threshold', '20'), ('spark.sql.catalogImplementation', 'hive'), ('spark.stage.attempt.ignoreOnDecommissionFetchFailure', 'true'), ('spark.hadoop.fs.s3.getObject.initialSocketTimeoutMilliseconds', '2000'), ('spark.hadoop.fs.s3a.committer.magic.enabled', 'true'), ('spark.master', 'local'), ('spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version.emr_internal_use_only.EmrFileSystem', '2'), ('spark.driver.port', '46275'), ('spark.yarn.dist.files', 'file:/etc/hudi/conf.dist/hudi-defaults.conf'), ('spark.executor.cores', '4'), ('spark.hadoop.fs.s3a.committer.name', 'magicv2'), ('spark.yarn.historyServer.address', 'ip-172-31-59-96.ec2.internal:18080'), ('spark.sql.hive.metastore.sharedPrefixes', 'com.amazonaws.services.dynamodbv2'), ('spark.serializer.objectStreamReset', '100'), ('spark.submit.deployMode', 'client'), ('spark.sql.parquet.fs.optimized.committer.optimization-enabled', 'true'), ('spark.hadoop.mapreduce.fileoutputcommitter.cleanup-failures.ignored.emr_internal_use_only.EmrFileSystem', 'true'), ('spark.executorEnv.AWS_SPARK_REDSHIFT_CONNECTOR_SERVICE_NAME', 'EMR'), ('spark.executor.extraClassPath', '/usr/lib/hadoop-lzo/lib/*:/usr/lib/hadoop/hadoop-aws.jar:/usr/share/aws/aws-java-sdk/*:/usr/share/aws/aws-java-sdk-v2/*:/usr/share/aws/emr/goodies/lib/emr-spark-goodies.jar:/usr/share/aws/emr/security/conf:/usr/share/aws/emr/security/lib/*:/usr/share/aws/redshift/jdbc/*:/usr/share/aws/redshift/spark-redshift/lib/*:/usr/share/aws/kinesis/spark-sql-kinesis/lib/*:/usr/share/aws/hmclient/lib/aws-glue-datacatalog-spark-client.jar:/usr/share/java/Hive-JSON-Serde/hive-openx-serde.jar:/usr/share/aws/emr/s3select/lib/emr-s3-select-spark-connector.jar:/docker/usr/lib/hadoop-lzo/lib/*:/docker/usr/lib/hadoop/hadoop-aws.jar:/docker/usr/share/aws/aws-java-sdk/*:/docker/usr/share/aws/aws-java-sdk-v2/*:/docker/usr/share/aws/emr/goodies/lib/emr-spark-goodies.jar:/docker/usr/share/aws/emr/security/conf:/docker/usr/share/aws/emr/security/lib/*:/docker/usr/share/aws/redshift/jdbc/*:/docker/usr/share/aws/redshift/spark-redshift/lib/*:/docker/usr/share/aws/kinesis/spark-sql-kinesis/lib/*:/docker/usr/share/aws/hmclient/lib/aws-glue-datacatalog-spark-client.jar:/docker/usr/share/java/Hive-JSON-Serde/hive-openx-serde.jar:/docker/usr/share/aws/emr/s3select/lib/emr-s3-select-spark-connector.jar'), ('spark.history.ui.port', '18080'), ('spark.executor.memory', '4269M'), ('spark.shuffle.service.enabled', 'true'), ('spark.driver.defaultJavaOptions', "-XX:OnOutOfMemoryError='kill -9 %p'"), ('spark.resourceManager.cleanupExpiredHost', 'true'), ('spark.executor.defaultJavaOptions', "-verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:OnOutOfMemoryError='kill -9 %p'"), ('spark.yarn.appMasterEnv.JAVA_HOME', '/usr/lib/jvm/jre-17'), ('spark.files.fetchFailure.unRegisterOutputOnHost', 'true'), ('spark.emr.default.executor.memory', '4269M'), ('spark.app.id', 'local-1718257852978'), ('spark.rdd.compress', 'True'), ('spark.driver.host', 'ip-172-31-59-96.ec2.internal'), ('spark.submit.pyFiles', ''), ('spark.dynamicAllocation.enabled', 'true'), ('spark.driver.extraJavaOptions', "-Djava.net.preferIPv6Addresses=false -XX:OnOutOfMemoryError='kill -9 %p' -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.cs=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED -Djdk.reflect.useDirectMethodHandle=false -XX:OnOutOfMemoryError='kill -9 %p'"), ('spark.executorEnv.JAVA_HOME', '/usr/lib/jvm/jre-17'), ('spark.ui.showConsoleProgress', 'true'), ('spark.emr.default.executor.cores', '4'), ('spark.blacklist.decommissioning.enabled', 'true')]
 ```
-```shell
-[hadoop@ip-xxxx ~]$ echo 'sc.getConf.get("spark.submit.deployMode")' | spark-shell --master local
-```
 
 
-Check the effective configurations via the application web UI at `http://<driver>:4040`, which lists Spark properties in the “Environment” tab. 
+
+Check the effective configurations via the application web UI (http://<public_DNS_primary>:18080/history/<app_id>/environment/)
+
+- <app_id> is the information displayed in the "App ID" column
+  
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/fbe7b8f7-7b5b-4727-b51b-ffa8f271e247">
+
+They are listed in the “Environment” tab. 
+
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/7c28fb8f-947c-4de1-bf9c-025f6d2473b3">
+
+<img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/713f4186-560f-4073-9d69-c9631c3c65ac">
+
 
 <br>
 
@@ -174,3 +191,12 @@ beeline               find-spark-home  load-spark-env.sh  run-example  spark-con
 docker-image-tool.sh  load-emr-env.sh  pyspark
 ```
 
+
+# 
+
+
+# Spark source code of different versions
+
+The source code of a particular Spark version can be found at https://archive.apache.org/dist/spark/ 
+
+For example, the source code for Spark 5.1.0 is in spark-3.5.0.tgz at https://archive.apache.org/dist/spark/spark-3.5.0/.
