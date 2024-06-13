@@ -56,20 +56,27 @@ More defails: https://github.com/justinjiajia/bigdata_lab/blob/main/spark_submit
 
 ## `spark-defaults.conf`
 
+It's not clear why there are two identical copies of configuration files in these two directories.
+
+
+
 ```shell
 [hadoop@ip-xxxx ~]$ ls /etc/spark/conf
 emrfs-site.xml              hive-site.xml      log4j2.properties.template  metrics.properties.template  spark-defaults.conf.template  spark-env.sh.template
 fairscheduler.xml.template  log4j2.properties  metrics.properties          spark-defaults.conf          spark-env.sh                  workers.template
 
-[hadoop@ip-xxxx ~]$  ls /etc/spark/conf
+[hadoop@ip-xxxx ~]$  ls /usr/lib/spark/conf
 emrfs-site.xml              hive-site.xml      log4j2.properties.template  metrics.properties.template  spark-defaults.conf.template  spark-env.sh.template
 fairscheduler.xml.template  log4j2.properties  metrics.properties          spark-defaults.conf          spark-env.sh                  workers.template
 ```
 
+the contents of a pair of same-name files are the same. This can be verified by using `vim -d` or `vimdiff`. E.g.:
 
 ```shell
-nano /etc/spark/conf/spark-defaults.conf
+vim -d /etc/spark/conf/spark-defaults.conf /usr/lib/spark/conf/spark-defaults.conf
 ```
+
+
 
 The content of *spark-defaults.conf* is as follows:
 
@@ -164,6 +171,7 @@ When creating or modifying an EMR cluster, we can use the Configurations paramet
   {
     "Classification": "spark-defaults",
     "Properties": {
+      "spark.emr.default.executor.cores": "2",
       "spark.executor.cores": "2"
     }
   },
@@ -184,8 +192,9 @@ When creating or modifying an EMR cluster, we can use the Configurations paramet
 
 - Write to both /etc/spark/conf/spark-defaults.conf and /usr/lib/spark/conf/spark-defaults.conf
 
-  The original entry is removed. A new entry is added to the end of the file
+  The original entries are removed. 2 new entries are added to the end of the file
   ```
+  spark.emr.default.executor.cores   2
   spark.executor.cores        2
   ```
 
