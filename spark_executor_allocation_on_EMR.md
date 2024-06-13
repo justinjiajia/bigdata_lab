@@ -72,7 +72,7 @@ All effective configurations can be found in the configuration tab (URL:`http://
 
 When launching a shell, make sure to set executors' idle timeout (`spark.dynamicAllocation.executorIdleTimeout`) to a longer time interval (e.g., 10 minutes). 
 
-The default timeout is 60s (set [here](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala#L707) ?). If we were not to configure the property to a longer time interval, idle executors would be automatically removed after 1 minute.
+The default timeout is 60s (set [here](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala#L707) ? as it's not present in files *spark-defaults.conf* and *spark-env.sh* under both directories */etc/spark/conf* and */usr/lib/spark/conf* ). If we were not to configure the property to a longer time interval, idle executors would be automatically removed after 1 minute.
 
 We don't need to specify the `--deploy-mode` flag, because spark shells can only run in client mode. If you try to launch a shell in cluster mode, you'll see an error message as follows: 
 
