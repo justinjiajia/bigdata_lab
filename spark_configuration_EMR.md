@@ -34,9 +34,9 @@ More details can be found on [this page](https://spark.apache.org/docs/latest/co
 
 Spark properties mainly can be divided into two kinds: 
 
-- one is related to deploy, like “spark.driver.memory”, “spark.executor.instances”, this kind of properties may not be affected when setting programmatically through SparkConf in runtime, or the behavior is depending on which cluster manager and deploy mode you choose, so it would be suggested to set through configuration file or spark-submit command line options;
+- One is related to deploy, like `spark.driver.memory`, `spark.executor.instances`, this kind of properties may not be affected when setting programmatically through `SparkConf` in runtime, or the behavior is depending on which cluster manager and deploy mode you choose, so it would be suggested to set through configuration file or spark-submit command line options;
 
-- another is mainly related to Spark runtime control, like “spark.task.maxFailures”, this kind of properties can be set in either way.
+- Another is mainly related to Spark runtime control, like `spark.task.maxFailures`, this kind of properties can be set in either way.
 
 <br>
 
