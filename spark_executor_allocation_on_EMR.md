@@ -38,17 +38,16 @@ SSHing into the primary node of the same instance type to further verifies that 
 
 
 
-### Web UIs
+## YARN Resource Manager Web UI
 
-YARN resource manager Web UI.  It shows that we logged in as hadoop. This is because we set `hadoop.http.staticuser.user` to `hadoop` in the EMR launch wizard before the cluster is spin off. Otherwise, it will be shown as "logged in as: dr.who").
+It shows that we logged in as hadoop. This is because we set `hadoop.http.staticuser.user` to `hadoop` in the EMR launch wizard before the cluster is spin up. Otherwise, it will be shown as "logged in as: dr.who").
 
  <img width="1011" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/acddf4d5-1bb4-407d-a0ff-3d3c5ac3060f">
 
 
-The cluster metrics section shows that there are 24 GB memory and 16 vCores.
-So, YARN sees 6 GB memory and 4 vCores per core instance. 
+The cluster metrics section shows that there are 24 GB memory and 16 vCores. So, YARN sees 6 GB memory and 4 vCores per core instance. 
 
-These are determined by YARN's configurations. We can find all effective configurations in the configuration tab (URL:`http://<primary-node-dns>:8088/conf`)
+All effective configurations can be found in the configuration tab (URL:`http://<primary-node-dns>:8088/conf`):
 
 <img width="150" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/5d49060a-c976-4493-a809-b4a640b6f500">
 
@@ -73,7 +72,7 @@ These are determined by YARN's configurations. We can find all effective configu
 
 When launching a shell, make sure to set executors' idle timeout (`spark.dynamicAllocation.executorIdleTimeout`) to a longer time interval (e.g., 10 minutes). 
 
-The default timeout is 60s. If we were not to configure the property to a longer time interval, idle executors would be automatically removed after 1 minute.
+The default timeout is 60s (set [here](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala#L707) ?). If we were not to configure the property to a longer time interval, idle executors would be automatically removed after 1 minute.
 
 We don't need to specify the `--deploy-mode` flag, because spark shells can only run in client mode. If you try to launch a shell in cluster mode, you'll see an error message as follows: 
 
