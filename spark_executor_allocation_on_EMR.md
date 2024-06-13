@@ -125,6 +125,26 @@ whereas 1 container (896 MB and 1 vCore) is allocated to host the application ma
 | ip-xxxx-51-151  | core |  executor 3 (4 cores; 2G mem) | 1 |
 | ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process (0 cores; 1G mem)<br>running inside it | 0 |
 
+
+in *spark-defaults.conf*:
+
+```shell
+spark.executor.memory            4269M
+spark.emr.default.executor.memory 4269M
+spark.driver.memory              2048M
+spark.executor.cores             4
+spark.emr.default.executor.cores 4
+```
+
+in [org/apache/spark/deploy/yarn/config.scala](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala)
+
+```scala
+  private[spark] val AM_CORES = ConfigBuilder("spark.yarn.am.cores")
+    .version("1.3.0")
+    .intConf
+    .createWithDefault(1)
+```
+
 Note that the primary instance is not part of the cluster's resource pool (because no NodeManager is running on it).
 
 Recall that YARN sees 1 vCore per container. So, for an executor, 1 vCore seen by YARN gets mapped to 4 cores seen by Spark.
