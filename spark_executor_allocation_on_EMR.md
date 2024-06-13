@@ -145,6 +145,9 @@ in [org/apache/spark/deploy/yarn/config.scala](https://github.com/apache/spark/b
     .createWithDefault(1)
 ```
 
+
+> The maximum memory size of container to running executor is determined by the sum of spark.executor.memoryOverhead, spark.executor.memory, spark.memory.offHeap.size and spark.executor.pyspark.memory. https://spark.apache.org/docs/latest/configuration.html
+
 Note that the primary instance is not part of the cluster's resource pool (because no NodeManager is running on it).
 
 Recall that YARN sees 1 vCore per container. So, for an executor, 1 vCore seen by YARN gets mapped to 4 cores seen by Spark.
