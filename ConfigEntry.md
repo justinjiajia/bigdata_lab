@@ -105,6 +105,60 @@ Create configuration entries specific to Spark on YARN.
 ### [*scala/org/apache/spark/internal/config/ConfigBuilder.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigBuilder.scala)
 
 ```scala
+
+private object ConfigHelpers {
+
+  def toNumber[T](s: String, converter: String => T, key: String, configType: String): T = {
+    try {
+      converter(s.trim)
+    } catch {
+      case _: NumberFormatException =>
+        throw new IllegalArgumentException(s"$key should be $configType, but was $s")
+    }
+  }
+
+  def toBoolean(s: String, key: String): Boolean = {
+    try {
+      s.trim.toBoolean
+    } catch {
+      case _: IllegalArgumentException =>
+        throw new IllegalArgumentException(s"$key should be boolean, but was $s")
+    }
+  }
+
+  def stringToSeq[T](str: String, converter: String => T): Seq[T] = {
+    Utils.stringToSeq(str).map(converter)
+  }
+
+  def seqToString[T](v: Seq[T], stringConverter: T => String): String = {
+    v.map(stringConverter).mkString(",")
+  }
+
+  def timeFromString(str: String, unit: TimeUnit): Long = JavaUtils.timeStringAs(str, unit)
+
+  def timeToString(v: Long, unit: TimeUnit): String = s"${TimeUnit.MILLISECONDS.convert(v, unit)}ms"
+
+  def byteFromString(str: String, unit: ByteUnit): Long = {
+    val (input, multiplier) =
+      if (str.length() > 0 && str.charAt(0) == '-') {
+        (str.substring(1), -1)
+      } else {
+        (str, 1)
+      }
+    multiplier * JavaUtils.byteStringAs(input, unit)
+  }
+
+  def byteToString(v: Long, unit: ByteUnit): String = s"${unit.convertTo(v, ByteUnit.BYTE)}b"
+
+  def regexFromString(str: String, key: String): Regex = {
+    try str.r catch {
+      case e: PatternSyntaxException =>
+        throw new IllegalArgumentException(s"$key should be a regex, but was $str", e)
+    }
+  }
+
+}
+
 /**
  * A type-safe config builder. Provides methods for transforming the input data (which can be
  * used, e.g., for validation) and creating the final config entry.
@@ -140,6 +194,112 @@ private[spark] class TypedConfigBuilder[T](
     }
   }
   ...
+}
+
+
+/**
+ * Basic builder for Spark configurations. Provides methods for creating type-specific builders.
+ *
+ * @see TypedConfigBuilder
+ */
+private[spark] case class ConfigBuilder(key: String) {
+
+  import ConfigHelpers._
+
+  private[config] var _prependedKey: Option[String] = None
+  private[config] var _prependSeparator: String = ""
+  private[config] var _public = true
+  private[config] var _doc = ""
+  private[config] var _version = ""
+  private[config] var _onCreate: Option[ConfigEntry[_] => Unit] = None
+  private[config] var _alternatives = List.empty[String]
+
+  def internal(): ConfigBuilder = {
+    _public = false
+    this
+  }
+
+  def doc(s: String): ConfigBuilder = {
+    _doc = s
+    this
+  }
+
+  def version(v: String): ConfigBuilder = {
+    _version = v
+    this
+  }
+
+  /**
+   * Registers a callback for when the config entry is finally instantiated. Currently used by
+   * SQLConf to keep track of SQL configuration entries.
+   */
+  def onCreate(callback: ConfigEntry[_] => Unit): ConfigBuilder = {
+    _onCreate = Option(callback)
+    this
+  }
+
+  def withPrepended(key: String, separator: String = " "): ConfigBuilder = {
+    _prependedKey = Option(key)
+    _prependSeparator = separator
+    this
+  }
+
+  def withAlternative(key: String): ConfigBuilder = {
+    _alternatives = _alternatives :+ key
+    this
+  }
+
+  def intConf: TypedConfigBuilder[Int] = {
+    checkPrependConfig
+    new TypedConfigBuilder(this, toNumber(_, _.toInt, key, "int"))
+  }
+
+  def longConf: TypedConfigBuilder[Long] = {
+    checkPrependConfig
+    new TypedConfigBuilder(this, toNumber(_, _.toLong, key, "long"))
+  }
+
+  def doubleConf: TypedConfigBuilder[Double] = {
+    checkPrependConfig
+    new TypedConfigBuilder(this, toNumber(_, _.toDouble, key, "double"))
+  }
+
+  def booleanConf: TypedConfigBuilder[Boolean] = {
+    checkPrependConfig
+    new TypedConfigBuilder(this, toBoolean(_, key))
+  }
+
+  def stringConf: TypedConfigBuilder[String] = {
+    new TypedConfigBuilder(this, v => v)
+  }
+
+  def timeConf(unit: TimeUnit): TypedConfigBuilder[Long] = {
+    checkPrependConfig
+    new TypedConfigBuilder(this, timeFromString(_, unit), timeToString(_, unit))
+  }
+
+  def bytesConf(unit: ByteUnit): TypedConfigBuilder[Long] = {
+    checkPrependConfig
+    new TypedConfigBuilder(this, byteFromString(_, unit), byteToString(_, unit))
+  }
+
+  def fallbackConf[T](fallback: ConfigEntry[T]): ConfigEntry[T] = {
+    val entry = new FallbackConfigEntry(key, _prependedKey, _prependSeparator, _alternatives, _doc,
+      _public, _version, fallback)
+    _onCreate.foreach(_(entry))
+    entry
+  }
+
+  def regexConf: TypedConfigBuilder[Regex] = {
+    checkPrependConfig
+    new TypedConfigBuilder(this, regexFromString(_, this.key), _.toString)
+  }
+
+  private def checkPrependConfig = {
+    if (_prependedKey.isDefined) {
+      throw new IllegalArgumentException(s"$key type must be string if prepend used")
+    }
+  }
 }
 ```
 
