@@ -22,7 +22,22 @@
  
 ### [*scala/org/apache/spark/internal/config/package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala)
 
+Create application-related configuration entries
+
 ```scala
+
+  private[spark] val DRIVER_CORES = ConfigBuilder("spark.driver.cores")
+    .doc("Number of cores to use for the driver process, only in cluster mode.")
+    .version("1.3.0")
+    .intConf
+    .createWithDefault(1)
+
+  private[spark] val DRIVER_MEMORY = ConfigBuilder(SparkLauncher.DRIVER_MEMORY)
+    .doc("Amount of memory to use for the driver process, in MiB unless otherwise specified.")
+    .version("1.1.1")
+    .bytesConf(ByteUnit.MiB)
+    .createWithDefaultString("1g")
+
   private[spark] val DRIVER_MEMORY_OVERHEAD = ConfigBuilder("spark.driver.memoryOverhead")
     .doc("The amount of non-heap memory to be allocated per driver in cluster mode, " +
       "in MiB unless otherwise specified.")
@@ -30,6 +45,17 @@
     .bytesConf(ByteUnit.MiB)
     .createOptional
 ```
+
+Variables defined in [java/org/apache/spark/launcher/SparkLauncher.java](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java), e.g., `DRIVER_MEMORY`, hold corresponding string values.
+
+|Entry Name| Key String | Type | Default |
+|--|--|--|--|
+|`DRIVER_CORES`| `"spark.driver.cores"`| `ConfigEntryWithDefault`| `1` |
+|`DRIVER_MEMORY`| `"spark.driver.memory"`| `ConfigEntryWithDefault`| `"1g"` |
+|`DRIVER_MEMORY_OVERHEAD`| `"spark.driver.memoryOverhead"`| `OptionalConfigEntry`|  | 
+|`DRIVER_MEMORY_OVERHEAD_FACTOR`| `"spark.driver.memoryOverheadFactor"`| `ConfigEntryWithDefault`| `0.1` | 
+|`EXECUTOR_MEMORY_OVERHEAD`| `""spark.executor.memoryOverhead"`| `OptionalConfigEntry`|  | 
+
 
 <br>
 
