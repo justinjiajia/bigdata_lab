@@ -327,6 +327,61 @@ class CommandBuilderUtils {
 }
 ```
 
+https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java
+
+```java
+/**
+ * Special command builder for handling a CLI invocation of SparkSubmit.
+ * <p>
+ * This builder adds command line parsing compatible with SparkSubmit. It handles setting
+ * driver-side options and special parsing behavior needed for the special-casing certain internal
+ * Spark applications.
+ * <p>
+ * This class has also some special features to aid launching shells (pyspark and sparkR) and also
+ * examples.
+ */
+class SparkSubmitCommandBuilder extends AbstractCommandBuilder {
+
+  /**
+   * Name of the app resource used to identify the PySpark shell. The command line parser expects
+   * the resource name to be the very first argument to spark-submit in this case.
+   *
+   * NOTE: this cannot be "pyspark-shell" since that identifies the PySpark shell to SparkSubmit
+   * (see java_gateway.py), and can cause this code to enter into an infinite loop.
+   */
+  static final String PYSPARK_SHELL = "pyspark-shell-main";
+
+  /**
+   * This is the actual resource name that identifies the PySpark shell to SparkSubmit.
+   */
+  static final String PYSPARK_SHELL_RESOURCE = "pyspark-shell";
+
+  /**
+   * Name of the app resource used to identify the SparkR shell. The command line parser expects
+   * the resource name to be the very first argument to spark-submit in this case.
+   *
+   * NOTE: this cannot be "sparkr-shell" since that identifies the SparkR shell to SparkSubmit
+   * (see sparkR.R), and can cause this code to enter into an infinite loop.
+   */
+  static final String SPARKR_SHELL = "sparkr-shell-main";
+
+  /**
+   * This is the actual resource name that identifies the SparkR shell to SparkSubmit.
+   */
+  static final String SPARKR_SHELL_RESOURCE = "sparkr-shell";
+
+  /**
+   * Name of app resource used to identify examples. When running examples, args[0] should be
+   * this name. The app resource will identify the example class to run.
+   */
+  static final String RUN_EXAMPLE = "run-example";
+
+  /**
+   * Prefix for example class names.
+   */
+  static final String EXAMPLE_CLASS_PREFIX = "org.apache.spark.examples.";
+```
+
 ### run pyspark
 
 https://github.com/apache/spark/blob/master/bin/pyspark
