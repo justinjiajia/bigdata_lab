@@ -259,8 +259,19 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
  * Abstract Spark command builder that defines common functionality.
  */
 abstract class AbstractCommandBuilder {
-...
 
+  ...
+
+  AbstractCommandBuilder() {
+    this.appArgs = new ArrayList<>();
+    this.childEnv = new HashMap<>();
+    this.conf = new HashMap<>();
+    this.files = new ArrayList<>();
+    this.jars = new ArrayList<>();
+    this.pyFiles = new ArrayList<>();
+  }
+
+ ...
   Map<String, String> getEffectiveConfig() throws IOException {
     if (effectiveConfig == null) {
       effectiveConfig = new HashMap<>(conf);
@@ -380,6 +391,49 @@ class SparkSubmitCommandBuilder extends AbstractCommandBuilder {
    * Prefix for example class names.
    */
   static final String EXAMPLE_CLASS_PREFIX = "org.apache.spark.examples.";
+
+  ...
+
+    /**
+   * This constructor is used when invoking spark-submit; it parses and validates arguments
+   * provided by the user on the command line.
+   */
+  SparkSubmitCommandBuilder(List<String> args) {
+    this.allowsMixedArguments = false;
+    this.parsedArgs = new ArrayList<>();
+    boolean isExample = false;
+    List<String> submitArgs = args;
+    this.userArgs = Collections.emptyList();
+
+    if (args.size() > 0) {
+      switch (args.get(0)) {
+        case PYSPARK_SHELL:
+          this.allowsMixedArguments = true;
+          appResource = PYSPARK_SHELL;
+          submitArgs = args.subList(1, args.size());
+          break;
+
+        case SPARKR_SHELL:
+          this.allowsMixedArguments = true;
+          appResource = SPARKR_SHELL;
+          submitArgs = args.subList(1, args.size());
+          break;
+
+        case RUN_EXAMPLE:
+          isExample = true;
+          appResource = findExamplesAppJar();
+          submitArgs = args.subList(1, args.size());
+      }
+
+      this.isExample = isExample;
+      OptionParser parser = new OptionParser(true);
+      parser.parse(submitArgs);
+      this.isSpecialCommand = parser.isSpecialCommand;
+    } else {
+      this.isExample = isExample;
+      this.isSpecialCommand = true;
+    }
+  }
 ```
 
 ### run pyspark
