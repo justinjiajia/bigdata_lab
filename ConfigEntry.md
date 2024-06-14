@@ -71,6 +71,15 @@ Variables defined in [java/org/apache/spark/launcher/SparkLauncher.java](https:/
 
 <br>
 
+### [*scala/org/apache/spark/internal/config/Python.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/Python.scala)
+
+|Entry Name| Key String | Type | Default |
+|--|--|--|--|
+|`PYSPARK_EXECUTOR_MEMORY`| `"spark.executor.pyspark.memory"`| `OptionalConfigEntry`|  | 
+
+
+<br>
+
 
 ### [scala/org/apache/spark/deploy/yarn/config.scala](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala)
 
