@@ -370,6 +370,14 @@ class SparkConf(loadDefaults: Boolean) extends Cloneable with Logging with Seria
 
   ...
 
+  /** Does the configuration contain a given parameter? */
+  def contains(key: String): Boolean = {
+    settings.containsKey(key) ||
+      configsWithAlternatives.get(key).toSeq.flatten.exists { alt => contains(alt.key) }
+  }
+
+  private[spark] def contains(entry: ConfigEntry[_]): Boolean = contains(entry.key)
+
 }
 ```
 
