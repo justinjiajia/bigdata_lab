@@ -126,6 +126,13 @@ whereas 1 container (896 MB and 1 vCore) is allocated to host the application ma
 | ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process (0 cores; 1G mem)<br>running inside it | 0 |
 
 
+| Property | Value | Meaning | Set via |
+| ------------- |-------------| ------------- |------------- |
+|`spark.yarn.am.memory` |  512M | Amount of memory to use for the YARN Application Master in client mode. In cluster mode, use `spark.driver.memory` instead.| [spark/deploy/yarn/config.scala](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala#L321)|
+|`spark.yarn.am.cores` |  1 | Number of cores to use for the YARN Application Master in client mode. In cluster mode, use spark.driver.cores instead.| [spark/deploy/yarn/config.scala](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala#L299) |
+|`spark.yarn.am.memoryOverhead`| AM memory * 0.10, with minimum of 384 | Amount of non-heap memory for the YARN Application Master in client mode. This is memory that accounts for things like VM overheads, interned strings, other native overheads, etc. | set if user provides this value [here](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala#L316) `0.1` os set [here](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/YarnSparkHadoopUtil.scala#L37); `384` is set [here](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L102); calculation is done [here](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L105)|
+
+
 in *spark-defaults.conf*:
 
 ```shell
