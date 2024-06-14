@@ -259,6 +259,19 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
  */
 abstract class AbstractCommandBuilder {
 ...
+
+  Map<String, String> getEffectiveConfig() throws IOException {
+    if (effectiveConfig == null) {
+      effectiveConfig = new HashMap<>(conf);
+      Properties p = loadPropertiesFile();
+      p.stringPropertyNames().forEach(key ->
+        effectiveConfig.computeIfAbsent(key, p::getProperty));
+      effectiveConfig.putIfAbsent(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH,
+        SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH_VALUE);
+    }
+    return effectiveConfig;
+  }
+
   /**
    * Loads the configuration file for the application, if it exists. This is either the
    * user-specified properties file, or the spark-defaults.conf file under the Spark configuration
