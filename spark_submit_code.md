@@ -26,7 +26,7 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 
 - `source "$(dirname "$0")"/find-spark-home`: `source` is a builtin command of the Bash shell. It reads and executes the code from *find-spark-home* under the same directory as *spark-submit* [$(dirname "$0")"/find-spark-home](https://stackoverflow.com/questions/54228196/bash-script-trying-to-get-path-of-script) 
 
-- `exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"`: `exec` is a builtin command of the Bash shell. It allows us to execute a command that completely replaces the current process. `$@` refers to all of a shell script's command-line arguments.
+- `exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"`: `exec` is a builtin command of the Bash shell. It allows us to execute a command that completely replaces the current process. "$@" represents all the arguments passed to spark-submit.
 
     <br>
 
@@ -132,7 +132,8 @@ build_command() {
       org/apache/spark/launcher/Main$1.class
       org/apache/spark/launcher/Main.class
       ```
-
+   - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments that were passed to *spark-submit*.
+   
     <br>
 
 ### *load-spark-env.sh* in */usr/lib/spark/bin*  
