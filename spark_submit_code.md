@@ -251,6 +251,14 @@ https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/sp
 
 
 ```java
+...
+import static org.apache.spark.launcher.CommandBuilderUtils.*;
+
+/**
+ * Abstract Spark command builder that defines common functionality.
+ */
+abstract class AbstractCommandBuilder {
+...
   /**
    * Loads the configuration file for the application, if it exists. This is either the
    * user-specified properties file, or the spark-defaults.conf file under the Spark configuration
@@ -282,6 +290,8 @@ https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/sp
     String confDir = getenv("SPARK_CONF_DIR");
     return confDir != null ? confDir : join(File.separator, getSparkHome(), "conf");
   }
+  ...
+}
 ```
 
 It seems that the property file is `/usr/lib/spark/confspark-defaults.conf`
