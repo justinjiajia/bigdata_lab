@@ -47,7 +47,7 @@ Create application-related configuration entries
     ...
 ```
 
-Variables defined in [java/org/apache/spark/launcher/SparkLauncher.java](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java), e.g., `DRIVER_MEMORY`, hold corresponding string values.
+> Variables defined in [java/org/apache/spark/launcher/SparkLauncher.java](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java), e.g., `DRIVER_MEMORY`, hold corresponding string values.
 
 |Entry Name| Key String | Type | Default |
 |--|--|--|--|
@@ -65,7 +65,7 @@ Variables defined in [java/org/apache/spark/launcher/SparkLauncher.java](https:/
 |`MEMORY_OFFHEAP_SIZE`| `"spark.memory.offHeap.size"`| `ConfigEntryWithDefault`| `0` | 
 |`MEMORY_STORAGE_FRACTION`| `"spark.memory.storageFraction"`| `ConfigEntryWithDefault`| `0.5` | 
 |`MEMORY_FRACTION`| `"spark.memory.fraction"`| `ConfigEntryWithDefault`| `0.6` | 
-
+|`DYN_ALLOCATION_ENABLED`| `"spark.dynamicAllocation.enabled"`| `ConfigEntryWithDefault`| `false` | 
 
 
 
