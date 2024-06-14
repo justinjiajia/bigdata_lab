@@ -884,3 +884,67 @@ OUTPUT:
 > error: can't find main(String[]) method in class: Example
 
 
+
+If a constructor in the child class does not explicitly call a parent class constructor using super, the Java compiler automatically inserts a call to the no-argument constructor of the parent class.
+No No-Argument Constructor: If the parent class does not have a no-argument constructor and the child class does not explicitly call another constructor of the parent class using super, the code will not compile.
+
+```
+public class Main {
+    public static void main(String[] args) {
+        Child child1 = new Child();
+        Child child2 = new Child("Hello");
+        Child child3 = new Child(42);
+        Child child4 = new Child("Hello", 42);
+    }
+}
+
+public class Child extends Parent {
+    public Child() {
+        System.out.println("Child no-arg constructor");
+    }
+
+    public Child(String message) {
+        System.out.println("Child constructor with message: " + message);
+    }
+
+    public Child(int number) {
+        System.out.println("Child constructor with number: " + number);
+    }
+
+    public Child(String message, int number) {
+        System.out.println("Child constructor with message: " + message + " and number: " + number);
+    }
+}
+
+public class Parent {
+    public Parent() {
+        System.out.println("Parent no-arg constructor");
+    }
+
+    public Parent(String message) {
+        System.out.println("Parent constructor with message: " + message);
+    }
+
+    public Parent(int number) {
+        System.out.println("Parent constructor with number: " + number);
+    }
+}
+```
+
+Output:
+
+> Parent no-arg constructor
+>
+> Child no-arg constructor
+>
+> Parent no-arg constructor
+>
+> Child constructor with message: Hello
+>
+> Parent no-arg constructor
+>
+> Child constructor with number: 42
+>
+> Parent no-arg constructor
+>
+> Child constructor with message: Hello and number: 4
