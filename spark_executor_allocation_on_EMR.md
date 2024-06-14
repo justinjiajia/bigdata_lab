@@ -126,19 +126,6 @@ whereas 1 container (896 MB and 1 vCore) is allocated to host the application ma
 | ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process (0 cores; 1G mem)<br>running inside it | 0 |
 
 
-```
-  /**
-   * Retrieves the value of a pre-defined configuration entry.
-   *
-   * - This is an internal Spark API.
-   * - The return type if defined by the configuration entry.
-   * - This will throw an exception is the config is not optional and the value is not set.
-   */
-  private[spark] def get[T](entry: ConfigEntry[T]): T = {
-    entry.readFrom(reader)
-  }
-```
-https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/SparkConf.scala#L255
 
 Deploy mode is client
 
