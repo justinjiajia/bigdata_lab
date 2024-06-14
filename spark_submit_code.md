@@ -326,7 +326,15 @@ class CommandBuilderUtils {
 }
 ```
 
-It seems that 
+### run pyspark
+
+https://github.com/apache/spark/blob/master/bin/pyspark
+
+the last command is to launch `spark-submit`
+```shell
+...
+exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "$@"
+```
 
 ### How to modify a file owned by `root`?
 
