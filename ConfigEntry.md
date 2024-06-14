@@ -1,6 +1,6 @@
 
 
-`sparkConf.get(entry)` -> `entry.readFrom(reader)`
+`sparkConf.get(entry)` in *Client.scala* -> `entry.readFrom(reader)` in *SparkConf.scala*
 
 - if `entry` is of type `OptionalConfigEntry`: `entry.readFrom(reader)` -> `readString(reader).map(rawValueConverter)`
   
@@ -323,6 +323,31 @@ private[spark] case class ConfigBuilder(key: String) {
 
 class SparkConf(loadDefaults: Boolean) extends Cloneable with Logging with Serializable {
 
+  import SparkConf._
+
+  /** Create a SparkConf that loads defaults from system properties and the classpath */
+  def this() = this(true)
+
+  private val settings = new ConcurrentHashMap[String, String]()
+
+  @transient private lazy val reader: ConfigReader = {
+    val _reader = new ConfigReader(new SparkConfigProvider(settings))
+    _reader.bindEnv((key: String) => Option(getenv(key)))
+    _reader
+  }
+
+  if (loadDefaults) {
+    loadFromSystemProperties(false)
+  }
+
+  private[spark] def loadFromSystemProperties(silent: Boolean): SparkConf = {
+    // Load any spark.* system properties
+    for ((key, value) <- Utils.getSystemProperties if key.startsWith("spark.")) {
+      set(key, value, silent)
+    }
+    this
+  }
+
   ...
 
   /**
@@ -335,6 +360,14 @@ class SparkConf(loadDefaults: Boolean) extends Cloneable with Logging with Seria
   private[spark] def get[T](entry: ConfigEntry[T]): T = {
     entry.readFrom(reader)
   }
+  ...
+
+  /**
+   * By using this instead of System.getenv(), environment variables can be mocked
+   * in unit tests.
+   */
+  private[spark] def getenv(name: String): String = System.getenv(name)
+
   ...
 
 }
