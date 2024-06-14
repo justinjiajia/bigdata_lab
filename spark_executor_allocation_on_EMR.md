@@ -126,12 +126,33 @@ whereas 1 container (896 MB and 1 vCore) is allocated to host the application ma
 | ip-xxxx-52-12 | primary |  client: Pyspark shell with the driver process (0 cores; 1G mem)<br>running inside it | 0 |
 
 
-| Property | Value | Meaning | Set via |
-| ------------- |-------------| ------------- |------------- |
-|`spark.yarn.am.memory` |  512M | Amount of memory to use for the YARN Application Master in client mode. In cluster mode, use `spark.driver.memory` instead.| [spark/deploy/yarn/config.scala](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala#L321)|
-|`spark.yarn.am.cores` |  1 | Number of cores to use for the YARN Application Master in client mode. In cluster mode, use spark.driver.cores instead.| [spark/deploy/yarn/config.scala](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala#L299) |
-|`spark.yarn.am.memoryOverhead`| AM memory * 0.10, with minimum of 384 | Amount of non-heap memory for the YARN Application Master in client mode. This is memory that accounts for things like VM overheads, interned strings, other native overheads, etc. | either set via a user-supplied value at [config.scala#L316](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala#L316) or calculated at [Client.scala#L105](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L105). `0.1` is set at [YarnSparkHadoopUtil.scala#L37](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/YarnSparkHadoopUtil.scala#L37), and `384` is set at [Client.scala#L102](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L102); |
+```
+  /**
+   * Retrieves the value of a pre-defined configuration entry.
+   *
+   * - This is an internal Spark API.
+   * - The return type if defined by the configuration entry.
+   * - This will throw an exception is the config is not optional and the value is not set.
+   */
+  private[spark] def get[T](entry: ConfigEntry[T]): T = {
+    entry.readFrom(reader)
+  }
+```
+https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/SparkConf.scala#L255
 
+Deploy mode is client
+
+| Variable | Property Key  | Value | Meaning | Set via |
+| ----- | ------------- |-------------| ------------- |------------- |
+|`executorMemory`|`spark.executor.memory`| 4269M | Amount of memory to use per executor process| [Client.scala#L119](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L119)|
+| `executorMemoryOverhead` |`spark.executor.memoryOverhead`|executorMemory * 0.1, with minimum of 384M |Amount of additional memory to be allocated per executor process, in MiB unless otherwise specified. This is memory that accounts for things like VM overheads, interned strings, other native overheads, etc.| [Client.scala#L125](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L125)|
+|`amMemory`|`spark.yarn.am.memory` |  512M | Amount of memory to use for the YARN Application Master in client mode. In cluster mode, use `spark.driver.memory` instead.| [Client.scala#L92](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L92)|
+|`amCores`|`spark.yarn.am.cores` |  1 | Number of cores to use for the YARN Application Master in client mode. In cluster mode, use spark.driver.cores instead.| [Client.scala#L112](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L112) |
+|`amMemoryOverhead`|`spark.yarn.am.memoryOverhead`| AM memory * 0.1, with minimum of 384M | Amount of non-heap memory for the YARN Application Master in client mode. This is memory that accounts for things like VM overheads, interned strings, other native overheads, etc. | [Client.scala#L105](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L105)|
+|`executorOffHeapMemory`|`spark.memory.offHeap.size`|0M| The absolute amount of memory which can be used for off-heap allocation |[Client.scala#L121](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L121)|
+
+
+ 
 
 in *spark-defaults.conf*:
 
@@ -154,13 +175,7 @@ in [org/apache/spark/deploy/yarn/config.scala](https://github.com/apache/spark/b
 
 in [org/apache/spark/internal/config/package.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala)
 ```java
-  private[spark] val MEMORY_OFFHEAP_ENABLED = ConfigBuilder("spark.memory.offHeap.enabled")
-    .doc("If true, Spark will attempt to use off-heap memory for certain operations. " +
-      "If off-heap memory use is enabled, then spark.memory.offHeap.size must be positive.")
-    .version("1.6.0")
-    .withAlternative("spark.unsafe.offHeap")
-    .booleanConf
-    .createWithDefault(false)
+
 
   private[spark] val EXECUTOR_MIN_MEMORY_OVERHEAD =
     ConfigBuilder("spark.executor.minMemoryOverhead")
