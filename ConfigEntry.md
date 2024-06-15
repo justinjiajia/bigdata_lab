@@ -11,7 +11,7 @@
 
 `readString(reader)` ->  `reader.get(key)` -> `conf.get(key).map(substitute)`
 
--  If no such a `key`, return `None`; otherwise, return `Some(values.mkString(prependSeparator))`
+-  If no such a `key` (of type `String`), return `None`; otherwise, return `Some(values.mkString(prependSeparator))`
     
 
 
