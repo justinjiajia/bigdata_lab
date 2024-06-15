@@ -46,9 +46,9 @@ private[spark] class SparkSubmit extends Logging {
 
 - `parse(args.asJava)`: [`parse()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C1-L193C4) defined for the parent class `SparkSubmitOptionParser` parses and handles different type of command line options. 
 
-  - If the option name exists in a predefined two-level list (`opts`), 
+  - If an option name exists in a two-level list named [`opts`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L92), 
   [`handle()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L349C1-L473C4) 
-  assigns the option value to the corresponding variable declared in the beginning.
+  assigns its value to the corresponding variable declared at the [beginning](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L44C1-L86C50) of the class definition.
 
     ```scala
     override protected def handle(opt: String, value: String): Boolean = {
@@ -59,6 +59,10 @@ private[spark] class SparkSubmit extends Logging {
   
         case EXECUTOR_MEMORY =>
           executorMemory = value
+    
+        ...
+        case PROPERTIES_FILE =>
+          propertiesFile = value
         ...
     ```
  
@@ -70,10 +74,11 @@ private[spark] class SparkSubmit extends Logging {
             val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
             sparkProperties(confName) = confValue
       ```
-      where `sparkProperties` is an empty `HashMap[String, String]` initialized by this constructor.
+      where `sparkProperties` is an empty `HashMap[String, String]` [initialized by this constructor](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L77).
   
    - After `parse()` completes, `sparkProperties` is already filled with properties specified through `--conf`
 
+   - The constants used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) are defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39)
 
 - [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) 
 
