@@ -39,17 +39,19 @@ private[spark] class SparkSubmit extends Logging {
     new SparkSubmitArguments(args.toImmutableArraySeq)
   }
 
-```  
+```
+
+<br>
 
 ### [*scala/org/apache/spark/deploy/SparkSubmitArguments.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala)
 
-`SparkSubmitArguments` is derived from class [`SparkSubmitArgumentsParser`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/launcher/SparkSubmitArgumentsParser.scala), which makes the Java class [`SparkSubmitOptionParser`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#) visible for Spark code
+`SparkSubmitArguments` is derived from class [`SparkSubmitArgumentsParser`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/launcher/SparkSubmitArgumentsParser.scala), which makes the Java class [`SparkSubmitOptionParser`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java) visible for Spark code
 
 - `parse(args.asJava)`: [`parse()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C1-L193C4) defined for the parent class `SparkSubmitOptionParser` parses and handles different type of command line options. 
 
   - If an option name exists in a two-level list named [`opts`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L92), 
   [`handle()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L349C1-L473C4) 
-  assigns its value to the corresponding variable declared at the [beginning](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L44C1-L86C50) of the definition of class `SparkSubmitArguments`.
+  assigns its value to the corresponding field declared at the [beginning](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L44C1-L86C50) of the definition of class `SparkSubmitArguments`.
 
     ```scala
     override protected def handle(opt: String, value: String): Boolean = {
@@ -87,20 +89,22 @@ private[spark] class SparkSubmit extends Logging {
   - `loadPropertiesFromFile(propertiesFile)`: When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
   
   
-  - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))`: When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`. Note: `env: Map[String, String] = sys.env` is part of the signature of the primary constructor of class `SparkSubmitArguments`
+  - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))`: When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`. Note: `env: Map[String, String] = sys.env` is in the signature of the primary constructor of class `SparkSubmitArguments`
   
   
-  - `loadPropertiesFromFile(filePath: String)` only addes a new entry to `sparkProperties`
+  - [`loadPropertiesFromFile(filePath: String)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L109) only adds new entries to `sparkProperties`
       ```scala
+      ...
       val properties = Utils.getPropertiesFromFile(filePath)
       properties.foreach { case (k, v) =>
             if (!sparkProperties.contains(k)) {
               sparkProperties(k) = v
             }
       }
+      ...
       ```
   
-  - so the precedence is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
+  - In summary, the precedence of property setting is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
 
 
 
@@ -117,8 +121,9 @@ private[spark] class SparkSubmit extends Logging {
           .orElse(env.get("SPARK_EXECUTOR_CORES"))
           .orNull
     ```
+  - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in *package.scala*(https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `""` and `""`.
     
-- Then validate all variables. Note: some variables can hold a `null` value. E.g., executorMemory could be `null` if it is not configured by `--executor-memory`, `--conf spark.executor.memory`,  the properties files, and the relevant environment variable.
+- [validateArguments()](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L241C2-L249C4): validate all fields. Note: some fields can hold a `null` value. E.g., `executorMemory` could be `null` if it is not configured by `--executor-memory`, `--conf spark.executor.memory`,  the properties files, and the relevant environment variable.
 
 
 ```scala
@@ -231,18 +236,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
     }
   }
 
-  /**
-   * Remove keys that don't start with "spark." from `sparkProperties`.
-   */
-  private def ignoreNonSparkProperties(): Unit = {
-    sparkProperties.keys.foreach { k =>
-      if (!k.startsWith("spark.")) {
-        sparkProperties -= k
-        logWarning(log"Ignoring non-Spark config property: ${MDC(CONFIG, k)}")
-      }
-    }
-  }
-
+  ...
   /**
    * Load arguments from environment variables, Spark properties etc.
    */
