@@ -185,6 +185,11 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
 <br>
 
 ```scala
+...
+import org.apache.spark.deploy.yarn.config._
+...
+import org.apache.spark.internal.config._
+...
   ...
   private val amMemoryOverhead = {
     val amMemoryOverheadEntry = if (isClusterMode) DRIVER_MEMORY_OVERHEAD else AM_MEMORY_OVERHEAD
@@ -210,6 +215,8 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
 
 ```
 
+-  Some capitalized names, such as `EXECUTOR_MEMORY`, `DRIVER_MEMORY_OVERHEAD`, `DRIVER_CORES`, etc., are `ConfigEntry` instances created in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala), while others, such as `AM_MEMORY_OVERHEAD`, `AM_CORES`, etc., are `ConfigEntry` instances created in [*config.scala*](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala)
+  
 - `sparkConf` is in [the signature of the primary constructor](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L66C1-L70C20) of class `Client` 
 
 - `sparkConf.get(entry)`
@@ -313,6 +320,8 @@ There are multiple `ConfigEntry` classes.
  
 ### [*scala/org/apache/spark/internal/config/package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala)
 
+<br>
+
 Create application-related configuration entries
 
 ```scala
@@ -372,7 +381,9 @@ Create application-related configuration entries
 <br>
 
 
-### [scala/org/apache/spark/deploy/yarn/config.scala](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala)
+### [*scala/org/apache/spark/deploy/yarn/config.scala*](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala)
+
+<br>
 
 Create configuration entries specific to Spark on YARN.
 
