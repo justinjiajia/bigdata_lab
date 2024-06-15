@@ -351,6 +351,7 @@ Create application-related configuration entries
 
 |Entry Name| Key String | Type | Default |
 |--|--|--|--|
+|`SUBMIT_DEPLOY_MODE`| `"spark.submit.deployMode"`| `ConfigEntryWithDefault`| `"client"` |
 |`DRIVER_CORES`| `"spark.driver.cores"`| `ConfigEntryWithDefault`| `1` |
 |`DRIVER_MEMORY`| `"spark.driver.memory"`| `ConfigEntryWithDefault`| `"1g"` |
 |`DRIVER_MEMORY_OVERHEAD`| `"spark.driver.memoryOverhead"`| `OptionalConfigEntry`|  | 
