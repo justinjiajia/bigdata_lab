@@ -78,13 +78,11 @@ private[spark] class SparkSubmit extends Logging {
 - [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) 
 
 
-  - When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
+  - `loadPropertiesFromFile(propertiesFile)`: When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
   
-      - `loadPropertiesFromFile(propertiesFile)`
   
-  - When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`
+  - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))`: When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`. Note: `env: Map[String, String] = sys.env` is part of the signature of the primary constructor of class `SparkSubmitArguments`
   
-      - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))` 
   
   - `loadPropertiesFromFile(filePath: String)` only addes a new entry to `sparkProperties`
       ```scala
@@ -99,20 +97,20 @@ private[spark] class SparkSubmit extends Logging {
   - so the precedence is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
 
 
-`loadEnvironmentArguments()`: * Load arguments from environment variables, Spark properties etc.
 
-E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from `Map[String, String] env` that maintains the environment variables (see the signature of the primary constructor `private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, String] = sys.env)`)
+- `loadEnvironmentArguments()`:
 
-```
-    executorMemory = Option(executorMemory)
-      .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
-      .orElse(env.get("SPARK_EXECUTOR_MEMORY"))
-      .orNull
-    executorCores = Option(executorCores)
-      .orElse(sparkProperties.get(config.EXECUTOR_CORES.key))
-      .orElse(env.get("SPARK_EXECUTOR_CORES"))
-      .orNull
-```
+  - Load arguments from environment variables, Spark properties etc. E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
+    ```scala
+        executorMemory = Option(executorMemory)
+          .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
+          .orElse(env.get("SPARK_EXECUTOR_MEMORY"))
+          .orNull
+        executorCores = Option(executorCores)
+          .orElse(sparkProperties.get(config.EXECUTOR_CORES.key))
+          .orElse(env.get("SPARK_EXECUTOR_CORES"))
+          .orNull
+    ```
 
 
 
