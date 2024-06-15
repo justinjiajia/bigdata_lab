@@ -50,53 +50,53 @@ private[spark] class SparkSubmit extends Logging {
   [`handle()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L349C1-L473C4) 
   assigns the option value to the corrsponding variable declared in the beginning
 
-  ```scala
-  override protected def handle(opt: String, value: String): Boolean = {
-    opt match {
-      ...
-      case EXECUTOR_CORES =>
-        executorCores = value
-
-      case EXECUTOR_MEMORY =>
-        executorMemory = value
-      ...
-  ```
+    ```scala
+    override protected def handle(opt: String, value: String): Boolean = {
+      opt match {
+        ...
+        case EXECUTOR_CORES =>
+          executorCores = value
+  
+        case EXECUTOR_MEMORY =>
+          executorMemory = value
+        ...
+    ```
  
    - For options defined via `--conf` or `-c`, e.g., `--conf spark.eventLog.enabled=false
       --conf "spark.executor.extraJavaOptions=-XX:+PrintGCDetails -XX:+PrintGCTimeStamps"`, the processing defined in `handle()` is a bit different:
     
-    ```scala
-        case CONF =>
-          val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
-          sparkProperties(confName) = confValue
-    ```
-    where `sparkProperties` is an empty `HashMap[String, String]` initialized by this constructor.
+      ```scala
+          case CONF =>
+            val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
+            sparkProperties(confName) = confValue
+      ```
+      where `sparkProperties` is an empty `HashMap[String, String]` initialized by this constructor.
   
    - After `parse()` completes, `sparkProperties` is already filled with properties specified through `--conf`
 
 
-- `mergeDefaultSparkProperties()` defined in [SparkSubmitArguments.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4)
+- [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) 
 
 
-- When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
-
-    - `loadPropertiesFromFile(propertiesFile)`
-
-- When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`
-
-    - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))` 
-
-- `loadPropertiesFromFile(filePath: String)` only addes a new entry to `sparkProperties`
-  ```scala
-  val properties = Utils.getPropertiesFromFile(filePath)
-  properties.foreach { case (k, v) =>
-        if (!sparkProperties.contains(k)) {
-          sparkProperties(k) = v
-        }
-  }
-  ```
-
-- so the precedence is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
+  - When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
+  
+      - `loadPropertiesFromFile(propertiesFile)`
+  
+  - When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`
+  
+      - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))` 
+  
+  - `loadPropertiesFromFile(filePath: String)` only addes a new entry to `sparkProperties`
+      ```scala
+      val properties = Utils.getPropertiesFromFile(filePath)
+      properties.foreach { case (k, v) =>
+            if (!sparkProperties.contains(k)) {
+              sparkProperties(k) = v
+            }
+      }
+      ```
+  
+  - so the precedence is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
 
 
 `loadEnvironmentArguments()`: * Load arguments from environment variables, Spark properties etc.
