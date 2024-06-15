@@ -390,9 +390,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
 
 `loadEnvironmentArguments()`: * Load arguments from environment variables, Spark properties etc.
 
-E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, 
-
-`private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, String] = sys.env)`
+E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from `Map[String, String] env` that maintains the environment variables (see the signature of the primary constructor `private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, String] = sys.env)`)
 
 ```
     executorMemory = Option(executorMemory)
