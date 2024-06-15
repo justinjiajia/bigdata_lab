@@ -48,7 +48,7 @@ private[spark] class SparkSubmit extends Logging {
 
   - If the option name exists in a predefined two-level list (`opts`), 
   [`handle()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L349C1-L473C4) 
-  assigns the option value to the corrsponding variable declared in the beginning
+  assigns the option value to the corresponding variable declared in the beginning.
 
     ```scala
     override protected def handle(opt: String, value: String): Boolean = {
@@ -98,9 +98,9 @@ private[spark] class SparkSubmit extends Logging {
 
 
 
-- `loadEnvironmentArguments()`:
+- [`loadEnvironmentArguments()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L158C1-L239C4): Load arguments from environment variables, Spark properties etc.
 
-  - Load arguments from environment variables, Spark properties etc. E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
+  - E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
     ```scala
         executorMemory = Option(executorMemory)
           .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
@@ -111,7 +111,8 @@ private[spark] class SparkSubmit extends Logging {
           .orElse(env.get("SPARK_EXECUTOR_CORES"))
           .orNull
     ```
-
+    
+- Then validate all variables. Note: some variables can hold a `null` value. E.g., executorMemory could be `null` if it is not configured by `--executor-memory`, `--conf spark.executor.memory`,  the properties files, and the relevant environment variable.
 
 
 ```scala
