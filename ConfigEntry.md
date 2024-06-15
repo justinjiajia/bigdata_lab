@@ -1,6 +1,7 @@
 
 ###  [*scala/org/apache/spark/deploy/SparkSubmit.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
 
+<br>
 
 - `val appArgs = parseArguments(args)` -> `new SparkSubmitArguments(args.toImmutableArraySeq)`
 
@@ -45,6 +46,8 @@ private[spark] class SparkSubmit extends Logging {
 
 ### [*scala/org/apache/spark/deploy/SparkSubmitArguments.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala)
 
+<br>
+
 `SparkSubmitArguments` is derived from class [`SparkSubmitArgumentsParser`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/launcher/SparkSubmitArgumentsParser.scala), which makes the Java class [`SparkSubmitOptionParser`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java) visible for Spark code
 
 - `parse(args.asJava)`: [`parse()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C1-L193C4) defined for the parent class `SparkSubmitOptionParser` parses and handles different type of command line options. 
@@ -81,7 +84,7 @@ private[spark] class SparkSubmit extends Logging {
   
    - After `parse()` completes, `sparkProperties` is already filled with properties specified through `--conf`
 
-   - The constants used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) are defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39)
+   - The constants used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) are defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39C3-L80C44)
 
 - [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) 
 
@@ -89,7 +92,7 @@ private[spark] class SparkSubmit extends Logging {
   - `loadPropertiesFromFile(propertiesFile)`: When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
   
   
-  - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))`: When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`. Note: `env: Map[String, String] = sys.env` is in the signature of the primary constructor of class `SparkSubmitArguments`
+  - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))`: When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`. Note: `env: Map[String, String] = sys.env` is in [the signature of the primary constructor](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L42) of class `SparkSubmitArguments`
   
   
   - [`loadPropertiesFromFile(filePath: String)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L109) only adds new entries to `sparkProperties`
@@ -112,16 +115,17 @@ private[spark] class SparkSubmit extends Logging {
 
   - E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
     ```scala
-        executorMemory = Option(executorMemory)
-          .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
-          .orElse(env.get("SPARK_EXECUTOR_MEMORY"))
-          .orNull
-        executorCores = Option(executorCores)
-          .orElse(sparkProperties.get(config.EXECUTOR_CORES.key))
-          .orElse(env.get("SPARK_EXECUTOR_CORES"))
-          .orNull
+    ...
+    executorMemory = Option(executorMemory)
+      .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
+      .orElse(env.get("SPARK_EXECUTOR_MEMORY"))
+      .orNull
+    executorCores = Option(executorCores)
+      .orElse(sparkProperties.get(config.EXECUTOR_CORES.key))
+      .orElse(env.get("SPARK_EXECUTOR_CORES"))
+      .orNull
     ```
-  - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in *package.scala*(https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `""` and `""`.
+  - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`.
     
 - [validateArguments()](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L241C2-L249C4): validate all fields. Note: some fields can hold a `null` value. E.g., `executorMemory` could be `null` if it is not configured by `--executor-memory`, `--conf spark.executor.memory`,  the properties files, and the relevant environment variable.
 
@@ -144,42 +148,9 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
   var totalExecutorCores: String = null
   var propertiesFile: String = null
   private var loadSparkDefaults: Boolean = false
-  var driverMemory: String = null
-  var driverExtraClassPath: String = null
-  var driverExtraLibraryPath: String = null
-  var driverExtraJavaOptions: String = null
-  var queue: String = null
-  var numExecutors: String = null
-  var files: String = null
-  var archives: String = null
-  var mainClass: String = null
-  var primaryResource: String = null
-  var name: String = null
-  var childArgs: ArrayBuffer[String] = new ArrayBuffer[String]()
-  var jars: String = null
-  var packages: String = null
-  var repositories: String = null
-  var ivyRepoPath: String = null
-  var ivySettingsPath: Option[String] = None
-  var packagesExclusions: String = null
-  var verbose: Boolean = false
-  var isPython: Boolean = false
-  var pyFiles: String = null
-  var isR: Boolean = false
-  var action: SparkSubmitAction = null
+  ...
   val sparkProperties: HashMap[String, String] = new HashMap[String, String]()
-  var proxyUser: String = null
-  var principal: String = null
-  var keytab: String = null
-  private var dynamicAllocationEnabled: Boolean = false
-  // Standalone cluster mode only
-  var supervise: Boolean = false
-  var driverCores: String = null
-  var submissionToKill: String = null
-  var submissionToRequestStatusFor: String = null
-  var useRest: Boolean = false // used internally
-
-  override protected def logName: String = classOf[SparkSubmitArguments].getName
+  ...
 
   // Set parameters from command line arguments
   parse(args.asJava)
@@ -195,389 +166,14 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
 
   validateArguments()
 
-  /**
-   * Load properties from the file with the given path into `sparkProperties`.
-   * No-op if the file path is null
-   */
-  private def loadPropertiesFromFile(filePath: String): Unit = {
-    if (filePath != null) {
-      if (verbose) {
-        logInfo(log"Using properties file: ${MDC(PATH, filePath)}")
-      }
-      val properties = Utils.getPropertiesFromFile(filePath)
-      properties.foreach { case (k, v) =>
-        if (!sparkProperties.contains(k)) {
-          sparkProperties(k) = v
-        }
-      }
-      // Property files may contain sensitive information, so redact before printing
-      if (verbose) {
-        Utils.redact(properties).foreach { case (k, v) =>
-          logInfo(log"Adding default property: ${MDC(KEY, k)}=${MDC(VALUE, v)}")
-        }
-      }
-    }
-  }
-
-  /**
-   * Merge values from the default properties file with those specified through --conf.
-   * When this is called, `sparkProperties` is already filled with configs from the latter.
-   */
-  private def mergeDefaultSparkProperties(): Unit = {
-    // Honor --conf before the specified properties file and defaults file
-    loadPropertiesFromFile(propertiesFile)
-
-    // Also load properties from `spark-defaults.conf` if they do not exist in the properties file
-    // and --conf list when:
-    //   - no input properties file is specified
-    //   - input properties file is specified, but `--load-spark-defaults` flag is set
-    if (propertiesFile == null || loadSparkDefaults) {
-      loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))
-    }
-  }
-
   ...
-  /**
-   * Load arguments from environment variables, Spark properties etc.
-   */
-  private def loadEnvironmentArguments(): Unit = {
-    maybeMaster = maybeMaster
-      .orElse(sparkProperties.get("spark.master"))
-      .orElse(env.get("MASTER"))
-    maybeRemote = maybeRemote
-      .orElse(sparkProperties.get("spark.remote"))
-      .orElse(env.get("SPARK_REMOTE"))
-
-    driverExtraClassPath = Option(driverExtraClassPath)
-      .orElse(sparkProperties.get(config.DRIVER_CLASS_PATH.key))
-      .orNull
-    driverExtraJavaOptions = Option(driverExtraJavaOptions)
-      .orElse(sparkProperties.get(config.DRIVER_JAVA_OPTIONS.key))
-      .orNull
-    driverExtraLibraryPath = Option(driverExtraLibraryPath)
-      .orElse(sparkProperties.get(config.DRIVER_LIBRARY_PATH.key))
-      .orNull
-    driverMemory = Option(driverMemory)
-      .orElse(sparkProperties.get(config.DRIVER_MEMORY.key))
-      .orElse(env.get("SPARK_DRIVER_MEMORY"))
-      .orNull
-    driverCores = Option(driverCores)
-      .orElse(sparkProperties.get(config.DRIVER_CORES.key))
-      .orNull
-    executorMemory = Option(executorMemory)
-      .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
-      .orElse(env.get("SPARK_EXECUTOR_MEMORY"))
-      .orNull
-    executorCores = Option(executorCores)
-      .orElse(sparkProperties.get(config.EXECUTOR_CORES.key))
-      .orElse(env.get("SPARK_EXECUTOR_CORES"))
-      .orNull
-    totalExecutorCores = Option(totalExecutorCores)
-      .orElse(sparkProperties.get(config.CORES_MAX.key))
-      .orNull
-    name = Option(name).orElse(sparkProperties.get("spark.app.name")).orNull
-    jars = Option(jars).orElse(sparkProperties.get(config.JARS.key)).orNull
-    files = Option(files).orElse(sparkProperties.get(config.FILES.key)).orNull
-    archives = Option(archives).orElse(sparkProperties.get(config.ARCHIVES.key)).orNull
-    pyFiles = Option(pyFiles).orElse(sparkProperties.get(config.SUBMIT_PYTHON_FILES.key)).orNull
-    ivyRepoPath = sparkProperties.get(config.JAR_IVY_REPO_PATH.key).orNull
-    ivySettingsPath = sparkProperties.get(config.JAR_IVY_SETTING_PATH.key)
-    packages = Option(packages).orElse(sparkProperties.get(config.JAR_PACKAGES.key)).orNull
-    packagesExclusions = Option(packagesExclusions)
-      .orElse(sparkProperties.get(config.JAR_PACKAGES_EXCLUSIONS.key)).orNull
-    repositories = Option(repositories)
-      .orElse(sparkProperties.get(config.JAR_REPOSITORIES.key)).orNull
-    deployMode = Option(deployMode)
-      .orElse(sparkProperties.get(config.SUBMIT_DEPLOY_MODE.key))
-      .orElse(env.get("DEPLOY_MODE"))
-      .orNull
-    numExecutors = Option(numExecutors)
-      .getOrElse(sparkProperties.get(config.EXECUTOR_INSTANCES.key).orNull)
-    queue = Option(queue).orElse(sparkProperties.get("spark.yarn.queue")).orNull
-    keytab = Option(keytab)
-      .orElse(sparkProperties.get(config.KEYTAB.key))
-      .orElse(sparkProperties.get("spark.yarn.keytab"))
-      .orNull
-    principal = Option(principal)
-      .orElse(sparkProperties.get(config.PRINCIPAL.key))
-      .orElse(sparkProperties.get("spark.yarn.principal"))
-      .orNull
-    dynamicAllocationEnabled =
-      sparkProperties.get(DYN_ALLOCATION_ENABLED.key).exists("true".equalsIgnoreCase)
-
-    // In YARN mode, app name can be set via SPARK_YARN_APP_NAME (see SPARK-5222)
-    if (master.startsWith("yarn")) {
-      name = Option(name).orElse(env.get("SPARK_YARN_APP_NAME")).orNull
-    }
-
-    // Set name from main class if not given
-    name = Option(name).orElse(Option(mainClass)).orNull
-    if (name == null && primaryResource != null) {
-      name = new File(primaryResource).getName()
-    }
-
-    // Action should be SUBMIT unless otherwise specified
-    action = Option(action).getOrElse(SUBMIT)
-  }
-
-  ...
-  /** Fill in values by parsing user options. */
-  override protected def handle(opt: String, value: String): Boolean = {
-    opt match {
-      case NAME =>
-        name = value
-
-      case MASTER =>
-        maybeMaster = Option(value)
-
-      case REMOTE =>
-        maybeRemote = Option(value)
-
-      case CLASS =>
-        mainClass = value
-
-      case DEPLOY_MODE =>
-        if (value != "client" && value != "cluster") {
-          error("--deploy-mode must be either \"client\" or \"cluster\"")
-        }
-        deployMode = value
-
-      case NUM_EXECUTORS =>
-        numExecutors = value
-
-      case TOTAL_EXECUTOR_CORES =>
-        totalExecutorCores = value
-
-      case EXECUTOR_CORES =>
-        executorCores = value
-
-      case EXECUTOR_MEMORY =>
-        executorMemory = value
-
-      case DRIVER_MEMORY =>
-        driverMemory = value
-
-      case DRIVER_CORES =>
-        driverCores = value
-
-      case DRIVER_CLASS_PATH =>
-        driverExtraClassPath = value
-
-      case DRIVER_JAVA_OPTIONS =>
-        driverExtraJavaOptions = value
-
-      case DRIVER_LIBRARY_PATH =>
-        driverExtraLibraryPath = value
-
-      case PROPERTIES_FILE =>
-        propertiesFile = value
-
-      case LOAD_SPARK_DEFAULTS =>
-        loadSparkDefaults = true
-
-      case KILL_SUBMISSION =>
-        submissionToKill = value
-        if (action != null) {
-          error(s"Action cannot be both $action and $KILL.")
-        }
-        action = KILL
-
-      case STATUS =>
-        submissionToRequestStatusFor = value
-        if (action != null) {
-          error(s"Action cannot be both $action and $REQUEST_STATUS.")
-        }
-        action = REQUEST_STATUS
-
-      case SUPERVISE =>
-        supervise = true
-
-      case QUEUE =>
-        queue = value
-
-      case FILES =>
-        files = Utils.resolveURIs(value)
-
-      case PY_FILES =>
-        pyFiles = Utils.resolveURIs(value)
-
-      case ARCHIVES =>
-        archives = Utils.resolveURIs(value)
-
-      case JARS =>
-        jars = Utils.resolveURIs(value)
-
-      case PACKAGES =>
-        packages = value
-
-      case PACKAGES_EXCLUDE =>
-        packagesExclusions = value
-
-      case REPOSITORIES =>
-        repositories = value
-
-      case CONF =>
-        val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
-        sparkProperties(confName) = confValue
-
-      case PROXY_USER =>
-        proxyUser = value
-
-      case PRINCIPAL =>
-        principal = value
-
-      case KEYTAB =>
-        keytab = value
-
-      case HELP =>
-        printUsageAndExit(0)
-
-      case VERBOSE =>
-        verbose = true
-
-      case VERSION =>
-        action = SparkSubmitAction.PRINT_VERSION
-
-      case USAGE_ERROR =>
-        printUsageAndExit(1)
-
-      case _ =>
-        error(s"Unexpected argument '$opt'.")
-    }
-    action != SparkSubmitAction.PRINT_VERSION
-  }
+}
 
 ```
 
 
 
 
-
-
-https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java
-
-```java
-/**
- * Parser for spark-submit command line options.
- * <p>
- * This class encapsulates the parsing code for spark-submit command line options, so that there
- * is a single list of options that needs to be maintained (well, sort of, but it makes it harder
- * to break things).
- */
-class SparkSubmitOptionParser {
-
-  // The following constants define the "main" name for the available options. They're defined
-  // to avoid copy & paste of the raw strings where they're needed.
-  //
-  // The fields are not static so that they're exposed to Scala code that uses this class. See
-  // SparkSubmitArguments.scala. That is also why this class is not abstract - to allow code to
-  // easily use these constants without having to create dummy implementations of this class.
-  protected final String CLASS = "--class";
-  protected final String CONF = "--conf";
-  protected final String DEPLOY_MODE = "--deploy-mode";
-  protected final String DRIVER_CLASS_PATH = "--driver-class-path";
-  protected final String DRIVER_DEFAULT_CLASS_PATH = "--driver-default-class-path";
-  protected final String DRIVER_CORES = "--driver-cores";
-  protected final String DRIVER_JAVA_OPTIONS =  "--driver-java-options";
-  protected final String DRIVER_LIBRARY_PATH = "--driver-library-path";
-  protected final String DRIVER_MEMORY = "--driver-memory";
-  protected final String EXECUTOR_MEMORY = "--executor-memory";
-  protected final String FILES = "--files";
-  protected final String JARS = "--jars";
-  protected final String KILL_SUBMISSION = "--kill";
-  protected final String MASTER = "--master";
-  protected final String REMOTE = "--remote";
-  protected final String NAME = "--name";
-  protected final String PACKAGES = "--packages";
-  protected final String PACKAGES_EXCLUDE = "--exclude-packages";
-  protected final String PROPERTIES_FILE = "--properties-file";
-  protected final String LOAD_SPARK_DEFAULTS = "--load-spark-defaults";
-  protected final String PROXY_USER = "--proxy-user";
-  protected final String PY_FILES = "--py-files";
-  protected final String REPOSITORIES = "--repositories";
-  protected final String STATUS = "--status";
-  protected final String TOTAL_EXECUTOR_CORES = "--total-executor-cores";
-
-  // Options that do not take arguments.
-  protected final String HELP = "--help";
-  protected final String SUPERVISE = "--supervise";
-  protected final String USAGE_ERROR = "--usage-error";
-  protected final String VERBOSE = "--verbose";
-  protected final String VERSION = "--version";
-
-  // Standalone-only options.
-
-  // YARN-only options.
-  protected final String ARCHIVES = "--archives";
-  protected final String EXECUTOR_CORES = "--executor-cores";
-  protected final String KEYTAB = "--keytab";
-  protected final String NUM_EXECUTORS = "--num-executors";
-  protected final String PRINCIPAL = "--principal";
-  protected final String QUEUE = "--queue";
-
-  ...
-
-  /**
-   * Parse a list of spark-submit command line options.
-   * <p>
-   * See SparkSubmitArguments.scala for a more formal description of available options.
-   *
-   * @throws IllegalArgumentException If an error is found during parsing.
-   */
-  protected final void parse(List<String> args) {
-    Pattern eqSeparatedOpt = Pattern.compile("(--[^=]+)=(.+)");
-
-    int idx = 0;
-    for (idx = 0; idx < args.size(); idx++) {
-      String arg = args.get(idx);
-      String value = null;
-
-      Matcher m = eqSeparatedOpt.matcher(arg);
-      if (m.matches()) {
-        arg = m.group(1);
-        value = m.group(2);
-      }
-
-      // Look for options with a value.
-      String name = findCliOption(arg, opts);
-      if (name != null) {
-        if (value == null) {
-          if (idx == args.size() - 1) {
-            throw new IllegalArgumentException(
-                String.format("Missing argument for option '%s'.", arg));
-          }
-          idx++;
-          value = args.get(idx);
-        }
-        if (!handle(name, value)) {
-          break;
-        }
-        continue;
-      }
-
-      // Look for a switch.
-      name = findCliOption(arg, switches);
-      if (name != null) {
-        if (!handle(name, null)) {
-          break;
-        }
-        continue;
-      }
-
-      if (!handleUnknown(arg)) {
-        break;
-      }
-    }
-
-    if (idx < args.size()) {
-      idx++;
-    }
-    handleExtraArgs(args.subList(idx, args.size()));
-  }
-
-
-
-```
 
 `sparkConf.get(entry)` in *Client.scala* -> `entry.readFrom(reader)` in *SparkConf.scala*
 
