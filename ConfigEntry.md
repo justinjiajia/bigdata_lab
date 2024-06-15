@@ -178,29 +178,131 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
 ```
 
 
+<br>
 
+### [*scala/org/apache/spark/deploy/yarn/Client.scala*](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala)
 
+<br>
 
-`sparkConf.get(entry)` in *Client.scala* -> `entry.readFrom(reader)` in *SparkConf.scala*
+```scala
+  ...
+  private val amMemoryOverhead = {
+    val amMemoryOverheadEntry = if (isClusterMode) DRIVER_MEMORY_OVERHEAD else AM_MEMORY_OVERHEAD
+    sparkConf.get(amMemoryOverheadEntry).getOrElse(
+      math.max((amMemoryOverheadFactor * amMemory).toLong,
+        driverMinimumMemoryOverhead)).toInt
+  }
 
-- if `entry` is of type `OptionalConfigEntry`: `entry.readFrom(reader)` -> `readString(reader).map(rawValueConverter)`
+  private val amCores = if (isClusterMode) {
+    sparkConf.get(DRIVER_CORES)
+  } else {
+    sparkConf.get(AM_CORES)
+  }
+
+  // Executor related configurations
+  private val executorMemory = sparkConf.get(EXECUTOR_MEMORY)
+  // Executor offHeap memory in MiB.
+  protected val executorOffHeapMemory = Utils.executorOffHeapMemorySizeAsMb(sparkConf)
+
+  private val executorMemoryOvereadFactor = sparkConf.get(EXECUTOR_MEMORY_OVERHEAD_FACTOR)
+  private val minMemoryOverhead = sparkConf.get(EXECUTOR_MIN_MEMORY_OVERHEAD)
+  ...
+
+```
+
+- `sparkConf` is in [the signature of the primary constructor](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L66C1-L70C20) of class `Client` 
+
+- `sparkConf.get(entry)`
+
+    -  `get[T](entry: ConfigEntry[T])` is defined in [*SparkConf.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/SparkConf.scala#L255C3-L264C4) as
+      ```scala
+      private[spark] def get[T](entry: ConfigEntry[T]): T = {
+        entry.readFrom(reader)
+      }
+      ```
+    - `reader` is defined in [*SparkConf.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/SparkConf.scala#L65C3-L69C4) as follows:
+      ```scala
+      @transient private lazy val reader: ConfigReader = {
+          val _reader = new ConfigReader(new SparkConfigProvider(settings))
+          _reader.bindEnv((key: String) => Option(getenv(key)))
+          _reader
+      }
+      ```
+
+    - class `ConfigReader` is defined in [*ConfigReader.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigReader.scala)
+      ```scala
+      private[spark] class ConfigReader(conf: ConfigProvider) {
   
-- If `entry` is of type `ConfigEntryWithDefault`: `entry.readFrom(reader)` -> `readString(reader).map(valueConverter).getOrElse(_defaultValue)`
+        def this(conf: JMap[String, String]) = this(new MapProvider(conf))
+        ...
+      ```
 
-- Note both `rawValueConverter` and `_defaultValue` are names used in the signatures of the respective classes 
+<br>
 
-- `reader` is defined in *SparkConf.scala* as follows:
-    ```scala
-    @transient private lazy val reader: ConfigReader = {
-        val _reader = new ConfigReader(new SparkConfigProvider(settings))
-        _reader.bindEnv((key: String) => Option(getenv(key)))
-        _reader
+
+### [*scala/org/apache/spark/internal/config/ConfigEntry.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigEntry.scala)
+
+
+
+<br>
+
+There are multiple `ConfigEntry` classes.
+  
+- If `entry` is of type `ConfigEntryWithDefault`, [`readFrom(reader)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigEntry.scala#L140C3-L142C4) is defined as
+  ```scala
+  def readFrom(reader: ConfigReader): T = {
+    readString(reader).map(valueConverter).getOrElse(_defaultValue)
+  }
+  ``` 
+
+
+- If `entry` is of type `OptionalConfigEntry`: [`readFrom(reader)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigEntry.scala#L238C3-L240C4) is defined as:
+  ```scala
+  override def readFrom(reader: ConfigReader): Option[T] = {
+    readString(reader).map(rawValueConverter)
+  }
+  ```
+  
+- Both `rawValueConverter` and `_defaultValue` are fields of a `ConfigEntry` instance.
+
+- `readString(reader)`:  [readString(reader: ConfigReader)](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigEntry.scala#L91C3-L101C4) defined in *ConfigEntry.scala*
+  ```scala
+  protected def readString(reader: ConfigReader): Option[String] = {
+    val values = Seq(
+      prependedKey.flatMap(reader.get(_)),
+      alternatives.foldLeft(reader.get(key))((res, nextKey) => res.orElse(reader.get(nextKey)))
+    ).flatten
+    if (values.nonEmpty) {
+      Some(values.mkString(prependSeparator))
+    } else {
+      None
     }
+  }
+
+- `key: String, prependedKey`: Option[String], ..., alternatives: List[String]` are present in the signature of each ConfigEntry class
+
+- The `alternatives` field is a list of strings that can be expanded with [`withAlternative(key: String)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigBuilder.scala#L245C3-L248C4)
+
+- The `prependedKey` field can be assigned an `Option[String]` with [`withPrepended(key: String, separator: String = " ")`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigBuilder.scala#L239C3-L243C4) 
+
+- `reader.get(key)` inside `foldLeft(reader.get(key))`
+
+  - [`get(key: String)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigReader.scala#L79C3-L79C71) defined in *ConfigReader.scala* : read a configuration key from the default provider, and apply variable substitution
+    ```scala
+    def get(key: String): Option[String] = conf.get(key).map(substitute)
     ```
 
-`readString(reader)` defined in *ConfigEntry.scala* ->  `reader.get(key)` defined in *ConfigReader.scala* -> `conf.get(key).map(substitute)`
+- If `values.nonEmpty` is `true`, return `Some(values.mkString(prependSeparator))` ; otherwise, return `None`
 
--  If no such a `key` (of type `String`), return `None`; otherwise, return `Some(values.mkString(prependSeparator))`
+<br>
+
+
+### [*scala/org/apache/spark/deploy/yarn/Client.scala*](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala)
+
+<br>
+ 
+
+
     
 
 
@@ -236,7 +338,7 @@ Create application-related configuration entries
     ...
 ```
 
-> Variables defined in [java/org/apache/spark/launcher/SparkLauncher.java](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java), e.g., `DRIVER_MEMORY`, hold corresponding string values.
+> Constants defined in [java/org/apache/spark/launcher/SparkLauncher.java](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39C3-L80C44) hold corresponding string values, e.g., `public static final String DRIVER_MEMORY = "spark.driver.memory";`.
 
 |Entry Name| Key String | Type | Default |
 |--|--|--|--|
@@ -287,19 +389,7 @@ Create configuration entries specific to Spark on YARN.
 
 
 
-<br>
 
-### [*scala/org/apache/spark/deploy/yarn/Client.scala*](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala)
-
-```scala
-  ...
-  private val amMemoryOverhead = {
-    val amMemoryOverheadEntry = if (isClusterMode) DRIVER_MEMORY_OVERHEAD else AM_MEMORY_OVERHEAD
-    sparkConf.get(amMemoryOverheadEntry).getOrElse(
-      math.max((amMemoryOverheadFactor * amMemory).toLong,
-        driverMinimumMemoryOverhead)).toInt
-  }
-```
 
 <br>
 
