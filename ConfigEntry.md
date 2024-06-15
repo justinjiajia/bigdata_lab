@@ -13,7 +13,7 @@
     }
   }
   ```
-  put all properties in `sparkProperties` into a `SparkConf` instance
+  It puts all properties contained in `sparkProperties` into a `SparkConf` instance.
   
 ```
 /**
