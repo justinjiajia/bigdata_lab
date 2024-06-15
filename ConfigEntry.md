@@ -217,7 +217,7 @@ import org.apache.spark.internal.config._
 
 -  Some capitalized names, such as `EXECUTOR_MEMORY`, `DRIVER_MEMORY_OVERHEAD`, `DRIVER_CORES`, etc., are `ConfigEntry` instances created in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala), while others, such as `AM_MEMORY_OVERHEAD`, `AM_CORES`, etc., are `ConfigEntry` instances created in [*config.scala*](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/config.scala)
   
-- `sparkConf` is in [the signature of the primary constructor](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L66C1-L70C20) of class `Client` 
+- `sparkConf` is present in [the signature of the primary constructor](https://github.com/apache/spark/blob/master/resource-managers/yarn/src/main/scala/org/apache/spark/deploy/yarn/Client.scala#L66C1-L70C20) of class `Client` 
 
 - `sparkConf.get(entry)`
 
