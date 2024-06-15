@@ -1,6 +1,120 @@
 
+###  [*scala/org/apache/spark/deploy/SparkSubmit.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
 
-https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala
+
+- `val appArgs = parseArguments(args)` -> `new SparkSubmitArguments(args.toImmutableArraySeq)`
+
+- `val sparkConf = appArgs.toSparkConf()`: `toSparkConf()` defined for class `SparkSubmitArguments` in *SparkSubmitArguments.scala*
+  ```scala
+  private[deploy] def toSparkConf(sparkConf: Option[SparkConf] = None): SparkConf = {
+    // either use an existing config or create a new empty one
+    sparkProperties.foldLeft(sparkConf.getOrElse(new SparkConf())) {
+      case (conf, (k, v)) => conf.set(k, v)
+    }
+  }
+  ```
+  put all properties in `sparkProperties` into a `SparkConf` instance
+  
+```
+/**
+ * Main gateway of launching a Spark application.
+ *
+ * This program handles setting up the classpath with relevant Spark dependencies and provides
+ * a layer over the different cluster managers and deploy modes that Spark supports.
+ */
+private[spark] class SparkSubmit extends Logging {
+
+  override protected def logName: String = classOf[SparkSubmit].getName
+
+  import DependencyUtils._
+  import SparkSubmit._
+
+  def doSubmit(args: Array[String]): Unit = {
+    val appArgs = parseArguments(args)
+    val sparkConf = appArgs.toSparkConf()
+    ... 
+  }
+
+  protected def parseArguments(args: Array[String]): SparkSubmitArguments = {
+    new SparkSubmitArguments(args.toImmutableArraySeq)
+  }
+
+```  
+
+### [*scala/org/apache/spark/deploy/SparkSubmitArguments.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala)
+
+
+- `parse(args.asJava)`: [`parse()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C1-L193C4) defined for the parent class `SparkSubmitOptionParser` parses and handles different type of command line options. 
+
+  - If the option name exists in a predefined two-level list (`opts`), 
+  [`handle()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L349C1-L473C4) 
+  assigns the option value to the corrsponding variable declared in the beginning
+
+  ```scala
+  override protected def handle(opt: String, value: String): Boolean = {
+    opt match {
+      ...
+      case EXECUTOR_CORES =>
+        executorCores = value
+
+      case EXECUTOR_MEMORY =>
+        executorMemory = value
+      ...
+  ```
+ 
+   - For options defined via `--conf` or `-c`, e.g., `--conf spark.eventLog.enabled=false
+      --conf "spark.executor.extraJavaOptions=-XX:+PrintGCDetails -XX:+PrintGCTimeStamps"`, the processing defined in `handle()` is a bit different:
+    
+    ```scala
+        case CONF =>
+          val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
+          sparkProperties(confName) = confValue
+    ```
+    where `sparkProperties` is an empty `HashMap[String, String]` initialized by this constructor.
+  
+   - After `parse()` completes, `sparkProperties` is already filled with properties specified through `--conf`
+
+
+- `mergeDefaultSparkProperties()` defined in [SparkSubmitArguments.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4)
+
+
+- When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
+
+    - `loadPropertiesFromFile(propertiesFile)`
+
+- When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`
+
+    - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))` 
+
+- `loadPropertiesFromFile(filePath: String)` only addes a new entry to `sparkProperties`
+  ```scala
+  val properties = Utils.getPropertiesFromFile(filePath)
+  properties.foreach { case (k, v) =>
+        if (!sparkProperties.contains(k)) {
+          sparkProperties(k) = v
+        }
+  }
+  ```
+
+- so the precedence is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
+
+
+`loadEnvironmentArguments()`: * Load arguments from environment variables, Spark properties etc.
+
+E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from `Map[String, String] env` that maintains the environment variables (see the signature of the primary constructor `private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, String] = sys.env)`)
+
+```
+    executorMemory = Option(executorMemory)
+      .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
+      .orElse(env.get("SPARK_EXECUTOR_MEMORY"))
+      .orNull
+    executorCores = Option(executorCores)
+      .orElse(sparkProperties.get(config.EXECUTOR_CORES.key))
+      .orElse(env.get("SPARK_EXECUTOR_CORES"))
+      .orNull
+```
+
+
 
 ```scala
 ...
@@ -336,72 +450,6 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
 
 ```
 
-
-`parse()` defined in [SparkSubmitOptionParser.java](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C1-L193C4)
-
-  - If the option name is in a predefined two-level list (`opts`), 
-  `handle()` defined in [SparkSubmitOptionParser.java](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L349C1-L473C4)
-  assigns the option value to the corrsponding variable declared in the beginning
-
-  ```
-      case EXECUTOR_CORES =>
-        executorCores = value
-
-      case EXECUTOR_MEMORY =>
-        executorMemory = value
-  ```
- 
- - For options defined via `--conf` or `-c`, e.g., `--conf spark.eventLog.enabled=false
-    --conf "spark.executor.extraJavaOptions=-XX:+PrintGCDetails -XX:+PrintGCTimeStamps"`, the processing defined in `handle()` is a bit different:
-  
-  ```
-        case CONF =>
-          val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
-          sparkProperties(confName) = confValue
-  ```
-  where `sparkProperties` is an empty `HashMap[String, String]` initially.
-
- - After `parse()`, `sparkProperties` is already filled with properties specified through `--conf`
-
-
-`mergeDefaultSparkProperties()` defined in [SparkSubmitArguments.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4)
-
-
-- When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
-
-    - `loadPropertiesFromFile(propertiesFile)`
-
-- When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`
-
-    - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))` 
-
-- `loadPropertiesFromFile(filePath: String)` only addes a new entry to `sparkProperties`
-  ```scala
-  val properties = Utils.getPropertiesFromFile(filePath)
-  properties.foreach { case (k, v) =>
-        if (!sparkProperties.contains(k)) {
-          sparkProperties(k) = v
-        }
-  }
-  ```
-
-- so the precedence is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
-
-
-`loadEnvironmentArguments()`: * Load arguments from environment variables, Spark properties etc.
-
-E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from `Map[String, String] env` that maintains the environment variables (see the signature of the primary constructor `private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, String] = sys.env)`)
-
-```
-    executorMemory = Option(executorMemory)
-      .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
-      .orElse(env.get("SPARK_EXECUTOR_MEMORY"))
-      .orNull
-    executorCores = Option(executorCores)
-      .orElse(sparkProperties.get(config.EXECUTOR_CORES.key))
-      .orElse(env.get("SPARK_EXECUTOR_CORES"))
-      .orNull
-```
 
 
 https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/launcher/SparkSubmitArgumentsParser.scala
