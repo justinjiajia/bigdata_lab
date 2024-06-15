@@ -1,5 +1,4 @@
-
-On an EMR instance
+ 
 
 ### *spark-submit* in */usr/lib/spark/bin*
 
@@ -27,6 +26,10 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 - `source "$(dirname "$0")"/find-spark-home`: `source` is a builtin command of the Bash shell. It reads and executes the code from *find-spark-home* under the same directory as *spark-submit* [$(dirname "$0")"/find-spark-home](https://stackoverflow.com/questions/54228196/bash-script-trying-to-get-path-of-script) 
 
 - `exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"`: `exec` is a builtin command of the Bash shell. It allows us to execute a command that completely replaces the current process. "$@" represents all the arguments passed to spark-submit.
+
+- `org.apache.spark.deploy.SparkSubmit` is defined in [scala/org/apache/spark/deploy/SparkSubmit.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
+
+
 
     <br>
 
