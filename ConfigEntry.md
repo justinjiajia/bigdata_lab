@@ -128,8 +128,12 @@ private[spark] class SparkSubmit extends Logging {
       .orNull
     ```
   - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`.
+ 
+  - This method does not change the content of `sparkProperties`.
     
 - [validateArguments()](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L241C2-L249C4): validate all fields. Note: some fields can hold a `null` value. E.g., `executorMemory` could be `null` if it is not configured by `--executor-memory`, `--conf spark.executor.memory`,  the properties files, and the relevant environment variable.
+
+  - This method does not change the content of `sparkProperties`. 
 
 
 ```scala
