@@ -550,8 +550,16 @@ class SparkSubmitOptionParser {
 
 - Note both `rawValueConverter` and `_defaultValue` are names used in the signatures of the respective classes 
 
+- `reader` is defined in *SparkConf.scala* as follows:
+    ```scala
+    @transient private lazy val reader: ConfigReader = {
+        val _reader = new ConfigReader(new SparkConfigProvider(settings))
+        _reader.bindEnv((key: String) => Option(getenv(key)))
+        _reader
+    }
+    ```
 
-`readString(reader)` ->  `reader.get(key)` -> `conf.get(key).map(substitute)`
+`readString(reader)` defined in *ConfigEntry.scala* ->  `reader.get(key)` defined in *ConfigReader.scala* -> `conf.get(key).map(substitute)`
 
 -  If no such a `key` (of type `String`), return `None`; otherwise, return `Some(values.mkString(prependSeparator))`
     
@@ -1034,7 +1042,7 @@ private[spark] class OptionalConfigEntry[T](
 
 <br>
 
-### [scala/org/apache/spark/internal/config/ConfigReader.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigReader.scala)
+### [*scala/org/apache/spark/internal/config/ConfigReader.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/ConfigReader.scala)
 
 ```scala
 /**
@@ -1058,6 +1066,7 @@ private[spark] class OptionalConfigEntry[T](
  */
 private[spark] class ConfigReader(conf: ConfigProvider) {
 
+  def this(conf: JMap[String, String]) = this(new MapProvider(conf))
   ...
   /**
    * Reads a configuration key from the default provider, and apply variable substitution.
