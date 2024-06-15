@@ -16,7 +16,7 @@
   ```
   It puts all properties contained in `sparkProperties` into a `SparkConf` instance.
   
-```
+```scala
 /**
  * Main gateway of launching a Spark application.
  *
@@ -39,6 +39,8 @@ private[spark] class SparkSubmit extends Logging {
   protected def parseArguments(args: Array[String]): SparkSubmitArguments = {
     new SparkSubmitArguments(args.toImmutableArraySeq)
   }
+
+  ...
 
 ```
 
