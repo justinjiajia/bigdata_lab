@@ -1,17 +1,51 @@
 
-In the `pyspark` scrpit:
+### [*/bin/pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark) 
+
+<br>
 
 ```shell
-spark-submit pyspark-shell-main --name "PySparkShell" "$@"
+...
+# Default to standard python3 interpreter unless told otherwise
+if [[ -z "$PYSPARK_PYTHON" ]]; then
+  PYSPARK_PYTHON=python3
+fi
+if [[ -z "$PYSPARK_DRIVER_PYTHON" ]]; then
+  PYSPARK_DRIVER_PYTHON=$PYSPARK_PYTHON
+fi
+export PYSPARK_PYTHON
+export PYSPARK_DRIVER_PYTHON
+export PYSPARK_DRIVER_PYTHON_OPT
+
+...
+# Add the PySpark classes to the Python path:
+export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.7-src.zip:$PYTHONPATH"
+
+# Load the PySpark shell.py script when ./pyspark is used interactively:
+export OLD_PYTHONSTARTUP="$PYTHONSTARTUP"
+export PYTHONSTARTUP="${SPARK_HOME}/python/pyspark/shell.py"
+
+...
+exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "$@"
 ```
 
-In the `spark-submit` scrpit:
+<br>
+
+### [*/bin/spark-submit*](https://github.com/apache/spark/blob/master/bin/spark-submit) 
+
+<br>
+
 
 ```shell
 spark-class org.apache.spark.deploy.SparkSubmit "$@"
 ```
 
-in spark-class script:
+<br>
+
+### [*/bin/spark-class*](https://github.com/apache/spark/blob/master/bin/spark-class) 
+
+<br>
+
 
 ```
 "$RUNNER" -Xmx128m $SPARK_LAUNCHER_OPTS -cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main "$@"
@@ -21,7 +55,11 @@ in spark-class script:
 org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"
 ```
 
+<br>
+
 ### [*java/org/apache/spark/launcher/Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java)
+
+<br>
 
 > class `Main` can be found in `/usr/lib/spark/jars/spark-launcher*.jar` on an EMR instance.
 
@@ -91,11 +129,21 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - `Map<String, String> env = new HashMap<>();`
 
-- Remove the 1st command line argument and check if it equals `"org.apache.spark.deploy.SparkSubmit"`. If so, create a `SparkSubmitCommandBuilder` instance with the remaining commaned line options passed (i.e., `pyspark-shell-main --name "PySparkShell" "$@"`), 
+- Remove the 1st command line option and check if it equals `"org.apache.spark.deploy.SparkSubmit"`.
 
-- `cmd = buildCommand(builder, env, printLaunchCommand);`:  `buildCommand()` further invokes `builder.buildCommand(env);` defined in [*SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L159C3-L169C4)
 
-    - If `appResource` equals `"pyspark-shell"`,  `return buildPySparkShellCommand(env);`. This is a list of strings containing python-related configurations
+- If so, `AbstractCommandBuilder builder = new SparkSubmitCommandBuilder(args);`, which creates a `SparkSubmitCommandBuilder` instance with the remaining commaned line options (i.e., `pyspark-shell-main --name "PySparkShell" "$@"`)
+
+  - The instance constructor contains [case matching code](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L131C9-L147C8) that assigns values to two fields:
+    ```java
+    appResource = PYSPARK_SHELL;
+    submitArgs = args.subList(1, args.size());
+    ```
+    when the 1st element in `args` equals `pyspark-shell-main`. Note `PYSPARK_SHELL` is a static constant equal to `"pyspark-shell-main"`.
+
+- `cmd = buildCommand(builder, env, printLaunchCommand);`: calling `buildCommand()` further invokes `builder.buildCommand(env);` defined in [*SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L159C3-L169C4)
+
+    - If `appResource` equals `PYSPARK_SHELL`,  execute `return buildPySparkShellCommand(env);`. What `buildPySparkShellCommand(env)` returns is is a list of strings containing python-related configurations.
   
 
 
@@ -159,7 +207,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     ...
     ```
 
-  - The instance initializer of class `SparkSubmitCommandBuilder` includes
+  - class `SparkSubmitCommandBuilder`'s instance initializer includes
     ```java
     this.allowsMixedArguments = false;
     this.parsedArgs = new ArrayList<>();
@@ -167,6 +215,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     List<String> submitArgs = args;
     this.userArgs = Collections.emptyList();
     ```
+    
   - Get the 1st argument for pattern maching: 
     ```java
     if (args.size() > 0) {
