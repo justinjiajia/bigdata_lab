@@ -23,7 +23,7 @@ org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell
 
 ### [*java/org/apache/spark/launcher/Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java)
 
-class Main can be found in `/usr/lib/spark/jars/spark-launcher*.jar` on an EMR instance
+> class `Main` can be found in `/usr/lib/spark/jars/spark-launcher*.jar` on an EMR instance.
 
 
 ```java
@@ -39,7 +39,9 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     String className = args.remove(0);
 
     boolean printLaunchCommand = !isEmpty(System.getenv("SPARK_PRINT_LAUNCH_COMMAND"));
+
     Map<String, String> env = new HashMap<>();
+
     List<String> cmd;
     if (className.equals("org.apache.spark.deploy.SparkSubmit")) {
       try {
@@ -89,11 +91,12 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - `Map<String, String> env = new HashMap<>();`
 
-- Remove the 1st command line argument and check if it equals `"org.apache.spark.deploy.SparkSubmit"`. If so, create a `SparkSubmitCommandBuilder` instance with the remaining arguments passed via commaned line flags (i.e., `pyspark-shell-main --name "PySparkShell" "$@"`), 
+- Remove the 1st command line argument and check if it equals `"org.apache.spark.deploy.SparkSubmit"`. If so, create a `SparkSubmitCommandBuilder` instance with the remaining commaned line options passed (i.e., `pyspark-shell-main --name "PySparkShell" "$@"`), 
 
 - `cmd = buildCommand(builder, env, printLaunchCommand);`:  `buildCommand()` further invokes `builder.buildCommand(env);` defined in [*SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L159C3-L169C4)
 
-    - If `appResource` equals `"pyspark-shell"`,  `return buildPySparkShellCommand(env);`
+    - If `appResource` equals `"pyspark-shell"`,  `return buildPySparkShellCommand(env);`. This is a list of strings containing python-related configurations
+  
 
 
 ### [*java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java)
@@ -103,21 +106,68 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - Define several constants for pattern matching in the [begining](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L39C1-L92C4), , e.g., `static final String PYSPARK_SHELL = "pyspark-shell-main";`
 
+
+- Create a `Map<String, String>` called specialClasses and initialize it to have several entries.
+
+  ```java
+  private static final Map<String, String> specialClasses = new HashMap<>();
+  static {
+    specialClasses.put("org.apache.spark.repl.Main", "spark-shell");
+    specialClasses.put("org.apache.spark.sql.hive.thriftserver.SparkSQLCLIDriver",
+      SparkLauncher.NO_RESOURCE);
+    specialClasses.put("org.apache.spark.sql.hive.thriftserver.HiveThriftServer2",
+      SparkLauncher.NO_RESOURCE);
+    specialClasses.put("org.apache.spark.sql.connect.service.SparkConnectServer",
+      SparkLauncher.NO_RESOURCE);
+  }
+  ```
   
 - `SparkSubmitCommandBuilder(List<String> args)`
 
   - First execute the initializer defined in its parent class [`AbstractCommandBuilder`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L43C2-L70C4),
     ```java
-    this.appArgs = new ArrayList<>();
-    this.childEnv = new HashMap<>();
-    this.conf = new HashMap<>();
-    this.files = new ArrayList<>();
-    this.jars = new ArrayList<>();
-    this.pyFiles = new ArrayList<>();
+    abstract class AbstractCommandBuilder {
+    
+      boolean verbose;
+      String appName;
+      String appResource;
+      String deployMode;
+      String javaHome;
+      String mainClass;
+      String master;
+      String remote;
+      protected String propertiesFile;
+      final List<String> appArgs;
+      final List<String> jars;
+      final List<String> files;
+      final List<String> pyFiles;
+      final Map<String, String> childEnv;
+      final Map<String, String> conf;
+    
+      // The merged configuration for the application. Cached to avoid having to read / parse
+      // properties files multiple times.
+      private Map<String, String> effectiveConfig;
+    
+      AbstractCommandBuilder() {
+        this.appArgs = new ArrayList<>();
+        this.childEnv = new HashMap<>();
+        this.conf = new HashMap<>();
+        this.files = new ArrayList<>();
+        this.jars = new ArrayList<>();
+        this.pyFiles = new ArrayList<>();
+      }
+    ...
     ```
- 
-  - Get the 1st argument for pattern maching
- 
+
+  - The instance initializer of class `SparkSubmitCommandBuilder` includes
+    ```java
+    this.allowsMixedArguments = false;
+    this.parsedArgs = new ArrayList<>();
+    boolean isExample = false;
+    List<String> submitArgs = args;
+    this.userArgs = Collections.emptyList();
+    ```
+  - Get the 1st argument for pattern maching: 
     ```java
     if (args.size() > 0) {
       switch (args.get(0)) {
@@ -142,11 +192,191 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
     - Because it equals `"pyspark-shell-main"`, the `appResource` field is assigne the value `"pyspark-shell"`, the `submitArgs` field is assigned a list packing the rest of the arguments (i.e., `--name "PySparkShell" "$@"`).
 
-  - `OptionParser parser = new OptionParser(true)`: class `OptionParser` extends class `SparkSubmitOptionParser` defined in [*SparkSubmitOptionParser.java*]()
+  - `OptionParser parser = new OptionParser(true)`: [class `OptionParser`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L488C3-L577C4) extends class `SparkSubmitOptionParser` defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java)
  
-  - `parser.parse(submitArgs);`
+  - `parser.parse(submitArgs);`: `parse()` defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C3-L193C4)
+ 
+  - If an option name exists in a two-level list named [`opts`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L92) and if it matches a case,  [`handle()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L497C5-L544C6) 
+  assigns its value to the corresponding field declared at the [beginning of *AbstractCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L43C2-L70C4) (e.g., fields `master`, `deployMode`, `propertiesFile`, etc.) or add an entry into the `HashMap` named `conf` (several driver-related properties such as `"spark.driver.memory"`, ` "spark.driver.defaultExtraClassPath"`, etc., and the options specified via `--conf` or `-c`): 
+    ```java
+    switch (opt) {
+      case MASTER -> master = value;
+      case REMOTE -> remote = value;
+      case DEPLOY_MODE -> deployMode = value;
+      case PROPERTIES_FILE -> propertiesFile = value;
+      case DRIVER_MEMORY -> conf.put(SparkLauncher.DRIVER_MEMORY, value);
+      case DRIVER_JAVA_OPTIONS -> conf.put(SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS, value);
+      case DRIVER_LIBRARY_PATH -> conf.put(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH, value);
+      case DRIVER_DEFAULT_CLASS_PATH ->
+        conf.put(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH, value);
+      case DRIVER_CLASS_PATH -> conf.put(SparkLauncher.DRIVER_EXTRA_CLASSPATH, value);
+      case CONF -> {
+        checkArgument(value != null, "Missing argument to %s", CONF);
+        String[] setConf = value.split("=", 2);
+        checkArgument(setConf.length == 2, "Invalid argument to %s: %s", CONF, value);
+        conf.put(setConf[0], setConf[1]);
+      }
+    ...
+      default -> {
+        parsedArgs.add(opt);
+        if (value != null) {
+          parsedArgs.add(value);
+        }
+      }
+    ```
+    - If there is no case match, add an entry to the `ArrayList` `parsedArgs` (e.g., options `--name`, `--packages`, etc.)
+
+
+  - the created instance is assigned to `builder` in *Main.java*
+     
+- `buildCommand(builder, env, printLaunchCommand)` in [*Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java) -> `builder.buildCommand(env)` -> buildPySparkShellCommand(env)
 
 - `private List<String> buildPySparkShellCommand(Map<String, String> env)`
+
+  - insert several  spark-related properties into `env` as an entry called `"PYSPARK_SUBMIT_ARGS"`, and return a list of strings `List<String>` that contains python-related options 
+
+  ```java
+  private List<String> buildPySparkShellCommand(Map<String, String> env) throws IOException {
+    ...
+    // When launching the pyspark shell, the spark-submit arguments should be stored in the
+    // PYSPARK_SUBMIT_ARGS env variable.
+    appResource = PYSPARK_SHELL_RESOURCE;
+    constructEnvVarArgs(env, "PYSPARK_SUBMIT_ARGS");
+
+    // Will pick up the binary executable in the following order
+    // 1. conf spark.pyspark.driver.python
+    // 2. conf spark.pyspark.python
+    // 3. environment variable PYSPARK_DRIVER_PYTHON
+    // 4. environment variable PYSPARK_PYTHON
+    // 5. python
+    List<String> pyargs = new ArrayList<>();
+    pyargs.add(firstNonEmpty(conf.get(SparkLauncher.PYSPARK_DRIVER_PYTHON),
+      conf.get(SparkLauncher.PYSPARK_PYTHON),
+      System.getenv("PYSPARK_DRIVER_PYTHON"),
+      System.getenv("PYSPARK_PYTHON"),
+      "python3"));
+    String pyOpts = System.getenv("PYSPARK_DRIVER_PYTHON_OPTS");
+    if (conf.containsKey(SparkLauncher.PYSPARK_PYTHON)) {
+      // pass conf spark.pyspark.python to python by environment variable.
+      env.put("PYSPARK_PYTHON", conf.get(SparkLauncher.PYSPARK_PYTHON));
+    }
+  ```
+
+
+```java
+  private void constructEnvVarArgs(
+      Map<String, String> env,
+      String submitArgsEnvVariable) throws IOException {
+    mergeEnvPathList(env, getLibPathEnvName(),
+      getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));
+
+    StringBuilder submitArgs = new StringBuilder();
+    for (String arg : buildSparkSubmitArgs()) {
+      if (submitArgs.length() > 0) {
+        submitArgs.append(" ");
+      }
+      submitArgs.append(quoteForCommandString(arg));
+    }
+    env.put(submitArgsEnvVariable, submitArgs.toString());
+  }
+```
+
+add a new entry `"PYSPARK_SUBMIT_ARGS"` into `env`. Its value is a string like `"--master yarn --conf driver-memory=<value>"
+
+
+- `buildSparkSubmitArgs()`
+
+add a restricted set of options in a particular order (e.g., `--master`, `--deploy-mode`, etc.) to the `ArrayList<>` `args`; then add all configurations contained by `conf` to the `ArrayList<>` `args` as pairs of `"--conf"` and `"<key string>=<value>"`
+
+So those driver-related properties set via command-line options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>" 
+
+  ```java
+   List<String> buildSparkSubmitArgs() {
+    List<String> args = new ArrayList<>();
+    OptionParser parser = new OptionParser(false);
+    final boolean isSpecialCommand;
+
+    ...
+
+    if (verbose) {
+      args.add(parser.VERBOSE);
+    }
+
+    if (master != null) {
+      args.add(parser.MASTER);
+      args.add(master);
+    }
+
+    if (remote != null) {
+      args.add(parser.REMOTE);
+      args.add(remote);
+    }
+
+    if (deployMode != null) {
+      args.add(parser.DEPLOY_MODE);
+      args.add(deployMode);
+    }
+
+    if (appName != null) {
+      args.add(parser.NAME);
+      args.add(appName);
+    }
+
+    for (Map.Entry<String, String> e : conf.entrySet()) {
+      args.add(parser.CONF);
+      args.add(String.format("%s=%s", e.getKey(), e.getValue()));
+    }
+
+    if (propertiesFile != null) {
+      args.add(parser.PROPERTIES_FILE);
+      args.add(propertiesFile);
+    }
+
+    if (isExample) {
+      jars.addAll(findExamplesJars());
+    }
+
+    if (!jars.isEmpty()) {
+      args.add(parser.JARS);
+      args.add(join(",", jars));
+    }
+
+    if (!files.isEmpty()) {
+      args.add(parser.FILES);
+      args.add(join(",", files));
+    }
+
+    if (!pyFiles.isEmpty()) {
+      args.add(parser.PY_FILES);
+      args.add(join(",", pyFiles));
+    }
+
+    if (isExample && !isSpecialCommand) {
+      checkArgument(mainClass != null, "Missing example class name.");
+    }
+
+    if (mainClass != null) {
+      args.add(parser.CLASS);
+      args.add(mainClass);
+    }
+
+    args.addAll(parsedArgs);
+
+    if (appResource != null) {
+      args.add(appResource);
+    }
+
+    args.addAll(appArgs);
+
+    return args;
+  }
+  ```
+
+
+
+### [*java/org/apache/spark/launcher/SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java)
+
+Define constants used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) in the [beginning](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39C3-L80C44).
 
   
 
