@@ -154,7 +154,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - Class `SparkSubmitCommandBuilder` extends class [`AbstractCommandBuilder`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java)
 
-- Define several static constants for pattern matching in the [begining](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L39C1-L92C4), , e.g., `static final String PYSPARK_SHELL = "pyspark-shell-main";`
+- Define several static constants for pattern matching , e.g., `static final String PYSPARK_SHELL = "pyspark-shell-main";`
 
 
 - Create a `Map<String, String>` called `specialClasses` and initialize it to have several entries:
@@ -249,35 +249,35 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
  
   - `parser.parse(submitArgs);`: `parse()` defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C3-L193C4)
  
-  - If an option name exists in a two-level list named [`opts`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L92) and if it matches a case,  [`handle()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L497C5-L544C6) 
-  assigns its value to the corresponding field of the `SparkCommandBuilder` instance (e.g., fields `master`, `remote `, `deployMode`, `propertiesFile`, etc.) or add an entry to the `HashMap` named `conf` (several driver-related properties such as `"spark.driver.memory"`, ` "spark.driver.defaultExtraClassPath"`, etc., and the options specified via `--conf` or `-c`): 
-    ```java
-    switch (opt) {
-      case MASTER -> master = value;
-      case REMOTE -> remote = value;
-      case DEPLOY_MODE -> deployMode = value;
-      case PROPERTIES_FILE -> propertiesFile = value;
-      case DRIVER_MEMORY -> conf.put(SparkLauncher.DRIVER_MEMORY, value);
-      case DRIVER_JAVA_OPTIONS -> conf.put(SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS, value);
-      case DRIVER_LIBRARY_PATH -> conf.put(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH, value);
-      case DRIVER_DEFAULT_CLASS_PATH ->
-        conf.put(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH, value);
-      case DRIVER_CLASS_PATH -> conf.put(SparkLauncher.DRIVER_EXTRA_CLASSPATH, value);
-      case CONF -> {
-        checkArgument(value != null, "Missing argument to %s", CONF);
-        String[] setConf = value.split("=", 2);
-        checkArgument(setConf.length == 2, "Invalid argument to %s: %s", CONF, value);
-        conf.put(setConf[0], setConf[1]);
-      }
-    ...
-      default -> {
-        parsedArgs.add(opt);
-        if (value != null) {
-          parsedArgs.add(value);
+    - If an option name exists in a two-level list named [`opts`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L92) and if it matches a case,  [`handle()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L497C5-L544C6) assigns its value to the corresponding field of the `SparkCommandBuilder` instance (e.g., fields `master`, `remote `, `deployMode`, `propertiesFile`, etc.) or add an entry to the `HashMap` named `conf` (several driver-related properties such as `"spark.driver.memory"`, ` "spark.driver.defaultExtraClassPath"`, etc., and the options specified via `--conf` or `-c`): 
+      ```java
+      switch (opt) {
+        case MASTER -> master = value;
+        case REMOTE -> remote = value;
+        case DEPLOY_MODE -> deployMode = value;
+        case PROPERTIES_FILE -> propertiesFile = value;
+        case DRIVER_MEMORY -> conf.put(SparkLauncher.DRIVER_MEMORY, value);
+        case DRIVER_JAVA_OPTIONS -> conf.put(SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS, value);
+        case DRIVER_LIBRARY_PATH -> conf.put(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH, value);
+        case DRIVER_DEFAULT_CLASS_PATH ->
+          conf.put(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH, value);
+        case DRIVER_CLASS_PATH -> conf.put(SparkLauncher.DRIVER_EXTRA_CLASSPATH, value);
+        case CONF -> {
+          checkArgument(value != null, "Missing argument to %s", CONF);
+          String[] setConf = value.split("=", 2);
+          checkArgument(setConf.length == 2, "Invalid argument to %s: %s", CONF, value);
+          conf.put(setConf[0], setConf[1]);
         }
-      }
-    ```
-    - If there is no case match, add an entry to the `ArrayList` `parsedArgs` (e.g., options `--name`, `--packages`, etc.)
+      ...
+        default -> {
+          parsedArgs.add(opt);
+          if (value != null) {
+            parsedArgs.add(value);
+          }
+        }
+      ```
+
+      - If there is no case match, add an entry to the `ArrayList` `parsedArgs` (e.g., options `--name`, `--packages`, etc.)
 
 
   - The resulting `SparkCommandBuilder` instance is assigned to `builder` in *Main.java*
