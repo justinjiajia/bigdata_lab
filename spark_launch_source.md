@@ -1,4 +1,155 @@
 
+In the `pyspark` scrpit:
+
+```shell
+spark-submit pyspark-shell-main --name "PySparkShell" "$@"
+```
+
+In the `spark-submit` scrpit:
+
+```shell
+spark-class org.apache.spark.deploy.SparkSubmit "$@"
+```
+
+in spark-class script:
+
+```
+"$RUNNER" -Xmx128m $SPARK_LAUNCHER_OPTS -cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main "$@"
+```
+
+```shell
+org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"
+```
+
+### [*java/org/apache/spark/launcher/Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java)
+
+class Main can be found in `/usr/lib/spark/jars/spark-launcher*.jar` on an EMR instance
+
+
+```java
+package org.apache.spark.launcher;
+...
+import static org.apache.spark.launcher.CommandBuilderUtils.*;
+...
+
+  public static void main(String[] argsArray) throws Exception {
+    checkArgument(argsArray.length > 0, "Not enough arguments: missing class name.");
+
+    List<String> args = new ArrayList<>(Arrays.asList(argsArray));
+    String className = args.remove(0);
+
+    boolean printLaunchCommand = !isEmpty(System.getenv("SPARK_PRINT_LAUNCH_COMMAND"));
+    Map<String, String> env = new HashMap<>();
+    List<String> cmd;
+    if (className.equals("org.apache.spark.deploy.SparkSubmit")) {
+      try {
+        AbstractCommandBuilder builder = new SparkSubmitCommandBuilder(args);
+        cmd = buildCommand(builder, env, printLaunchCommand);
+      } catch (IllegalArgumentException e) {
+        ...
+      }
+    } else {
+      ...
+    }
+
+    // test for shell environments, to enable non-Windows treatment of command line prep
+    boolean shellflag = !isEmpty(System.getenv("SHELL"));
+    if (isWindows() && !shellflag) {
+      System.out.println(prepareWindowsCommand(cmd, env));
+    } else {
+      // A sequence of NULL character and newline separates command-strings and others.
+      System.out.println('\0');
+
+      // In bash, use NULL as the arg separator since it cannot be used in an argument.
+      List<String> bashCmd = prepareBashCommand(cmd, env);
+      for (String c : bashCmd) {
+        System.out.print(c.replaceFirst("\r$",""));
+        System.out.print('\0');
+      }
+    }
+  }
+
+  /**
+   * Prepare spark commands with the appropriate command builder.
+   * If printLaunchCommand is set then the commands will be printed to the stderr.
+   */
+  private static List<String> buildCommand(
+      AbstractCommandBuilder builder,
+      Map<String, String> env,
+      boolean printLaunchCommand) throws IOException, IllegalArgumentException {
+    List<String> cmd = builder.buildCommand(env);
+    ...
+    return cmd;
+  }
+  ...
+}
+```
+
+- `List<String> args = new ArrayList<>(Arrays.asList(argsArray));`
+
+- `Map<String, String> env = new HashMap<>();`
+
+- Remove the 1st command line argument and check if it equals `"org.apache.spark.deploy.SparkSubmit"`. If so, create a `SparkSubmitCommandBuilder` instance with the remaining arguments passed via commaned line flags (i.e., `pyspark-shell-main --name "PySparkShell" "$@"`), 
+
+- `cmd = buildCommand(builder, env, printLaunchCommand);`:  `buildCommand()` further invokes `builder.buildCommand(env);` defined in [*SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L159C3-L169C4)
+
+    - If `appResource` equals `"pyspark-shell"`,  `return buildPySparkShellCommand(env);`
+
+
+### [*java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java)
+
+
+- class `SparkSubmitCommandBuilder` extends class `AbstractCommandBuilder`
+
+- Define several constants for pattern matching in the [begining](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L39C1-L92C4), , e.g., `static final String PYSPARK_SHELL = "pyspark-shell-main";`
+
+  
+- `SparkSubmitCommandBuilder(List<String> args)`
+
+  - First execute the initializer defined in its parent class [`AbstractCommandBuilder`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L43C2-L70C4),
+    ```java
+    this.appArgs = new ArrayList<>();
+    this.childEnv = new HashMap<>();
+    this.conf = new HashMap<>();
+    this.files = new ArrayList<>();
+    this.jars = new ArrayList<>();
+    this.pyFiles = new ArrayList<>();
+    ```
+ 
+  - Get the 1st argument for pattern maching
+ 
+    ```java
+    if (args.size() > 0) {
+      switch (args.get(0)) {
+        case PYSPARK_SHELL:
+          this.allowsMixedArguments = true;
+          appResource = PYSPARK_SHELL;
+          submitArgs = args.subList(1, args.size());
+          break;
+
+        case SPARKR_SHELL:
+          this.allowsMixedArguments = true;
+          appResource = SPARKR_SHELL;
+          submitArgs = args.subList(1, args.size());
+          break;
+
+        case RUN_EXAMPLE:
+          isExample = true;
+          appResource = findExamplesAppJar();
+          submitArgs = args.subList(1, args.size());
+      }
+    ```
+
+    - Because it equals `"pyspark-shell-main"`, the `appResource` field is assigne the value `"pyspark-shell"`, the `submitArgs` field is assigned a list packing the rest of the arguments (i.e., `--name "PySparkShell" "$@"`).
+
+  - `OptionParser parser = new OptionParser(true)`: class `OptionParser` extends class `SparkSubmitOptionParser` defined in [*SparkSubmitOptionParser.java*]()
+ 
+  - `parser.parse(submitArgs);`
+
+- `private List<String> buildPySparkShellCommand(Map<String, String> env)`
+
+  
+
 ###  [*scala/org/apache/spark/deploy/SparkSubmit.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
 
 <br>
