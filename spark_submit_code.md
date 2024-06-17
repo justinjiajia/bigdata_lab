@@ -84,7 +84,9 @@ fi
 
 - `elif [ ! -f "$FIND_SPARK_HOME_PYTHON_SCRIPT" ];`: check if file *find_spark_home.py* doesn't exist in the same directory as *find-spark-home*.
 
-- `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: include a nested command substitution. Assign the absolute path of the parent directory (i.e., */usr/lib/spark/*) to `SPARK_HOME`, and mark the name to be passed to child processes in the environment.
+- `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: assign the absolute path of the parent directory (i.e., */usr/lib/spark/*) to `SPARK_HOME` and mark the name to be passed to child processes in the environment.
+
+  - It includes a nested command substitution.  
 
   <br>
   
