@@ -10,6 +10,7 @@ org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit \
 pyspark-shell-main --name "PySparkShell" --master yarn --driver-memory=2g --executor-memory=2g
 ```
 
+<br>
  
 ### [*java/org/apache/spark/launcher/Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java)
 
@@ -78,6 +79,8 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - `List<String> args = new ArrayList<>(Arrays.asList(argsArray));`
 
+-  `printLaunchCommand` is `false`. Verified by adding `echo $(env | grep SPARK_PRINT_LAUNCH_COMMAND)` to proper places in  *spark-class*.
+  
 - `Map<String, String> env = new HashMap<>();`
 
 - Remove the 1st command line option and check if it equals `"org.apache.spark.deploy.SparkSubmit"`.
@@ -96,6 +99,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
     - If `appResource` equals `PYSPARK_SHELL`,  execute `return buildPySparkShellCommand(env);`. What `buildPySparkShellCommand(env)` returns is is a list of strings containing python-related configurations.
 
+- `shellflag` is `true`, because environment variable `SHELL` holds a value of `/bin/bash`. Verified by adding `echo $(env | grep SHELL)` to proper places in  *spark-class*.
 
 - `List<String> bashCmd = prepareBashCommand(cmd, env);`
 
