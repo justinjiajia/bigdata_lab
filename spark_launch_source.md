@@ -1,8 +1,13 @@
+```shell
+pyspark --master yarn --driver-memory=2g --executor-memory=2g
+```
+
+Effectively:
 
 ```shell
 /usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> \
 org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit \
-pyspark-shell-main --name "PySparkShell" "$@"
+pyspark-shell-main --name "PySparkShell" --master yarn --driver-memory=2g --executor-memory=2g
 ```
 
  
