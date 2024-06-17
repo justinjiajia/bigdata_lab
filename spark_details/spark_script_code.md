@@ -280,7 +280,15 @@ fi
   
 
 ```shell
+if [ -z "${SPARK_HOME}" ]; then
+  source "$(dirname "$0")"/find-spark-home
+fi
+
+source "${SPARK_HOME}"/bin/load-spark-env.sh
+export _SPARK_CMD_USAGE="Usage: ./bin/pyspark [options]"
+
 ...
+
 # Default to standard python3 interpreter unless told otherwise
 if [[ -z "$PYSPARK_PYTHON" ]]; then
   PYSPARK_PYTHON=python3
@@ -305,6 +313,7 @@ export PYTHONSTARTUP="${SPARK_HOME}/python/pyspark/shell.py"
 exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "$@"
 ```
 
+- Because */usr/lib/spark/conf/spark-env.sh* on an EMR instance contains `export PYSPARK_PYTHON=/usr/bin/python3`, both `PYSPARK_PYTHON` and `PYSPARK_DRIVER_PYTHON` are set to `/usr/bin/python3`
 
 - Environment variable [`PYTHONSTARTUP`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONSTARTUP) is set to `"${SPARK_HOME}/python/pyspark/shell.py"`, which will be executed automatically when starting a Python intepreter.
 
