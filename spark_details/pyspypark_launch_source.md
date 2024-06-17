@@ -270,8 +270,9 @@ the Python commands in that file are executed before the first prompt is display
           }
         }
       ```
-
-     - If there is no case match, add an entry to the `ArrayList` `parsedArgs` (e.g., options `--name`, `--packages`, etc.)
+         - `.put()` of a HashMap instance:  If an existing key is passed, the previous value gets replaced by the new value.
+           
+     - If there is no case match, add an entry to `ArrayList<>` `parsedArgs` (e.g., options `--name`, `--packages`, etc.)
 
 
   - The resulting `SparkCommandBuilder` instance is assigned to `builder` in *Main.java*
