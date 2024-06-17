@@ -167,9 +167,9 @@ build_command() {
         ```
    - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments passed to *spark-submit*.
    
- - Effectively, this executes
-   ```shell
-   java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"
+  - Effectively, this executes
+    ```shell
+    java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"
    ```
 
 
