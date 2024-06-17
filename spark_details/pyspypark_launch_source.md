@@ -168,7 +168,7 @@ the Python commands in that file are executed before the first prompt is display
   
 - The constructor `SparkSubmitCommandBuilder(List<String> args)`
 
-  - First execute the initializer defined in its parent class [`AbstractCommandBuilder`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L43C2-L70C4),
+  - First execute the initializer defined in its parent class [`AbstractCommandBuilder`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L43C2-L70C4):
     ```java
     abstract class AbstractCommandBuilder {
     
