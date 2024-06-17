@@ -1,6 +1,8 @@
 
 ```shell
-/usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"
+/usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> \
+org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit \
+pyspark-shell-main --name "PySparkShell" "$@"
 ```
 
  
