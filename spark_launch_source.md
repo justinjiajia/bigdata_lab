@@ -145,7 +145,44 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 - `cmd = buildCommand(builder, env, printLaunchCommand);`: calling `buildCommand()` further invokes `builder.buildCommand(env);` defined in [*SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L159C3-L169C4)
 
     - If `appResource` equals `PYSPARK_SHELL`,  execute `return buildPySparkShellCommand(env);`. What `buildPySparkShellCommand(env)` returns is is a list of strings containing python-related configurations.
-  
+
+
+- `List<String> bashCmd = prepareBashCommand(cmd, env);`
+
+- `["env", "PATH=<>", "PYSPARK_SUBMIT_ARGS='--master yarn --conf driver-memory=2g'", "python3"]`
+
+`env` searches PATH for python3
+
+  /**
+   * Prepare the command for execution from a bash script. The final command will have commands to
+   * set up any needed environment variables needed by the child process.
+   */
+  private static List<String> prepareBashCommand(List<String> cmd, Map<String, String> childEnv) {
+    if (childEnv.isEmpty()) {
+      return cmd;
+    }
+
+    List<String> newCmd = new ArrayList<>();
+    newCmd.add("env");
+
+    for (Map.Entry<String, String> e : childEnv.entrySet()) {
+      newCmd.add(String.format("%s=%s", e.getKey(), e.getValue()));
+    }
+    newCmd.addAll(cmd);
+    return newCmd;
+  }
+
+print each string to the standard output, followed by a null character ('\0')
+      
+      for (String c : bashCmd) {
+        System.out.print(c.replaceFirst("\r$",""));
+        System.out.print('\0');
+      }
+
+
+it will load the PySpark *shell.py* script, because we have export `PYTHONSTARTUP="${SPARK_HOME}/python/pyspark/shell.py"` in [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark#L84 )
+the Python commands in that file are executed before the first prompt is displayed in interactive mode. 
+   
 <br>
 
 ### [*java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java)
@@ -277,7 +314,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
         }
       ```
 
-      - If there is no case match, add an entry to the `ArrayList` `parsedArgs` (e.g., options `--name`, `--packages`, etc.)
+     - If there is no case match, add an entry to the `ArrayList` `parsedArgs` (e.g., options `--name`, `--packages`, etc.)
 
 
   - The resulting `SparkCommandBuilder` instance is assigned to `builder` in *Main.java*
@@ -319,11 +356,13 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     }
     ```
     - `mergeEnvPathList(env, getLibPathEnvName(), getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));`
+      
        -  [`getLibPathEnvName()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L90C3-L102C4): return the name of the env variable that holds the native library path.
+         
        -  [`getEffectiveConfig()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L274C3-L284C4)
          - [loadPropertiesFile()](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L286C3-L311C4): load configurations from a file specified via the command line option `--properties-file` or the *spark-defaults.conf* file under the Spark configuration directory. [`DEFAULT_PROPERTIES_FILE`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L31) is a constant with the value of `"spark-defaults.conf"`.
      
-         - return a `HashMap<>` with all  configurations loaded from the properties file and an entry with the key `"spark.driver.defaultExtraClassPath"` and the value `"hive-jackson/*"` if no such an entry is specified in the properties file.
+         - Return a `HashMap<>` with all  configurations loaded from the properties file and an entry with the key `"spark.driver.defaultExtraClassPath"` and the value `"hive-jackson/*"` if no such an entry is specified in the properties file.
      
      - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of entry `"spark.driver.defaultExtraClassPath"` to the native library path and write the prolonged library path to the user environment `env`
 
@@ -379,41 +418,14 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       }
       ```
 
-  - Construct a string from the `ArrayList<>` returned from `buildSparkSubmitArgs()`,  associate it with the key `"PYSPARK_SUBMIT_ARGS"`, and write it into `env`
-    
+     - Construct a string from the `ArrayList<>` returned from `buildSparkSubmitArgs()`,  associate it with the key `"PYSPARK_SUBMIT_ARGS"`, and write it into `env`
 
+  -  `List<String> pyargs = new ArrayList<>();`
+ 
+  -  pick up the binary executable in the following order: `--conf spark.pyspark.driver.python` > `--conf spark.pyspark.python` > environment variable `PYSPARK_DRIVER_PYTHON` > environment variable `PYSPARK_PYTHON` > `python3`, and add it to  `pyargs`. Note that environment variables `PYSPARK_DRIVER_PYTHON` and `PYSPARK_PYTHON` were set to  `python3` in script [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark#L41C1-L46C3)
 
-  ```java
-  private List<String> buildPySparkShellCommand(Map<String, String> env) throws IOException {
-    ...
-    // When launching the pyspark shell, the spark-submit arguments should be stored in the
-    // PYSPARK_SUBMIT_ARGS env variable.
-    appResource = PYSPARK_SHELL_RESOURCE;
-    constructEnvVarArgs(env, "PYSPARK_SUBMIT_ARGS");
+  - return `pyargs`
 
-    // Will pick up the binary executable in the following order
-    // 1. conf spark.pyspark.driver.python
-    // 2. conf spark.pyspark.python
-    // 3. environment variable PYSPARK_DRIVER_PYTHON
-    // 4. environment variable PYSPARK_PYTHON
-    // 5. python
-    List<String> pyargs = new ArrayList<>();
-    pyargs.add(firstNonEmpty(conf.get(SparkLauncher.PYSPARK_DRIVER_PYTHON),
-      conf.get(SparkLauncher.PYSPARK_PYTHON),
-      System.getenv("PYSPARK_DRIVER_PYTHON"),
-      System.getenv("PYSPARK_PYTHON"),
-      "python3"));
-    String pyOpts = System.getenv("PYSPARK_DRIVER_PYTHON_OPTS");
-    if (conf.containsKey(SparkLauncher.PYSPARK_PYTHON)) {
-      // pass conf spark.pyspark.python to python by environment variable.
-      env.put("PYSPARK_PYTHON", conf.get(SparkLauncher.PYSPARK_PYTHON));
-    }
-  ```
-
-
-
-
-add a new entry `"PYSPARK_SUBMIT_ARGS"` into `env`. Its value is a string like `"--master yarn --conf driver-memory=<value>"
 
 
 
