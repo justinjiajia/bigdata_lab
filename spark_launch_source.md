@@ -1,15 +1,8 @@
 
-
-
-<br>
-
+ 
 ### [*java/org/apache/spark/launcher/Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java)
 
-<br>
-
-> class `Main` can be found in `/usr/lib/spark/jars/spark-launcher*.jar` on an EMR instance.
-
-
+ 
 ```java
 package org.apache.spark.launcher;
 ...
