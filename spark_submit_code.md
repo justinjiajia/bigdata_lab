@@ -2,7 +2,9 @@
 
 ### *spark-submit* in */usr/lib/spark/bin*
 
-The source code can also be found at https://github.com/apache/spark/blob/master/bin/spark-submit
+<br>
+
+The source code can be found at https://github.com/apache/spark/blob/master/bin/spark-submit
 
 ```shell
 #!/usr/bin/env bash
@@ -50,7 +52,10 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 
 ### *find-spark-home* in */usr/lib/spark/bin*
 
-    <br>
+
+<br>
+
+The source code can be found at https://github.com/apache/spark/blob/master/bin/find-spark-home
     
 ```shell
 #!/usr/bin/env bash
@@ -87,7 +92,7 @@ fi
 
   <br>
 
-The source code can also be found at https://github.com/apache/spark/blob/master/bin/spark-class
+The source code can be found at https://github.com/apache/spark/blob/master/bin/spark-class
 
 ```shell
 #!/usr/bin/env bash
@@ -135,11 +140,11 @@ build_command() {
 
 ```
 
-- `. "${SPARK_HOME}"/bin/load-spark-env.sh`: `.` means `source`. Reference: https://ss64.com/bash/source.html
+- `. "${SPARK_HOME}"/bin/load-spark-env.sh`: `.` means `source`. See [here](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source)
 
 - `if [ -d "${SPARK_HOME}/jars" ];`: check if directory `${SPARK_HOME}/jars` exists or not;
 
-  -  Variable `SPARK_HOME` is assigned a value of `/usr/lib/spark/` in *find-spark-home*
+  -  Variable `SPARK_HOME` has been assigned a value of `/usr/lib/spark/` when executing *find-spark-home*
 
 -  `"$RUNNER" -Xmx128m $SPARK_LAUNCHER_OPTS -cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main "$@"`
 
@@ -147,18 +152,25 @@ build_command() {
       
     -  Variable `LAUNCH_CLASSPATH` holds a value of `/usr/lib/spark/jars/*`, and variable `SPARK_LAUNCHER_OPTS` holds an empty value. Verified by adding `echo` commands before `build_command()`
   
-    - `-cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main` is located in `/usr/lib/spark/jars/spark-launcher*.jar`. Note `-cp` is used to specify classpath.
-      ```shell
-      [hadoop@ip-xxxx ~]$ jar tf /usr/lib/spark/jars/spark-launcher*.jar | grep Main
-      org/apache/spark/launcher/Main$MainClassOptionParser.class
-      org/apache/spark/launcher/Main$1.class
-      org/apache/spark/launcher/Main.class
-      ```
-   - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments that were passed to *spark-submit*.
+    - `-cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main`
+      
+      - `-cp` is used to specify classpath.
+        
+      - `org.apache.spark.launcher.Main` is located in `/usr/lib/spark/jars/spark-launcher*.jar`.  
+        ```shell
+        [hadoop@ip-xxxx ~]$ jar tf /usr/lib/spark/jars/spark-launcher*.jar | grep Main
+        org/apache/spark/launcher/Main$MainClassOptionParser.class
+        org/apache/spark/launcher/Main$1.class
+        org/apache/spark/launcher/Main.class
+        ```
+   - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments passed to *spark-submit*.
    
     <br>
 
 ### *load-spark-env.sh* in */usr/lib/spark/bin*  
+
+<br>
+
 
 
 ```shell
