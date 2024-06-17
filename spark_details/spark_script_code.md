@@ -342,15 +342,19 @@ build_command() {
 | `SPARK_MASTER_PORT=7077`| `7077` | set by *spark-env.sh* |
 |`SPARK_MASTER_IP=$STANDALONE_SPARK_MASTER_HOST` | `ip-xxxx.ec2.internal` | set by *spark-env.sh* |
 |`SPARK_MASTER_WEBUI_PORT=8080` | `8080` | set by *spark-env.sh* |
-|`SPARK_WORKER_DIR=${SPARK_WORKER_DIR:-/var/run/spark/work} | `/var/run/spark/work`| set by *spark-env.sh* |
+|`SPARK_WORKER_DIR=${SPARK_WORKER_DIR:-/var/run/spark/work}` | `/var/run/spark/work`| set by *spark-env.sh* |
 |`SPARK_WORKER_PORT=7078`| `7078` | set by *spark-env.sh* |
 |`SPARK_WORKER_WEBUI_PORT=8081`| `8081` | set by *spark-env.sh* |
 |`HIVE_SERVER2_THRIFT_BIND_HOST=0.0.0.0`| `0.0.0.0` | set by *spark-env.sh* |
 |`HIVE_SERVER2_THRIFT_PORT=10001| `10001` | set by *spark-env.sh* |
 |`AWS_SPARK_REDSHIFT_CONNECTOR_SERVICE_NAME=EMR`| `EMR` | set by *spark-env.sh* |
-|`SPARK_DAEMON_JAVA_OPTS="$SPARK_DAEMON_JAVA_OPTS -XX:+ExitOnOutOfMemoryError"` <br>  | `-XX:+ExitOnOutOfMemoryError -DAWS_ACCOUNT_ID=154048744197 -DEMR_CLUSTER_ID=j-2FBBKCWZEI5L4 -DEMR_RELEASE_LABEL=emr-7.1.0`  |set by *spark-env.sh* <br> later appended by  *load-emr-env.sh* (EMR specific) |
+|`SPARK_DAEMON_JAVA_OPTS="$SPARK_DAEMON_JAVA_OPTS -XX:+ExitOnOutOfMemoryError"` <br>  `SPARK_DAEMON_JAVA_OPTS+=$EXTRA_OPTS` | `-XX:+ExitOnOutOfMemoryError -DAWS_ACCOUNT_ID=154048744197 -DEMR_CLUSTER_ID=j-2FBBKCWZEI5L4 -DEMR_RELEASE_LABEL=emr-7.1.0`  |set by *spark-env.sh* <br> later appended by  *load-emr-env.sh* (EMR specific) |
 |`SPARK_PUBLIC_DNS=ip-xxxx.ec2.internal` | `ip-xxxx.ec2.internal` |set by *spark-env.sh* |
 |`PYSPARK_PYTHON=/usr/bin/python3`| `/usr/bin/python3` |set by *spark-env.sh* |
+|`SPARK_SCALA_VERSION=2.13` | `2.13` |set by *load-spark-env.sh* |
+|`_SPARK_CMD_USAGE="Usage: ./bin/pyspark [options]"` |`Usage: ./bin/pyspark [options]`  | set by *pyspark*  |
+| `PYSPARK_DRIVER_PYTHON=$PYSPARK_PYTHON` |`/usr/bin/python3`| set by *pyspark*  |
+|`PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"<br> PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.7-src.zip:$PYTHONPATH"| `/usr/lib/spark/python/lib/py4j-0.10.9.7-src.zip:/usr/lib/spark/python/:`| set by *pyspark*  |
 
 
 ### How to modify a file owned by `root`?
