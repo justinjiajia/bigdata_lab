@@ -1,4 +1,8 @@
 
+```shell
+pyspark 
+```
+
  
 ### [*java/org/apache/spark/launcher/Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java)
 
@@ -72,7 +76,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 - Remove the 1st command line option and check if it equals `"org.apache.spark.deploy.SparkSubmit"`.
 
 
-- If so, `AbstractCommandBuilder builder = new SparkSubmitCommandBuilder(args);`, which creates a `SparkSubmitCommandBuilder` instance with the remaining commaned line options (i.e., `pyspark-shell-main --name "PySparkShell" "$@"`)
+- If so, `AbstractCommandBuilder builder = new SparkSubmitCommandBuilder(args);`, which creates a `SparkSubmitCommandBuilder` instance with the remaining command line options (i.e., `pyspark-shell-main --name "PySparkShell" "$@"`).
 
   - The instance constructor contains [case matching code](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L131C9-L147C8) that assigns values to two fields:
     ```java
