@@ -1,10 +1,10 @@
  
 
-### *spark-submit* in */usr/lib/spark/bin*
+### [*spark-submit*](https://github.com/apache/spark/blob/master/bin/spark-submit) in */usr/lib/spark/bin*
 
 <br>
 
-The source code can be found at https://github.com/apache/spark/blob/master/bin/spark-submit
+ 
 
 ```shell
 #!/usr/bin/env bash
@@ -50,13 +50,12 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 
     <br>
 
-### *find-spark-home* in */usr/lib/spark/bin*
+### [*find-spark-home*](https://github.com/apache/spark/blob/master/bin/find-spark-home) in */usr/lib/spark/bin*
 
 
 <br>
 
-The source code can be found at https://github.com/apache/spark/blob/master/bin/find-spark-home
-    
+
 ```shell
 #!/usr/bin/env bash
 ...
@@ -90,11 +89,12 @@ fi
 
   <br>
   
-### *spark-class* in */usr/lib/spark/bin* 
+### [*spark-class*](https://github.com/apache/spark/blob/master/bin/spark-class) in */usr/lib/spark/bin* 
 
-  <br>
 
-The source code can be found at https://github.com/apache/spark/blob/master/bin/spark-class
+<br>
+
+
 
 ```shell
 #!/usr/bin/env bash
@@ -142,7 +142,7 @@ build_command() {
 
 ```
 
-- `. "${SPARK_HOME}"/bin/load-spark-env.sh`: `.` means `source`. See [here](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source)
+- `. "${SPARK_HOME}"/bin/load-spark-env.sh`: `.` means `source`. See https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source
 
 - `if [ -d "${SPARK_HOME}/jars" ];`: check if directory `${SPARK_HOME}/jars` exists or not;
 
@@ -167,9 +167,15 @@ build_command() {
         ```
    - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments passed to *spark-submit*.
    
-    <br>
+ - Effectively, this executes
+   ```shell
+   java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"
+   ```
 
-### *load-spark-env.sh* in */usr/lib/spark/bin*  
+
+<br>
+
+### [*load-spark-env.sh*](https://github.com/apache/spark/blob/master/bin/load-spark-env.sh) in */usr/lib/spark/bin*  
 
 <br>
 
@@ -199,7 +205,7 @@ fi
 ...
 ```
 
-- `set -a`: mark variables which are modified or created for `export`
+- [`set -a`](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#index-set): mark variables which are modified or created for export to the environment of subsequent commands.
 
 - `. ${SPARK_ENV_SH}`: read and execute the code in *spark-env.sh* under `${SPARK_HOME}"/conf`
   
@@ -208,6 +214,46 @@ fi
 
 
   <br>
+
+### [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark) in */usr/lib/spark/bin*  
+
+ <br>
+  
+
+```shell
+...
+# Default to standard python3 interpreter unless told otherwise
+if [[ -z "$PYSPARK_PYTHON" ]]; then
+  PYSPARK_PYTHON=python3
+fi
+if [[ -z "$PYSPARK_DRIVER_PYTHON" ]]; then
+  PYSPARK_DRIVER_PYTHON=$PYSPARK_PYTHON
+fi
+export PYSPARK_PYTHON
+export PYSPARK_DRIVER_PYTHON
+export PYSPARK_DRIVER_PYTHON_OPT
+
+...
+# Add the PySpark classes to the Python path:
+export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.7-src.zip:$PYTHONPATH"
+
+# Load the PySpark shell.py script when ./pyspark is used interactively:
+export OLD_PYTHONSTARTUP="$PYTHONSTARTUP"
+export PYTHONSTARTUP="${SPARK_HOME}/python/pyspark/shell.py"
+
+...
+exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "$@"
+```
+
+
+- Environment variable [`PYTHONSTARTUP`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONSTARTUP) is set to `"${SPARK_HOME}/python/pyspark/shell.py"`, which will be executed automatically when we start a Python intepreter.
+
+- Effectively, this executes
+```shell
+java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit \
+pyspark-shell-main --name "PySparkShell" "$@"
+```
 
 ### class Main in `/usr/lib/spark/jars/spark-launcher*.jar`
 
@@ -472,15 +518,7 @@ class SparkSubmitCommandBuilder extends AbstractCommandBuilder {
   }
 ```
 
-### run pyspark
 
-https://github.com/apache/spark/blob/master/bin/pyspark
-
-the last command is to launch `spark-submit`
-```shell
-...
-exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "$@"
-```
 
 ### How to modify a file owned by `root`?
 
