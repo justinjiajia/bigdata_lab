@@ -123,9 +123,8 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - `List<String> bashCmd = prepareBashCommand(cmd, env);`
 
-- `["env", "PATH=<>", "PYSPARK_SUBMIT_ARGS='--master yarn --conf spark.driver.memory=2g pyspark-shell'", "python3"]`
+- `["env", "LD_LIBRARY_PATH=hive-jackson/*", "PYSPARK_SUBMIT_ARGS='--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'", "/usr/bin/python3"]`
 
-`env` searches PATH for python3
 
 
 
