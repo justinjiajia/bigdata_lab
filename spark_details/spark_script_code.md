@@ -268,7 +268,7 @@ fi
 
 - `. ${SPARK_ENV_SH}`: read and execute the code in *spark-env.sh* under `${SPARK_HOME}"/conf`
   
-- Varaible `SPARK_ENV_SH` holds a value of `/usr/lib/spark/conf/spark-env.sh`. Verified by adding one line of `echo $SPARK_ENV_SH` after `SPARK_ENV_SH="${SPARK_CONF_DIR}/${SPARK_ENV_SH}"`. It also indicates `SPARK_CONF_DIR` is assigned `/usr/lib/spark/conf`
+- Verified that varaible `SPARK_ENV_SH` holds a value of `/usr/lib/spark/conf/spark-env.sh`. It also indicates that `SPARK_CONF_DIR` is assigned `/usr/lib/spark/conf`.
 
 
 
