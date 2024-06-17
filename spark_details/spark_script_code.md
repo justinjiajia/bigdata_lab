@@ -279,6 +279,44 @@ build_command() {
   printf "%d\0" $?
 }
 
+# Turn off posix mode since it does not allow process substitution
+set +o posix
+CMD=()
+DELIM=$'\n'
+CMD_START_FLAG="false"
+while IFS= read -d "$DELIM" -r _ARG; do
+  ARG=${_ARG//$'\r'}
+  if [ "$CMD_START_FLAG" == "true" ]; then
+    CMD+=("$ARG")
+  else
+    if [ "$ARG" == $'\0' ]; then
+      # After NULL character is consumed, change the delimiter and consume command string.
+      DELIM=''
+      CMD_START_FLAG="true"
+    elif [ "$ARG" != "" ]; then
+      echo "$ARG"
+    fi
+  fi
+done < <(build_command "$@")
+
+COUNT=${#CMD[@]}
+LAST=$((COUNT - 1))
+LAUNCHER_EXIT_CODE=${CMD[$LAST]}
+
+# Certain JVM failures result in errors being printed to stdout (instead of stderr), which causes
+# the code that parses the output of the launcher to get confused. In those cases, check if the
+# exit code is an integer, and if it's not, handle it as a special error case.
+if ! [[ $LAUNCHER_EXIT_CODE =~ ^[0-9]+$ ]]; then
+  echo "${CMD[@]}" | head -n-1 1>&2
+  exit 1
+fi
+
+if [ $LAUNCHER_EXIT_CODE != 0 ]; then
+  exit $LAUNCHER_EXIT_CODE
+fi
+
+CMD=("${CMD[@]:0:$LAST}")
+exec "${CMD[@]}"
 ```
 
 - `. "${SPARK_HOME}"/bin/load-spark-env.sh`: `.` means `source`. See https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source
@@ -297,29 +335,108 @@ build_command() {
 
   -  Variable `SPARK_HOME` has been assigned a value of `/usr/lib/spark/` when executing *find-spark-home*
 
--  `"$RUNNER" -Xmx128m $SPARK_LAUNCHER_OPTS -cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main "$@"`
-
-    - The flag `-Xmx` specifies the maximum memory allocation pool for a Java Virtual Machine (JVM)
-      
-    -  Verified that variable `LAUNCH_CLASSPATH` holds a value of `/usr/lib/spark/jars/*`, and both variables `$SPARK_PREPEND_CLASSES` and `SPARK_LAUNCHER_OPTS` hold an empty value. 
+- Define a function named `build_command()`
   
-    - `-cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main`
-      
-      - `-cp` is used to specify classpath.
+  -  `"$RUNNER" -Xmx128m $SPARK_LAUNCHER_OPTS -cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main "$@"`
+  
+      - The flag `-Xmx` specifies the maximum memory allocation pool for a Java Virtual Machine (JVM)
         
-      - `org.apache.spark.launcher.Main` is located in `/usr/lib/spark/jars/spark-launcher*.jar`.  
-        ```shell
-        [hadoop@ip-xxxx ~]$ jar tf /usr/lib/spark/jars/spark-launcher*.jar | grep Main
-        org/apache/spark/launcher/Main$MainClassOptionParser.class
-        org/apache/spark/launcher/Main$1.class
-        org/apache/spark/launcher/Main.class
-        ```
+      -  Verified that variable `LAUNCH_CLASSPATH` holds a value of `/usr/lib/spark/jars/*`, and both variables `$SPARK_PREPEND_CLASSES` and `SPARK_LAUNCHER_OPTS` hold an empty value. 
+    
+      - `-cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main`
         
-   - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments passed to *spark-submit*.
+        - `-cp` is used to specify classpath.
+          
+        - `org.apache.spark.launcher.Main` is located in `/usr/lib/spark/jars/spark-launcher*.jar`.  
+          ```shell
+          [hadoop@ip-xxxx ~]$ jar tf /usr/lib/spark/jars/spark-launcher*.jar | grep Main
+          org/apache/spark/launcher/Main$MainClassOptionParser.class
+          org/apache/spark/launcher/Main$1.class
+          org/apache/spark/launcher/Main.class
+          ```
+          
+     - `$@` inside the definition of `build_command()` refers to all the arguments passed to the build_command function at the time it is invoked. 
+   
+     - Effectively, this executes `/usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"`
+  
+       
+  - [`$?`](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_003f) expands to the exit status of the most recently executed foreground pipeline.
  
+  - The `printf` statement does not automatically append a newline to its output. https://www.gnu.org/software/gawk/manual/html_node/Basic-Printf.html
 
-- Effectively, this executes `/usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"`
+verified that calling `build_command "$@"`
+returns 
+`envPYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server/usr/bin/python30`
 
+- `set +o posix`: disables POSIX mode, allowing for more flexible shell features, such as process substitution.
+
+- `CMD = ()`: initialize `CMD` to an array
+
+- The `while` loop reads parts of the output of `build_command "$@"` delineated by a custom delimiter `DELIM`
+  
+   - `_ARG` is each line read from the output.
+     
+   - `ARG=${_ARG//$'\r'}`: removes any carriage return (`\r`) characters from the argument. Check out this [page](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) for the meaning of `//` inside `${}`
+
+   - If `CMD_START_FLAG` is `true`, add `ARG` to the `CMD` array.
+
+   - If not, check for the null character (`$'\0'`); when encountered, switch the delimiter to an empty string (`DELIM=''`) and set `CMD_START_FLAG` to `true`.
+ 
+   - The first line of the output is `\0\n` generated by `System.out.println('\0');` in [*Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java#L96)
+
+
+The special shell variable `IFS` determines how Bash recognizes word boundaries while splitting a sequence of character strings. The default value of IFS is a three-character string comprising a space, tab, and newline:
+
+```
+[hadoop@ip-172-31-50-109 ~]$ echo "$IFS" | cat -et
+ ^I$
+$
+```
+
+`$@` in `<(build_command "$@")` refers to all the arguments passed to *spark-class*.
+
+1. `IFS= `, By setting IFS to an empty value, you ensure that no word splitting occurs and leading/trailing whitespace is preserved.
+2. read -d "$DELIM" -r _ARG
+read: Reads a line of input.
+-d "$DELIM": Uses the character in $DELIM as the delimiter instead of newline. If $DELIM is set to a null character (' '), it will read until it encounters this character.
+-r: Prevents backslashes from being interpreted as escape characters.
+_ARG: The variable to store the input.
+3. while ...; do ...; done
+This constructs a loop that continues reading lines into _ARG and executing the commands within the loop body until the input is exhausted.
+
+The @ symbol in the square brackets indicates that you are looping through all of the elements in the array. If you were to leave that out and just write for str in ${myArray}, only the first string in the array would be printed.
+
+```
+for str in ${CMD[@]}; do
+  echo $str
+done
+```
+
+```
+env
+PYSPARK_SUBMIT_ARGS="--master"
+"yarn"
+"--conf"
+"spark.driver.memory=2g"
+"--name"
+"PySparkShell"
+"--executor-memory"
+"2g"
+"pyspark-shell"
+LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server
+/usr/bin/python3
+0
+```
+   COUNT: Number of elements in the CMD array.
+LAST: Index of the last element in CMD.
+LAUNCHER_EXIT_CODE: The last element in the CMD array, which should be the exit code.
+Validate if LAUNCHER_EXIT_CODE is an integer:
+If not, print all elements of CMD except the last one to stderr and exit with code 1.
+If it is an integer and not 0 (indicating an error), exit with that code.
+
+
+Remove the last element (exit code) from the CMD array.
+Use exec to replace the current shell with the command stored in CMD.
 
 
 <br>
