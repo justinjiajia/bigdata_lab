@@ -74,6 +74,26 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     return cmd;
   }
   ...
+
+  /**
+   * Prepare the command for execution from a bash script. The final command will have commands to
+   * set up any needed environment variables needed by the child process.
+   */
+  private static List<String> prepareBashCommand(List<String> cmd, Map<String, String> childEnv) {
+    if (childEnv.isEmpty()) {
+      return cmd;
+    }
+
+    List<String> newCmd = new ArrayList<>();
+    newCmd.add("env");
+
+    for (Map.Entry<String, String> e : childEnv.entrySet()) {
+      newCmd.add(String.format("%s=%s", e.getKey(), e.getValue()));
+    }
+    newCmd.addAll(cmd);
+    return newCmd;
+  }
+  ...
 }
 ```
 
@@ -107,24 +127,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 `env` searches PATH for python3
 
-  /**
-   * Prepare the command for execution from a bash script. The final command will have commands to
-   * set up any needed environment variables needed by the child process.
-   */
-  private static List<String> prepareBashCommand(List<String> cmd, Map<String, String> childEnv) {
-    if (childEnv.isEmpty()) {
-      return cmd;
-    }
 
-    List<String> newCmd = new ArrayList<>();
-    newCmd.add("env");
-
-    for (Map.Entry<String, String> e : childEnv.entrySet()) {
-      newCmd.add(String.format("%s=%s", e.getKey(), e.getValue()));
-    }
-    newCmd.addAll(cmd);
-    return newCmd;
-  }
 
 print each string to the standard output, followed by a null character ('\0')
       
