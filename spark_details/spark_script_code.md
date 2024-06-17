@@ -46,36 +46,56 @@ _=/usr/bin/env
 /usr/bin/java
 ```
 
-<br> 
 
-### [*spark-submit*](https://github.com/apache/spark/blob/master/bin/spark-submit) in */usr/lib/spark/bin*
 
 <br>
 
- 
+### [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark) in */usr/lib/spark/bin*  
+
+<br>
+  
 
 ```shell
-#!/usr/bin/env bash
-
-...
-
 if [ -z "${SPARK_HOME}" ]; then
   source "$(dirname "$0")"/find-spark-home
 fi
 
-# disable randomized hash for string in Python 3.3+
-export PYTHONHASHSEED=0
+source "${SPARK_HOME}"/bin/load-spark-env.sh
+export _SPARK_CMD_USAGE="Usage: ./bin/pyspark [options]"
 
-exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
+...
+
+# Default to standard python3 interpreter unless told otherwise
+if [[ -z "$PYSPARK_PYTHON" ]]; then
+  PYSPARK_PYTHON=python3
+fi
+if [[ -z "$PYSPARK_DRIVER_PYTHON" ]]; then
+  PYSPARK_DRIVER_PYTHON=$PYSPARK_PYTHON
+fi
+export PYSPARK_PYTHON
+export PYSPARK_DRIVER_PYTHON
+export PYSPARK_DRIVER_PYTHON_OPT
+
+...
+# Add the PySpark classes to the Python path:
+export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.7-src.zip:$PYTHONPATH"
+
+# Load the PySpark shell.py script when ./pyspark is used interactively:
+export OLD_PYTHONSTARTUP="$PYTHONSTARTUP"
+export PYTHONSTARTUP="${SPARK_HOME}/python/pyspark/shell.py"
+
+...
+exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "$@"
 ```
 
-- `${SPARK_HOME}` is initially empty. Verified by additing one line of `echo ${SPARK_HOME}` before the if test.
+- The [`$` character](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) introduces parameter expansion, command substitution, or arithmetic expansion.
+  
+- Verified that `${SPARK_HOME}` is initially empty
 
 - `if [ -z "${SPARK_HOME}" ];`: check if the value of variable `SPARK_HOME` is of length 0. Check out [conditional expressions](https://www.gnu.org/software/bash/manual/html_node/Bash-Conditional-Expressions.html) for different options Bash supports.
 
 - `source "$(dirname "$0")"/find-spark-home`:
-  
-   - Placing a list of commands between parentheses causes a subshell environment to be created to execute them.
      
    - `dirname "$0"` returns the directory that contains the current script. [`$0`](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-0) represents the name of the script.
 
@@ -83,17 +103,19 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
      
    - [`source`](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source) is a builtin command of the [Bash shell](https://www.gnu.org/software/bash/manual/html_node/index.html). It reads and executes the code from *find-spark-home* under the same directory in the current shell context.
 
-- `export PYTHONHASHSEED=0`: [`export`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html#index-export) is a builtin command of the Bash shell. It marks a name to be passed to child processes in the environment.
+- [`export`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html#index-export) is a builtin command of the Bash shell. It marks a name to be passed to child processes in the environment.
 
-  
+- `source "${SPARK_HOME}"/bin/load-spark-env.sh`
+         
+- Because */usr/lib/spark/conf/spark-env.sh* on an EMR instance contains `export PYSPARK_PYTHON=/usr/bin/python3`, both `PYSPARK_PYTHON` and `PYSPARK_DRIVER_PYTHON` are set to `/usr/bin/python3`
+
+- Environment variable [`PYTHONSTARTUP`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONSTARTUP) is set to `"${SPARK_HOME}/python/pyspark/shell.py"`, which will be executed automatically when starting a Python intepreter.
+
 - `exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"`
 
    -  [`exec`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html#index-exec) is a builtin command of the Bash shell. It allows us to execute a command that completely replaces the current process.
    
-   -  ["$@"](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_0040) represents all the arguments passed to *spark-submit*.
-
-   - `org.apache.spark.deploy.SparkSubmit` is defined in [scala/org/apache/spark/deploy/SparkSubmit.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
-
+   -  ["$@"](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_0040) represents all the arguments passed to *pyspark*.
 
 
 <br>
@@ -129,11 +151,79 @@ else
 fi
 ```
 
-- `elif [ ! -f "$FIND_SPARK_HOME_PYTHON_SCRIPT" ];`: test if file *find_spark_home.py* doesn't exist in the same directory as *find-spark-home*.
+- `elif [ ! -f "$FIND_SPARK_HOME_PYTHON_SCRIPT" ];`: test if no *find_spark_home.py* exists in the same directory as *find-spark-home*.
 
-- `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: assign the absolute path of the parent directory (i.e., */usr/lib/spark/*) to `SPARK_HOME` and mark the name to be passed to child processes in the environment.
+- `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: this nested command substitution assigns the absolute path of the parent directory (i.e., */usr/lib/spark/*) to `SPARK_HOME`. Then, `export` marks the name to be passed to child processes in the environment.
 
-  - It includes a nested command substitution.  
+- `:-` in `${PYSPARK_PYTHON:-"python3"}` means if `PYSPARK_PYTHON` isn't already set, set it to `"python3"`.
+
+<br>
+
+
+### [*load-spark-env.sh*](https://github.com/apache/spark/blob/master/bin/load-spark-env.sh) in */usr/lib/spark/bin*  
+
+<br>
+
+
+```shell
+#!/usr/bin/env bash
+...
+SPARK_ENV_SH="spark-env.sh"
+if [ -z "$SPARK_ENV_LOADED" ]; then
+  export SPARK_ENV_LOADED=1
+
+  export SPARK_CONF_DIR="${SPARK_CONF_DIR:-"${SPARK_HOME}"/conf}"
+
+  SPARK_ENV_SH="${SPARK_CONF_DIR}/${SPARK_ENV_SH}"
+  if [[ -f "${SPARK_ENV_SH}" ]]; then
+    # Promote all variable declarations to environment (exported) variables
+    set -a
+    . ${SPARK_ENV_SH}
+    set +a
+  fi
+fi
+...
+```
+
+- [`set -a`](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#index-set): mark variables which are modified or created for export to the environment of subsequent commands.
+
+- `. ${SPARK_ENV_SH}`: read and execute the code in *spark-env.sh* under `${SPARK_HOME}"/conf`
+  
+- Verified that varaible `SPARK_ENV_SH` holds a value of `/usr/lib/spark/conf/spark-env.sh`. It also indicates that `SPARK_CONF_DIR` is assigned `/usr/lib/spark/conf`.
+
+
+
+  
+<br> 
+
+### [*spark-submit*](https://github.com/apache/spark/blob/master/bin/spark-submit) in */usr/lib/spark/bin*
+
+<br>
+
+ 
+```shell
+#!/usr/bin/env bash
+
+...
+
+if [ -z "${SPARK_HOME}" ]; then
+  source "$(dirname "$0")"/find-spark-home
+fi
+
+# disable randomized hash for string in Python 3.3+
+export PYTHONHASHSEED=0
+
+exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
+```
+
+  
+- `exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"`
+
+   - `org.apache.spark.deploy.SparkSubmit` is defined in [scala/org/apache/spark/deploy/SparkSubmit.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
+
+
+
+
 
 
 <br>
@@ -146,16 +236,6 @@ fi
 
 ```shell
 #!/usr/bin/env bash
-
-...
-
-if [ -z "${SPARK_HOME}" ]; then
-  source "$(dirname "$0")"/find-spark-home
-fi
-
-. "${SPARK_HOME}"/bin/load-spark-env.sh
-. "${SPARK_HOME}"/bin/load-emr-env.sh 2>/dev/null
-
 ...
 # Find the java binary
 if [ -n "${JAVA_HOME}" ]; then
@@ -230,95 +310,12 @@ build_command() {
         ```
         
    - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments passed to *spark-submit*.
-   
-   - Effectively, this executes `/usr/lib/jvm/jre-17/bin/java -Xmx128m  -cp <all files under /usr/lib/spark/jars> org.apache.spark.launcher.Main "$@"`
-
-<br>
-
-### [*load-spark-env.sh*](https://github.com/apache/spark/blob/master/bin/load-spark-env.sh) in */usr/lib/spark/bin*  
-
-<br>
-
-
-```shell
-#!/usr/bin/env bash
-...
-if [ -z "${SPARK_HOME}" ]; then
-  source "$(dirname "$0")"/find-spark-home
-fi
-
-SPARK_ENV_SH="spark-env.sh"
-if [ -z "$SPARK_ENV_LOADED" ]; then
-  export SPARK_ENV_LOADED=1
-
-  export SPARK_CONF_DIR="${SPARK_CONF_DIR:-"${SPARK_HOME}"/conf}"
-
-  SPARK_ENV_SH="${SPARK_CONF_DIR}/${SPARK_ENV_SH}"
-  if [[ -f "${SPARK_ENV_SH}" ]]; then
-    # Promote all variable declarations to environment (exported) variables
-    set -a
-    . ${SPARK_ENV_SH}
-    set +a
-  fi
-fi
-...
-```
-
-- [`set -a`](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#index-set): mark variables which are modified or created for export to the environment of subsequent commands.
-
-- `. ${SPARK_ENV_SH}`: read and execute the code in *spark-env.sh* under `${SPARK_HOME}"/conf`
-  
-- Verified that varaible `SPARK_ENV_SH` holds a value of `/usr/lib/spark/conf/spark-env.sh`. It also indicates that `SPARK_CONF_DIR` is assigned `/usr/lib/spark/conf`.
-
-
-
-<br>
-
-### [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark) in */usr/lib/spark/bin*  
-
-<br>
-  
-
-```shell
-if [ -z "${SPARK_HOME}" ]; then
-  source "$(dirname "$0")"/find-spark-home
-fi
-
-source "${SPARK_HOME}"/bin/load-spark-env.sh
-export _SPARK_CMD_USAGE="Usage: ./bin/pyspark [options]"
-
-...
-
-# Default to standard python3 interpreter unless told otherwise
-if [[ -z "$PYSPARK_PYTHON" ]]; then
-  PYSPARK_PYTHON=python3
-fi
-if [[ -z "$PYSPARK_DRIVER_PYTHON" ]]; then
-  PYSPARK_DRIVER_PYTHON=$PYSPARK_PYTHON
-fi
-export PYSPARK_PYTHON
-export PYSPARK_DRIVER_PYTHON
-export PYSPARK_DRIVER_PYTHON_OPT
-
-...
-# Add the PySpark classes to the Python path:
-export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
-export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.7-src.zip:$PYTHONPATH"
-
-# Load the PySpark shell.py script when ./pyspark is used interactively:
-export OLD_PYTHONSTARTUP="$PYTHONSTARTUP"
-export PYTHONSTARTUP="${SPARK_HOME}/python/pyspark/shell.py"
-
-...
-exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "$@"
-```
-
-- Because */usr/lib/spark/conf/spark-env.sh* on an EMR instance contains `export PYSPARK_PYTHON=/usr/bin/python3`, both `PYSPARK_PYTHON` and `PYSPARK_DRIVER_PYTHON` are set to `/usr/bin/python3`
-
-- Environment variable [`PYTHONSTARTUP`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONSTARTUP) is set to `"${SPARK_HOME}/python/pyspark/shell.py"`, which will be executed automatically when starting a Python intepreter.
-
+ 
 
 - Effectively, this executes `/usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"`
+<br>
+
+
 
 
 <br>
