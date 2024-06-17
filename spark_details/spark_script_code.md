@@ -1,6 +1,6 @@
 
 
-```
+```shell
 [hadoop@ip-xxxx ~]$ env
 SHELL=/bin/bash
 HISTCONTROL=ignoredups
