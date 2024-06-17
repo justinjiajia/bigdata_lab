@@ -19,15 +19,30 @@ export PYTHONHASHSEED=0
 exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 ```
 
-- `${SPARK_HOME}` is initially empty. Verified by additing one line of `echo ${SPARK_HOME}` before the if test;
+- `${SPARK_HOME}` is initially empty. Verified by additing one line of `echo ${SPARK_HOME}` before the if test.
 
-- `if [ -z "${SPARK_HOME}" ];`: check if the value of variable `SPARK_HOME` is of length 0;
+- `if [ -z "${SPARK_HOME}" ];`: check if the value of variable `SPARK_HOME` is of length 0.
 
-- `source "$(dirname "$0")"/find-spark-home`: `source` is a builtin command of the Bash shell. It reads and executes the code from *find-spark-home* under the same directory as *spark-submit* [$(dirname "$0")"/find-spark-home](https://stackoverflow.com/questions/54228196/bash-script-trying-to-get-path-of-script) 
+- `source "$(dirname "$0")"/find-spark-home`:
+  
+   - Placing a list of commands between parentheses causes a subshell environment to be created to execute them.
+     
+   - `dirname "$0"` returns the directory that contains the current script. `$0` represents the name of the script.
 
-- `exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"`: `exec` is a builtin command of the Bash shell. It allows us to execute a command that completely replaces the current process. "$@" represents all the arguments passed to spark-submit.
+   - `"$(dirname "$0")"` is an instance of [command substitution](https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html). It executes command in the list marked by parentheses in a subshell environment and replace the whole thing with the output.
+     
+   - [`source`](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source) is a builtin command of the [Bash shell](https://www.gnu.org/software/bash/manual/html_node/index.html). It reads and executes the code from *find-spark-home* under the same directory in the current shell context.
 
-- `org.apache.spark.deploy.SparkSubmit` is defined in [scala/org/apache/spark/deploy/SparkSubmit.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
+- `export PYTHONHASHSEED=0`: [`export`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html#index-export) is a builtin command of the Bash shell. It marks a name to be passed to child processes in the environment.
+
+  
+- `exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"`
+
+   -  [`exec`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html#index-exec) is a builtin command of the Bash shell. It allows us to execute a command that completely replaces the current process.
+   
+   -  "$@" represents all the arguments passed to spark-submit.
+
+   - `org.apache.spark.deploy.SparkSubmit` is defined in [scala/org/apache/spark/deploy/SparkSubmit.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
 
 
 
@@ -35,6 +50,8 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 
 ### *find-spark-home* in */usr/lib/spark/bin*
 
+    <br>
+    
 ```shell
 #!/usr/bin/env bash
 ...
@@ -60,13 +77,15 @@ else
 fi
 ```
 
-- `elif [ ! -f "$FIND_SPARK_HOME_PYTHON_SCRIPT" ];`: check if *find_spark_home.py* doesn't exist in the same directory as *find-spark-home*.
+- `elif [ ! -f "$FIND_SPARK_HOME_PYTHON_SCRIPT" ];`: check if file *find_spark_home.py* doesn't exist in the same directory as *find-spark-home*.
 
-- `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: `export` is a builtin command of the Bash shell. We frist assign the absolute path of the parent directory (i.e., */usr/lib/spark/*) to `SPARK_HOME`. Then `export` marks the variable to be passed to child processes 
+- `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: include a nested command substitution. Assign the absolute path of the parent directory (i.e., */usr/lib/spark/*) to `SPARK_HOME`, and mark the name to be passed to child processes in the environment.
 
   <br>
   
 ### *spark-class* in */usr/lib/spark/bin* 
+
+  <br>
 
 The source code can also be found at https://github.com/apache/spark/blob/master/bin/spark-class
 
