@@ -247,8 +247,7 @@ exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "
 - Environment variable [`PYTHONSTARTUP`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONSTARTUP) is set to `"${SPARK_HOME}/python/pyspark/shell.py"`, which will be executed automatically when we start a Python intepreter.
 
 - Effectively, this executes `
-java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit \
-pyspark-shell-main --name "PySparkShell" "$@"`
+java -Xmx128m -cp /usr/lib/spark/jars org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"`
 
 
 
