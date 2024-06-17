@@ -1,4 +1,5 @@
 
+List all environment variables
 
 ```shell
 [hadoop@ip-xxxx ~]$ env
@@ -40,6 +41,7 @@ BASH_FUNC_which%%=() {  ( alias;
  eval ${which_declare} ) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot "$@"
 }
 _=/usr/bin/env
+
 [hadoop@ip-xxxx ~]$ command -v java
 /usr/bin/java
 ```
