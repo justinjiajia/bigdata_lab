@@ -23,13 +23,13 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 
 - `${SPARK_HOME}` is initially empty. Verified by additing one line of `echo ${SPARK_HOME}` before the if test.
 
-- `if [ -z "${SPARK_HOME}" ];`: check if the value of variable `SPARK_HOME` is of length 0.
+- `if [ -z "${SPARK_HOME}" ];`: check if the value of variable `SPARK_HOME` is of length 0. Check out [conditional expressions](https://www.gnu.org/software/bash/manual/html_node/Bash-Conditional-Expressions.html) for different options Bash supports.
 
 - `source "$(dirname "$0")"/find-spark-home`:
   
    - Placing a list of commands between parentheses causes a subshell environment to be created to execute them.
      
-   - `dirname "$0"` returns the directory that contains the current script. `$0` represents the name of the script.
+   - `dirname "$0"` returns the directory that contains the current script. [`$0`](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-0) represents the name of the script.
 
    - `"$(dirname "$0")"` is an instance of [command substitution](https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html). It executes command in the list marked by parentheses in a subshell environment and replace the whole thing with the output.
      
@@ -42,7 +42,7 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 
    -  [`exec`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html#index-exec) is a builtin command of the Bash shell. It allows us to execute a command that completely replaces the current process.
    
-   -  "$@" represents all the arguments passed to spark-submit.
+   -  ["$@"](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_0040) represents all the arguments passed to *spark-submit*.
 
    - `org.apache.spark.deploy.SparkSubmit` is defined in [scala/org/apache/spark/deploy/SparkSubmit.scala](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
 
@@ -81,7 +81,7 @@ else
 fi
 ```
 
-- `elif [ ! -f "$FIND_SPARK_HOME_PYTHON_SCRIPT" ];`: check if file *find_spark_home.py* doesn't exist in the same directory as *find-spark-home*.
+- `elif [ ! -f "$FIND_SPARK_HOME_PYTHON_SCRIPT" ];`: test if file *find_spark_home.py* doesn't exist in the same directory as *find-spark-home*.
 
 - `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: assign the absolute path of the parent directory (i.e., */usr/lib/spark/*) to `SPARK_HOME` and mark the name to be passed to child processes in the environment.
 
