@@ -290,7 +290,7 @@ the Python commands in that file are executed before the first prompt is display
   }
   ```
 
-- `private List<String> buildPySparkShellCommand(Map<String, String> env)`
+- [`private List<String> buildPySparkShellCommand(Map<String, String> env)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L262C3-L318C4)
 
   - `appResource = PYSPARK_SHELL_RESOURCE;`. Note `static final String PYSPARK_SHELL_RESOURCE = "pyspark-shell";`
     
