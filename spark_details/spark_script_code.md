@@ -237,6 +237,10 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 ```shell
 #!/usr/bin/env bash
 ...
+
+. "${SPARK_HOME}"/bin/load-spark-env.sh
+. "${SPARK_HOME}"/bin/load-emr-env.sh 2>/dev/null
+...
 # Find the java binary
 if [ -n "${JAVA_HOME}" ]; then
   RUNNER="${JAVA_HOME}/bin/java"
@@ -285,7 +289,9 @@ build_command() {
      ```shell
      JAVA17_HOME=/usr/lib/jvm/jre-17
      export JAVA_HOME=$JAVA17_HOME
-     ``` 
+     ```
+
+- `. "${SPARK_HOME}"/bin/load-emr-env.sh 2>/dev/null`: only available in *spark-class* on an EMR instance; load EMR specific environment variables  
 
 - `if [ -d "${SPARK_HOME}/jars" ];`: check if directory `${SPARK_HOME}/jars` exists or not;
 
@@ -319,6 +325,32 @@ build_command() {
 
 
 <br>
+
+| Command | Value |Source |
+|---|-----|--------|
+| `SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"` | `/usr/lib/spark` | set by *find-spark-home*  |
+|`SPARK_ENV_LOADED=1 `     |  1 | set by *load-spark-env.sh* |
+|`SPARK_CONF_DIR="${SPARK_CONF_DIR:-"${SPARK_HOME}"/conf}"`|  `/usr/lib/spark/conf` | set by *load-spark-env.sh* |
+| `JAVA17_HOME=/usr/lib/jvm/jre-17` | `/usr/lib/jvm/jre-17`| set by *spark-env.sh* |
+|  `JAVA_HOME=$JAVA17_HOME` | `/usr/lib/jvm/jre-17` | overridden by *spark-env.sh* |
+| `SPARK_LOG_DIR=${SPARK_LOG_DIR:-/var/log/spark}` | |  set by *spark-env.sh* |
+| `HADOOP_HOME=${HADOOP_HOME:-/usr/lib/hadoop}` |`/usr/lib/hadoop` | set by *spark-env.sh* |
+| `HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-/etc/hadoop/conf}` |`/etc/hadoop/conf` | set by *spark-env.sh* |
+| `HIVE_CONF_DIR=${HIVE_CONF_DIR:-/etc/hive/conf}` |  `/etc/hive/conf`  | set by *spark-env.sh* |
+| `HUDI_CONF_DIR=${HUDI_CONF_DIR:-/etc/hudi/conf}` | `/etc/hudi/conf` | set by *spark-env.sh* |
+|`STANDALONE_SPARK_MASTER_HOST=ip-xxxx.ec2.internal`|  `ip-xxxx.ec2.internal` | set by *spark-env.sh* |
+| `SPARK_MASTER_PORT=7077`| `7077` | set by *spark-env.sh* |
+|`SPARK_MASTER_IP=$STANDALONE_SPARK_MASTER_HOST` | `ip-xxxx.ec2.internal` | set by *spark-env.sh* |
+|`SPARK_MASTER_WEBUI_PORT=8080` | `8080` | set by *spark-env.sh* |
+|`SPARK_WORKER_DIR=${SPARK_WORKER_DIR:-/var/run/spark/work} | `/var/run/spark/work`| set by *spark-env.sh* |
+|`SPARK_WORKER_PORT=7078`| `7078` | set by *spark-env.sh* |
+|`SPARK_WORKER_WEBUI_PORT=8081`| `8081` | set by *spark-env.sh* |
+|`HIVE_SERVER2_THRIFT_BIND_HOST=0.0.0.0`| `0.0.0.0` | set by *spark-env.sh* |
+|`HIVE_SERVER2_THRIFT_PORT=10001| `10001` | set by *spark-env.sh* |
+|`AWS_SPARK_REDSHIFT_CONNECTOR_SERVICE_NAME=EMR`| `EMR` | set by *spark-env.sh* |
+|`SPARK_DAEMON_JAVA_OPTS="$SPARK_DAEMON_JAVA_OPTS -XX:+ExitOnOutOfMemoryError"` <br>  | `-XX:+ExitOnOutOfMemoryError -DAWS_ACCOUNT_ID=154048744197 -DEMR_CLUSTER_ID=j-2FBBKCWZEI5L4 -DEMR_RELEASE_LABEL=emr-7.1.0`  |set by *spark-env.sh* <br> later appended by  *load-emr-env.sh* (EMR specific) |
+|`SPARK_PUBLIC_DNS=ip-xxxx.ec2.internal` | `ip-xxxx.ec2.internal` |set by *spark-env.sh* |
+|`PYSPARK_PYTHON=/usr/bin/python3`| `/usr/bin/python3` |set by *spark-env.sh* |
 
 
 ### How to modify a file owned by `root`?
