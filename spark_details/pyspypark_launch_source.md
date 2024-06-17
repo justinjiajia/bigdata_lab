@@ -123,8 +123,11 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - `List<String> bashCmd = prepareBashCommand(cmd, env);`
 
-- `["env", "LD_LIBRARY_PATH=hive-jackson/*", "PYSPARK_SUBMIT_ARGS='--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'", "/usr/bin/python3"]`
+    - bashCmd equals `["env", "LD_LIBRARY_PATH=hive-jackson/*", "PYSPARK_SUBMIT_ARGS='--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'", "/usr/bin/python3"]`
 
+    - The value of environment variable `PYSPARK_SUBMIT_ARGS` is verified (adding a printing step to a proper place in *java-gateway.py*; the output was `"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"`)
+ 
+    - The output printed for environment variable `LD_LIBRARY_PATH` was `/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server`. why??
 
 
 
