@@ -169,12 +169,7 @@ build_command() {
         
    - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments passed to *spark-submit*.
    
-   - Effectively, this executes
-     ```shell
-     java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"
-    ```
-
-
+   - Effectively, this executes `java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"`
 
 <br>
 
@@ -215,11 +210,11 @@ fi
 
 
 
-  <br>
+<br>
 
 ### [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark) in */usr/lib/spark/bin*  
 
- <br>
+<br>
   
 
 ```shell
@@ -251,279 +246,18 @@ exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "
 
 - Environment variable [`PYTHONSTARTUP`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONSTARTUP) is set to `"${SPARK_HOME}/python/pyspark/shell.py"`, which will be executed automatically when we start a Python intepreter.
 
-- Effectively, this executes
-```shell
+- Effectively, this executes `
 java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit \
-pyspark-shell-main --name "PySparkShell" "$@"
-```
-
-### class Main in `/usr/lib/spark/jars/spark-launcher*.jar`
-
-Source code can be found at https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java
-
-```java
-package org.apache.spark.launcher;
-
-...
-
-import static org.apache.spark.launcher.CommandBuilderUtils.*;
-
-...
-
-  public static void main(String[] argsArray) throws Exception {
-    checkArgument(argsArray.length > 0, "Not enough arguments: missing class name.");
-
-    List<String> args = new ArrayList<>(Arrays.asList(argsArray));
-    String className = args.remove(0);
-
-    boolean printLaunchCommand = !isEmpty(System.getenv("SPARK_PRINT_LAUNCH_COMMAND"));
-    Map<String, String> env = new HashMap<>();
-    List<String> cmd;
-    if (className.equals("org.apache.spark.deploy.SparkSubmit")) {
-      try {
-        AbstractCommandBuilder builder = new SparkSubmitCommandBuilder(args);
-        cmd = buildCommand(builder, env, printLaunchCommand);
-      } catch (IllegalArgumentException e) {
-        printLaunchCommand = false;
-        System.err.println("Error: " + e.getMessage());
-        System.err.println();
-
-        MainClassOptionParser parser = new MainClassOptionParser();
-        try {
-          parser.parse(args);
-        } catch (Exception ignored) {
-          // Ignore parsing exceptions.
-        }
-
-        List<String> help = new ArrayList<>();
-        if (parser.className != null) {
-          help.add(parser.CLASS);
-          help.add(parser.className);
-        }
-        help.add(parser.USAGE_ERROR);
-        AbstractCommandBuilder builder = new SparkSubmitCommandBuilder(help);
-        cmd = buildCommand(builder, env, printLaunchCommand);
-      }
-    } else {
-      AbstractCommandBuilder builder = new SparkClassCommandBuilder(className, args);
-      cmd = buildCommand(builder, env, printLaunchCommand);
-    }
-
-    // test for shell environments, to enable non-Windows treatment of command line prep
-    boolean shellflag = !isEmpty(System.getenv("SHELL"));
-    if (isWindows() && !shellflag) {
-      System.out.println(prepareWindowsCommand(cmd, env));
-    } else {
-      // A sequence of NULL character and newline separates command-strings and others.
-      System.out.println('\0');
-
-      // In bash, use NULL as the arg separator since it cannot be used in an argument.
-      List<String> bashCmd = prepareBashCommand(cmd, env);
-      for (String c : bashCmd) {
-        System.out.print(c.replaceFirst("\r$",""));
-        System.out.print('\0');
-      }
-    }
-  }
-```
+pyspark-shell-main --name "PySparkShell" "$@"`
 
 
 
-https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java#L62
-
-
-https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java
-
-
-```java
-...
-import static org.apache.spark.launcher.CommandBuilderUtils.*;
-
-/**
- * Abstract Spark command builder that defines common functionality.
- */
-abstract class AbstractCommandBuilder {
-
-  ...
-
-  AbstractCommandBuilder() {
-    this.appArgs = new ArrayList<>();
-    this.childEnv = new HashMap<>();
-    this.conf = new HashMap<>();
-    this.files = new ArrayList<>();
-    this.jars = new ArrayList<>();
-    this.pyFiles = new ArrayList<>();
-  }
-
- ...
-  Map<String, String> getEffectiveConfig() throws IOException {
-    if (effectiveConfig == null) {
-      effectiveConfig = new HashMap<>(conf);
-      Properties p = loadPropertiesFile();
-      p.stringPropertyNames().forEach(key ->
-        effectiveConfig.computeIfAbsent(key, p::getProperty));
-      effectiveConfig.putIfAbsent(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH,
-        SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH_VALUE);
-    }
-    return effectiveConfig;
-  }
-
-  /**
-   * Loads the configuration file for the application, if it exists. This is either the
-   * user-specified properties file, or the spark-defaults.conf file under the Spark configuration
-   * directory.
-   */
-  private Properties loadPropertiesFile() throws IOException {
-    Properties props = new Properties();
-    File propsFile;
-    if (propertiesFile != null) {
-      propsFile = new File(propertiesFile);
-      checkArgument(propsFile.isFile(), "Invalid properties file '%s'.", propertiesFile);
-    } else {
-      propsFile = new File(getConfDir(), DEFAULT_PROPERTIES_FILE);
-    }
-
-    if (propsFile.isFile()) {
-      try (InputStreamReader isr = new InputStreamReader(
-          new FileInputStream(propsFile), StandardCharsets.UTF_8)) {
-        props.load(isr);
-        for (Map.Entry<Object, Object> e : props.entrySet()) {
-          e.setValue(e.getValue().toString().trim());
-        }
-      }
-    }
-    return props;
-  }
-
-  private String getConfDir() {
-    String confDir = getenv("SPARK_CONF_DIR");
-    return confDir != null ? confDir : join(File.separator, getSparkHome(), "conf");
-  }
-  ...
-}
-```
-
-It seems that the property file is `/usr/lib/spark/confspark-defaults.conf`
-
-https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java
-
-https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L28C1-L32C53
-
-```java
-...
-class CommandBuilderUtils {
-
-  static final String DEFAULT_MEM = "1g";
-  static final String DEFAULT_PROPERTIES_FILE = "spark-defaults.conf";
-  static final String ENV_SPARK_HOME = "SPARK_HOME";
-
-  ...
-
-}
-```
-
-https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java
-
-```java
-/**
- * Special command builder for handling a CLI invocation of SparkSubmit.
- * <p>
- * This builder adds command line parsing compatible with SparkSubmit. It handles setting
- * driver-side options and special parsing behavior needed for the special-casing certain internal
- * Spark applications.
- * <p>
- * This class has also some special features to aid launching shells (pyspark and sparkR) and also
- * examples.
- */
-class SparkSubmitCommandBuilder extends AbstractCommandBuilder {
-
-  /**
-   * Name of the app resource used to identify the PySpark shell. The command line parser expects
-   * the resource name to be the very first argument to spark-submit in this case.
-   *
-   * NOTE: this cannot be "pyspark-shell" since that identifies the PySpark shell to SparkSubmit
-   * (see java_gateway.py), and can cause this code to enter into an infinite loop.
-   */
-  static final String PYSPARK_SHELL = "pyspark-shell-main";
-
-  /**
-   * This is the actual resource name that identifies the PySpark shell to SparkSubmit.
-   */
-  static final String PYSPARK_SHELL_RESOURCE = "pyspark-shell";
-
-  /**
-   * Name of the app resource used to identify the SparkR shell. The command line parser expects
-   * the resource name to be the very first argument to spark-submit in this case.
-   *
-   * NOTE: this cannot be "sparkr-shell" since that identifies the SparkR shell to SparkSubmit
-   * (see sparkR.R), and can cause this code to enter into an infinite loop.
-   */
-  static final String SPARKR_SHELL = "sparkr-shell-main";
-
-  /**
-   * This is the actual resource name that identifies the SparkR shell to SparkSubmit.
-   */
-  static final String SPARKR_SHELL_RESOURCE = "sparkr-shell";
-
-  /**
-   * Name of app resource used to identify examples. When running examples, args[0] should be
-   * this name. The app resource will identify the example class to run.
-   */
-  static final String RUN_EXAMPLE = "run-example";
-
-  /**
-   * Prefix for example class names.
-   */
-  static final String EXAMPLE_CLASS_PREFIX = "org.apache.spark.examples.";
-
-  ...
-
-    /**
-   * This constructor is used when invoking spark-submit; it parses and validates arguments
-   * provided by the user on the command line.
-   */
-  SparkSubmitCommandBuilder(List<String> args) {
-    this.allowsMixedArguments = false;
-    this.parsedArgs = new ArrayList<>();
-    boolean isExample = false;
-    List<String> submitArgs = args;
-    this.userArgs = Collections.emptyList();
-
-    if (args.size() > 0) {
-      switch (args.get(0)) {
-        case PYSPARK_SHELL:
-          this.allowsMixedArguments = true;
-          appResource = PYSPARK_SHELL;
-          submitArgs = args.subList(1, args.size());
-          break;
-
-        case SPARKR_SHELL:
-          this.allowsMixedArguments = true;
-          appResource = SPARKR_SHELL;
-          submitArgs = args.subList(1, args.size());
-          break;
-
-        case RUN_EXAMPLE:
-          isExample = true;
-          appResource = findExamplesAppJar();
-          submitArgs = args.subList(1, args.size());
-      }
-
-      this.isExample = isExample;
-      OptionParser parser = new OptionParser(true);
-      parser.parse(submitArgs);
-      this.isSpecialCommand = parser.isSpecialCommand;
-    } else {
-      this.isExample = isExample;
-      this.isSpecialCommand = true;
-    }
-  }
-```
-
+<br>
 
 
 ### How to modify a file owned by `root`?
 
+<br>
 
 Add `hadoop` to the `root` group:
 
