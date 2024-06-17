@@ -258,9 +258,14 @@ java -Xmx128m -cp /usr/lib/spark/jars org.apache.spark.launcher.Main org.apache.
 
 <br>
 
+```shell
+$ groups hadoop
+hadoop : hadoop hdfsadmingroup
+```
+
 Add `hadoop` to the `root` group:
 
-```
+```shell
 $ sudo usermod -a -G root hadoop
 $ groups hadoop
 hadoop : hadoop root hdfsadmingroup
