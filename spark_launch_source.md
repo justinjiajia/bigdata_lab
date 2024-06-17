@@ -29,6 +29,8 @@ export PYTHONSTARTUP="${SPARK_HOME}/python/pyspark/shell.py"
 exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "$@"
 ```
 
+- Environment variable `PYTHONSTARTUP` is set to  `"${SPARK_HOME}/python/pyspark/shell.py"`, which will be executed automatically when we start the python intepreter.
+
 <br>
 
 ### [*/bin/spark-submit*](https://github.com/apache/spark/blob/master/bin/spark-submit) 
@@ -428,13 +430,15 @@ the Python commands in that file are executed before the first prompt is display
 
 
 
-
+<br>
 
 
 
 ### [*java/org/apache/spark/launcher/SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java)
 
-Define constants used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) in the [beginning](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39C3-L80C44).
+<br>
+
+Include the [definitions](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39C3-L80C44) of instance-level constant fields [Define constants] used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) 
 
   
 
