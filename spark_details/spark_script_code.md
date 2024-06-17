@@ -1,5 +1,5 @@
 
-List all environment variables
+List all environment variables on an EMR instance:
 
 ```shell
 [hadoop@ip-xxxx ~]$ env
