@@ -45,7 +45,8 @@ _=/usr/bin/env
 [hadoop@ip-xxxx ~]$ command -v java
 /usr/bin/java
 ```
- 
+
+<br> 
 
 ### [*spark-submit*](https://github.com/apache/spark/blob/master/bin/spark-submit) in */usr/lib/spark/bin*
 
@@ -143,7 +144,6 @@ fi
 <br>
 
 
-
 ```shell
 #!/usr/bin/env bash
 
@@ -183,6 +183,13 @@ else
   LAUNCH_CLASSPATH="$SPARK_JARS_DIR/*"
 fi
 
+# Add the launcher build dir to the classpath if requested.
+if [ -n "$SPARK_PREPEND_CLASSES" ]; then
+  LAUNCH_CLASSPATH="${SPARK_HOME}/launcher/target/scala-$SPARK_SCALA_VERSION/classes:$LAUNCH_CLASSPATH"
+fi
+
+...
+
 build_command() {
   "$RUNNER" -Xmx128m $SPARK_LAUNCHER_OPTS -cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main "$@"
   printf "%d\0" $?
@@ -192,6 +199,14 @@ build_command() {
 
 - `. "${SPARK_HOME}"/bin/load-spark-env.sh`: `.` means `source`. See https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source
 
+   - *load-spark-env.sh* contains commands that load variables from *spark-env.sh*.
+
+   - On an EMR instance, `JAVA_HOME` is reset by *spark-env.sh* as follows:
+     ```shell
+     JAVA17_HOME=/usr/lib/jvm/jre-17
+     export JAVA_HOME=$JAVA17_HOME
+     ``` 
+
 - `if [ -d "${SPARK_HOME}/jars" ];`: check if directory `${SPARK_HOME}/jars` exists or not;
 
   -  Variable `SPARK_HOME` has been assigned a value of `/usr/lib/spark/` when executing *find-spark-home*
@@ -200,7 +215,7 @@ build_command() {
 
     - The flag `-Xmx` specifies the maximum memory allocation pool for a Java Virtual Machine (JVM)
       
-    -  Variable `LAUNCH_CLASSPATH` holds a value of `/usr/lib/spark/jars/*`, and variable `SPARK_LAUNCHER_OPTS` holds an empty value. Verified by adding `echo` commands before `build_command()`
+    -  Verified that variable `LAUNCH_CLASSPATH` holds a value of `/usr/lib/spark/jars/*`, and both variables `$SPARK_PREPEND_CLASSES` and `SPARK_LAUNCHER_OPTS` hold an empty value. 
   
     - `-cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main`
       
@@ -216,7 +231,7 @@ build_command() {
         
    - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments passed to *spark-submit*.
    
-   - Effectively, this executes `java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"`
+   - Effectively, this executes `/usr/lib/jvm/jre-17/bin/java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"`
 
 <br>
 
