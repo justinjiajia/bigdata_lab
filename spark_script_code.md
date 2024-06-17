@@ -48,7 +48,7 @@ exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit "$@"
 
 
 
-    <br>
+<br>
 
 ### [*find-spark-home*](https://github.com/apache/spark/blob/master/bin/find-spark-home) in */usr/lib/spark/bin*
 
@@ -87,7 +87,8 @@ fi
 
   - It includes a nested command substitution.  
 
-  <br>
+
+<br>
   
 ### [*spark-class*](https://github.com/apache/spark/blob/master/bin/spark-class) in */usr/lib/spark/bin* 
 
@@ -165,12 +166,14 @@ build_command() {
         org/apache/spark/launcher/Main$1.class
         org/apache/spark/launcher/Main.class
         ```
+        
    - The `$@`in `build_command()` includes `org.apache.spark.deploy.SparkSubmit` and all the arguments passed to *spark-submit*.
    
-  - Effectively, this executes
-    ```shell
-    java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"
-   ```
+   - Effectively, this executes
+     ```shell
+     java -Xmx128m  -cp /usr/lib/spark/jars org.apache.spark.launcher.Main "$@"
+    ```
+
 
 
 <br>
@@ -178,7 +181,6 @@ build_command() {
 ### [*load-spark-env.sh*](https://github.com/apache/spark/blob/master/bin/load-spark-env.sh) in */usr/lib/spark/bin*  
 
 <br>
-
 
 
 ```shell
