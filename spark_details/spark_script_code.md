@@ -46,6 +46,12 @@ _=/usr/bin/env
 /usr/bin/java
 ```
 
+Experiment with the following code:
+
+```shell
+pyspark --master yarn --driver-memory=2g --executor-memory=2g
+```
+
 
 
 <br>
