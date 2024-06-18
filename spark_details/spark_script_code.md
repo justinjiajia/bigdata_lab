@@ -187,7 +187,7 @@ fi
 
 - [`set -a`](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#index-set): mark variables which are modified or created for export to the environment of subsequent commands.
 
-- `. ${SPARK_ENV_SH}`: read and execute the code in *spark-env.sh* under `${SPARK_HOME}"/conf`
+- `. ${SPARK_ENV_SH}`: [`.`](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source) means `source`; read and execute the code in *spark-env.sh* under `${SPARK_HOME}"/conf`
   
 - Verified that varaible `SPARK_ENV_SH` holds a value of `/usr/lib/spark/conf/spark-env.sh`. It also indicates that `SPARK_CONF_DIR` is assigned `/usr/lib/spark/conf`.
 
@@ -319,7 +319,7 @@ CMD=("${CMD[@]:0:$LAST}")
 exec "${CMD[@]}"
 ```
 
-- `. "${SPARK_HOME}"/bin/load-spark-env.sh`: [`.`](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source) means `source`
+- `. "${SPARK_HOME}"/bin/load-spark-env.sh`
 
    - *load-spark-env.sh* contains commands that load variables from *spark-env.sh*.
 
