@@ -4,7 +4,7 @@
 env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell" LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server /usr/bin/python3
 ```
 
-- [`env`](https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html) runs a command with a modified environment.
+- [`env`](https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html) runs a command with a modified environment. Changes introduced by `env` only apply to the command that is executed by `env` and do not persist in the current shell environment. 
 
 - `LD_LIBRARY_PATH` tells the dynamic link loader (a.k.a. dynamic linker; find and load the shared libraries needed by a program, prepare the program to run, and then run it; typically named `ld. so` on Linux) where to search for the dynamic shared libraries an application was linked against.
 
