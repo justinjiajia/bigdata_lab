@@ -446,7 +446,10 @@ exec "${CMD[@]}"
 
 - Validate if `$LAUNCHER_EXIT_CODE` is an integer. 
 
-- Remove the last element (exit code) from the `CMD` array. Use `exec` to replace the current shell with the command stored in `CMD`.
+- `CMD=("${CMD[@]:0:$LAST}")` remove the last element (exit code) from the `CMD` array.
+
+- `exec "${CMD[@]}"` replaces the current shell with the command stored in `CMD`.
+
 
 
 <br>
