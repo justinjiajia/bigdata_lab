@@ -41,7 +41,7 @@ env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--n
           /lib64/ld-linux-x86-64.so.2 (0x00007fcab7308000)
           ```
       
-      - The last digit in a name above is a library version number
+          - The last digit in a name above is a library version number
 
     - To locate the libraries, the dynamic linker searches multiple resources (environment variable `LD_LIBRARY_PATH` is one of them) with the order explained [here](https://man7.org/linux/man-pages/man8/ld.so.8.html).
  
