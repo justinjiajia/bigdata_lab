@@ -216,6 +216,10 @@ class SparkContext:
 <br>
 
 ```python
+...
+import shlex
+...
+
 def launch_gateway(conf=None, popen_kwargs=None):
     """
     launch jvm gateway
@@ -349,6 +353,9 @@ def launch_gateway(conf=None, popen_kwargs=None):
     return gateway
 ```
 
+- `submit_args = os.environ.get("PYSPARK_SUBMIT_ARGS", "pyspark-shell")`
+  
+- `shlex.split(s, comments=False, posix=True)`: Split the string `s` using shell-like syntax. 
 
 
 
