@@ -386,7 +386,7 @@ exec "${CMD[@]}"
  
       - If the `-r` option is given, backslashes in the input do not act as an escape character. 
 
-      - It uses `$IFS` to split the input into words. The special shell variable [`IFS`](https://www.gnu.org/software/bash/manual/html_node/Word-Splitting.html) determines how Bash recognizes word boundaries while splitting a sequence of character strings. Its default value is a three-character string comprising a space, tab, and newline (to see this, run `echo $IFS | ).  The following code shows the default value of $IFS$:
+      - It uses `$IFS` to split the input into words. The special shell variable [`IFS`](https://www.gnu.org/software/bash/manual/html_node/Word-Splitting.html) determines how Bash recognizes word boundaries while splitting a sequence of character strings. Its default value is a three-character string comprising a space, tab, and newline. The following code shows the default value of `IFS`:
         ```shell
         [hadoop@ip-xxxx ~]$ echo "$IFS" | cat -et
          ^I$
@@ -414,30 +414,28 @@ exec "${CMD[@]}"
    ```
 
 
--  `"${CMD[@]}"` expands each element of `CMD` to a separate word.
-
-    - Adding the code snippet below to the shell script
-      ```shell
-      for tp_str in ${CMD[@]}; do
-        echo $tp_str
-      done
-      ```
-      prints
-      ```
-      env
-      PYSPARK_SUBMIT_ARGS="--master"
-      "yarn"
-      "--conf"
-      "spark.driver.memory=2g"
-      "--name"
-      "PySparkShell"
-      "--executor-memory"
-      "2g"
-      "pyspark-shell"
-      LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server
-      /usr/bin/python3
-      0
-      ```
+-  `"${CMD[@]}"` expands each element of `CMD` to a separate word. Adding the code snippet below to the shell script
+    ```shell
+    for tp_str in ${CMD[@]}; do
+      echo $tp_str
+    done
+    ```
+    prints
+    ```
+    env
+    PYSPARK_SUBMIT_ARGS="--master"
+    "yarn"
+    "--conf"
+    "spark.driver.memory=2g"
+    "--name"
+    "PySparkShell"
+    "--executor-memory"
+    "2g"
+    "pyspark-shell"
+    LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server
+    /usr/bin/python3
+    0
+    ```
 
       
 - `${#CMD[@]}` expands to the length of ${name[@]}. So `COUNT` is assgined the number of elements in the `CMD` array.
