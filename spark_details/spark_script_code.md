@@ -357,11 +357,11 @@ exec "${CMD[@]}"
    
      - Effectively, this executes `/usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"`
   
- - `printf "%d\0" $?`       
- 
-   - [`$?`](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_003f) expands to the exit status of the most recently executed foreground pipeline.
- 
-   - [The `printf` statement](https://www.gnu.org/software/gawk/manual/html_node/Basic-Printf.html) does not automatically append a newline to its output. 
+  - `printf "%d\0" $?`       
+  
+     - [`$?`](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_003f) expands to the exit status of the most recently executed foreground pipeline.
+   
+     - [The `printf` statement](https://www.gnu.org/software/gawk/manual/html_node/Basic-Printf.html) does not automatically append a newline to its output. 
 
 verified that calling `build_command "$@"`
 returns 
