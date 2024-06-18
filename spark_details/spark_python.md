@@ -24,22 +24,22 @@ env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--n
 
       - There is the [`ldd` command](https://man7.org/linux/man-pages/man1/ldd.1.html) that lists both direct and indirect dependencies (libraries required by other libraries) at runtime and the paths resolved by the dynamic linker:
       
-      ```shell
-      [hadoop@ip-xxxx ~]$ which python3
-      /usr/bin/python3
-      [hadoop@ip-xxxx ~]$ ldd $(which python3)
-      linux-vdso.so.1 (0x00007ffd981a1000)
-      libpython3.9.so.1.0 => /lib64/libpython3.9.so.1.0 (0x00007fb61f800000)
-      libc.so.6 => /lib64/libc.so.6 (0x00007fb61f400000)
-      libm.so.6 => /lib64/libm.so.6 (0x00007fb61f725000)
-      /lib64/ld-linux-x86-64.so.2 (0x00007fb61fbe2000)
-
-      [hadoop@ip-xxxx ~]$ ldd /lib64/libpython3.9.so.1.0
-      linux-vdso.so.1 (0x00007ffcc2551000)
-      libm.so.6 => /lib64/libm.so.6 (0x00007fcab7224000)
-      libc.so.6 => /lib64/libc.so.6 (0x00007fcab6a00000)
-      /lib64/ld-linux-x86-64.so.2 (0x00007fcab7308000)
-      ```
+          ```shell
+          [hadoop@ip-xxxx ~]$ which python3
+          /usr/bin/python3
+          [hadoop@ip-xxxx ~]$ ldd $(which python3)
+          linux-vdso.so.1 (0x00007ffd981a1000)
+          libpython3.9.so.1.0 => /lib64/libpython3.9.so.1.0 (0x00007fb61f800000)
+          libc.so.6 => /lib64/libc.so.6 (0x00007fb61f400000)
+          libm.so.6 => /lib64/libm.so.6 (0x00007fb61f725000)
+          /lib64/ld-linux-x86-64.so.2 (0x00007fb61fbe2000)
+    
+          [hadoop@ip-xxxx ~]$ ldd /lib64/libpython3.9.so.1.0
+          linux-vdso.so.1 (0x00007ffcc2551000)
+          libm.so.6 => /lib64/libm.so.6 (0x00007fcab7224000)
+          libc.so.6 => /lib64/libc.so.6 (0x00007fcab6a00000)
+          /lib64/ld-linux-x86-64.so.2 (0x00007fcab7308000)
+          ```
       
       - The last digit in a name above is a library version number
 
