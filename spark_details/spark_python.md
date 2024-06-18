@@ -10,7 +10,7 @@ env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--n
 
     - Many standard library modules and third party libraries in Python are implemented as C-based Modules. The dynamic linker is responsible for loading shared libraries (files with extension *.so*) corresponding to these modules.
  
-    - The dynamic linker scans the list of shared library names embedded in the executable (e.g., `python3`), and load 
+    - The dynamic linker scans the list of shared library names embedded in the executable (e.g., `python3`).
 
       - [`readelf -d`](https://man7.org/linux/man-pages/man1/readelf.1.html) shows the dynamic section of the ELF file, listing the direct dependencies (shared libraries) that the executable was linked against.
         ```shell
