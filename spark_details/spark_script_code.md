@@ -448,7 +448,7 @@ exec "${CMD[@]}"
 
 - `CMD=("${CMD[@]:0:$LAST}")` remove the last element (exit code) from the `CMD` array.
 
-- `exec "${CMD[@]}"` replaces the current shell with the command stored in `CMD`.
+- `exec "${CMD[@]}"` replaces the current shell with the command stored in `CMD`. It executes *python/pyspark/shell.py* and starts a Python intepreter.
 
 
 
