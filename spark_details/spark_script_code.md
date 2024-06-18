@@ -371,7 +371,7 @@ exec "${CMD[@]}"
 
 - `set +o posix`: disables POSIX mode, allowing for more flexible shell features, such as process substitution.
 
-- `CMD = ()`: initialize `CMD` to an array
+- `CMD=()`: initialize `CMD` to an array
 
 - The `while` loop reads parts of the output of `build_command "$@"` delineated by a custom delimiter `DELIM`
 
@@ -404,10 +404,10 @@ exec "${CMD[@]}"
     
    - `ARG=${_ARG//$'\r'}`: [`${parameter//pattern`](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) removes any carriage return (`\r`) characters from the argument.
 
-   - If `CMD_START_FLAG` is `true`, [`CMD+=("$ARG")`](https://www.gnu.org/software/bash/manual/bash.html#Arrays) add `$ARG` to the `CMD` array.
+   - If `CMD_START_FLAG` is `true`, [`CMD+=("$ARG")`](https://www.gnu.org/software/bash/manual/bash.html#Arrays) add `"$ARG"` to the `CMD` array.
  
-       - If `"$ARG"` contains spaces, it will be treated as a space-separated list of elements, and thereby add multiple elements to the `CMD` array.
-
+       - It is important to quote `$ARG`; otherwise, it will be added as multiple elements due to the presence of spaces.
+         
    - If not, check for the null character (`$'\0'`); when encountered, switch the delimiter to an empty string (`DELIM=''`) and set `CMD_START_FLAG` to `true`.
 
         - Once `DELIM` is set to `''`, `-d ''` indicates that each input should be delimited by a null string or `$'\0'`. 
@@ -455,8 +455,22 @@ exec "${CMD[@]}"
 
 
 
-<br>
+```shell
+[hadoop@ip-xxxx ~]$ CMD=()
+[hadoop@ip-xxxx ~]$ CMD+=("env")
+[hadoop@ip-xxxx ~]$ CMD+=("PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell"")
+[hadoop@ip-xxxx ~]$ CMD+=("python3")
+[hadoop@ip-xxxx ~]$ "${CMD[@]}"
+Python 3.9.16 (main, Apr 24 2024, 00:00:00) 
+[GCC 11.4.1 20230605 (Red Hat 11.4.1-2)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import os
+>>> os.environ.get("PYSPARK_SUBMIT_ARGS")
+'--master yarn --conf spark.driver.memory=2g --name PySparkShell'
+```
 
+
+<br>
 
 
 
