@@ -6,11 +6,24 @@ env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--n
 
 - [`env`](https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html) runs a command with a modified environment.
 
-- `LD_LIBRARY_PATH` tells the dynamic link loader (a program that starts all applications; typically named `ld. so` on Linux) where to search for the dynamic shared libraries an application was linked against.
+- `LD_LIBRARY_PATH` tells the dynamic link loader (a.k.a. dynamic linker; find and load the shared libraries needed by a program, prepare the program to run, and then run it; typically named `ld. so` on Linux) where to search for the dynamic shared libraries an application was linked against.
 
-    - Python relies on the dynamic link loader to load shared libraries, especially when using C extension modules or external libraries.
+    - Many standard library modules and third party libraries in Python are implemented as C-based Modules. The dynamic linker is responsible for loading shared libraries (files with extension *.so*) corresponding to these modules.
+ 
+    - The dynamic linker scans the list of shared library names embedded in the executable (e.g., `python3`), and load 
+      ```shell
+      [hadoop@ip-xxxx ~]$ readelf -d /usr/bin/python3
+      Dynamic section at offset 0x2db0 contains 28 entries:
+       Tag        Type                         Name/Value
+      0x0000000000000001 (NEEDED)             Shared library: [libpython3.9.so.1.0]
+      0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+      ...
+      ```
 
-    - There is the `ldd` command that shows which libraries are needed by a dynamically linked executable (e.g., `python3`)
+      - [`readelf -d`](https://man7.org/linux/man-pages/man1/readelf.1.html) shows the dynamic section of the ELF file, listing the direct dependencies (shared libraries) that the executable was linked against.
+
+      - There is the [`ldd` command](https://man7.org/linux/man-pages/man1/ldd.1.html) that lists both direct and indirect dependencies (libraries required by other libraries) at runtime and the paths resolved by the dynamic linker:
+      
       ```shell
       [hadoop@ip-xxxx ~]$ which python3
       /usr/bin/python3
@@ -20,8 +33,24 @@ env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--n
       libc.so.6 => /lib64/libc.so.6 (0x00007fb61f400000)
       libm.so.6 => /lib64/libm.so.6 (0x00007fb61f725000)
       /lib64/ld-linux-x86-64.so.2 (0x00007fb61fbe2000)
+
+      [hadoop@ip-xxxx ~]$ ldd /lib64/libpython3.9.so.1.0
+      linux-vdso.so.1 (0x00007ffcc2551000)
+      libm.so.6 => /lib64/libm.so.6 (0x00007fcab7224000)
+      libc.so.6 => /lib64/libc.so.6 (0x00007fcab6a00000)
+      /lib64/ld-linux-x86-64.so.2 (0x00007fcab7308000)
       ```
-  
+      
+      - The last digit in a name above is a library version number
+
+    - To locate the libraries, the dynamic linker searches multiple resources with the order explained [here]([in the following order](https://man7.org/linux/man-pages/man8/ld.so.8.html).
+ 
+      
+    https://cseweb.ucsd.edu/~gbournou/CSE131/the_inside_story_on_shared_libraries_and_dynamic_loading.pdf
+
+   https://python.plainenglish.io/extending-python-with-c-extension-modules-7beb68a0249b
+
+<br>    
 
 ### [*python/pyspark/shell.py*](https://github.com/apache/spark/blob/master/python/pyspark/shell.py)
 
