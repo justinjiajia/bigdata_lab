@@ -354,9 +354,14 @@ def launch_gateway(conf=None, popen_kwargs=None):
     return gateway
 ```
 
-- `submit_args = os.environ.get("PYSPARK_SUBMIT_ARGS", "pyspark-shell")`
+- `script = "./bin/spark-submit.cmd" if on_windows else "./bin/spark-submit"` evaluates to `"./bin/spark-submit"`
   
-- `shlex.split(s, comments=False, posix=True)`: Split the string `s` using shell-like syntax. 
+- `submit_args = os.environ.get("PYSPARK_SUBMIT_ARGS", "pyspark-shell")` gets the value associated with the key `"PYSPARK_SUBMIT_ARGS"`. `print(submit_args)` outputs `"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"`.
+
+- `command = command + shlex.split(submit_args)`
+  
+    - `shlex.split(submit_args)` splits the string `submit_args` using shell-like syntax. It results in a list `['/usr/lib/spark/./bin/spark-submit', '--master', 'yarn', '--conf', 'spark.driver.memory=2g', '--name', 'PySparkShell', '--executor-memory', '2g', 'pyspark-shell']`
+
 
 
 
