@@ -436,7 +436,7 @@ exec "${CMD[@]}"
    ```
    - Remember to quote the variable. Using the unquoted version `${CMD[@]}` may result in breaking apart a single element into many due to the presence of whitespaces.
       
-- `${#CMD[@]}` expands to the length of `${CMD[@]}`. So `COUNT` is assgined the number of elements in the `CMD` array.
+- `${#CMD[@]}` expands to the length of `${CMD[@]}`. So `COUNT` is assgined the number of elements (i.e., `5`) in the `CMD` array.
 
 - `LAST` is assigned the index of the last element in `CMD`.
 
