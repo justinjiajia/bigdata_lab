@@ -448,7 +448,7 @@ exec "${CMD[@]}"
 
 - `exec "${CMD[@]}"` replaces the current shell with the command stored in `CMD`. It executes *python/pyspark/shell.py* and starts a Python intepreter.
 
-    - `echo ${CMD[@]}` prints:
+    - `echo "${CMD[@]}"` prints:
       ```shell
       env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell" LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server /usr/bin/python3
       ```
@@ -469,6 +469,22 @@ Type "help", "copyright", "credits" or "license" for more information.
 '--master yarn --conf spark.driver.memory=2g --name PySparkShell'
 ```
 
+```shell
+% CMD=()
+% CMD+=("env")
+% CMD+=("PYSPARK_SUBMIT_ARGS=\"--master\" \"yarn\" \"--conf\" \"spark.driver.memory=2g\" \"--name\" \"PySparkShell\"")
+% CMD+=("python3")
+% echo "${CMD[@]}"
+env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" python
+% "${CMD[@]}"
+Python 3.11.5 (main, Sep 11 2023, 08:31:25) [Clang 14.0.6 ] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import os
+>>> os.environ.get("PYSPARK_SUBMIT_ARGS")
+'"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell"'
+>>> print(os.environ.get("PYSPARK_SUBMIT_ARGS"))
+"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell"
+```
 
 <br>
 
