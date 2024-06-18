@@ -6,7 +6,7 @@ env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--n
 
 - [`env`](https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html) runs a command with a modified environment. Changes introduced by `env` only apply to the command that is executed by `env` and do not persist in the current shell environment. 
 
-- `LD_LIBRARY_PATH` tells the dynamic link loader (a.k.a. dynamic linker; find and load the shared libraries needed by a program, prepare the program to run, and then run it; typically named `ld. so` on Linux) where to search for the dynamic shared libraries an application was linked against.
+- `LD_LIBRARY_PATH` tells the dynamic link loader (a.k.a. dynamic linker; find and load the shared libraries needed by a program, prepare the program to run, and then run it; typically named `ld.so` on Linux) where to search for the dynamic shared libraries an application was linked against.
 
     - Many standard library modules and third party libraries in Python are implemented as C-based Modules. The dynamic linker is responsible for loading shared libraries (files with extension *.so*) corresponding to these modules.
  
