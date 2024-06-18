@@ -319,9 +319,7 @@ CMD=("${CMD[@]:0:$LAST}")
 exec "${CMD[@]}"
 ```
 
-- `. "${SPARK_HOME}"/bin/load-spark-env.sh`
-
-   - *load-spark-env.sh* contains commands that load variables from *spark-env.sh*.
+- `. "${SPARK_HOME}"/bin/load-spark-env.sh`: *load-spark-env.sh* contains commands that load variables from *spark-env.sh*.
 
    - On an EMR instance, `JAVA_HOME` is reset by *spark-env.sh* as follows:
      ```shell
@@ -345,7 +343,7 @@ exec "${CMD[@]}"
     
       - `-cp "$LAUNCH_CLASSPATH" org.apache.spark.launcher.Main`
         
-        - `-cp` is used to specify classpath.
+        - `-cp` is used to specify the class search path. So, `-cp "$LAUNCH_CLASSPATH" expands to all directories and zip/jar files under */usr/lib/spark/jars*.
           
         - `org.apache.spark.launcher.Main` is located in `/usr/lib/spark/jars/spark-launcher*.jar`.  
           ```shell
@@ -355,14 +353,15 @@ exec "${CMD[@]}"
           org/apache/spark/launcher/Main.class
           ```
           
-     - `$@` inside the definition of `build_command()` refers to all the arguments passed to the build_command function at the time it is invoked. 
+     - `$@` inside the definition of `build_command()` refers to all the arguments passed to the build_command function at the point of call. 
    
      - Effectively, this executes `/usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main --name "PySparkShell" "$@"`
   
-       
-  - [`$?`](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_003f) expands to the exit status of the most recently executed foreground pipeline.
+ - `printf "%d\0" $?`       
  
-  - The `printf` statement does not automatically append a newline to its output. https://www.gnu.org/software/gawk/manual/html_node/Basic-Printf.html
+   - [`$?`](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_003f) expands to the exit status of the most recently executed foreground pipeline.
+ 
+   - [The `printf` statement](https://www.gnu.org/software/gawk/manual/html_node/Basic-Printf.html) does not automatically append a newline to its output. 
 
 verified that calling `build_command "$@"`
 returns 
