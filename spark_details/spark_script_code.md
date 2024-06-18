@@ -115,7 +115,7 @@ exec "${SPARK_HOME}"/bin/spark-submit pyspark-shell-main --name "PySparkShell" "
 
    -  [`exec`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html#index-exec) is a builtin command of the Bash shell. It allows us to execute a command that completely replaces the current process.
    
-   -  ["$@"](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_0040) represents all the arguments passed to *pyspark*.
+   -  ["$@"](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#index-_0040) expands to all the arguments passed to *pyspark*.
 
 
 <br>
@@ -153,9 +153,9 @@ fi
 
 - `elif [ ! -f "$FIND_SPARK_HOME_PYTHON_SCRIPT" ];`: test if no *find_spark_home.py* exists in the same directory as *find-spark-home*.
 
-- `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: this nested command substitution assigns the absolute path of the parent directory (i.e., */usr/lib/spark/*) to `SPARK_HOME`. Then, `export` marks the name to be passed to child processes in the environment.
+- `export SPARK_HOME="$(cd "$(dirname "$0")"/..; pwd)"`: the nested command substitution part evaluates the absolute path of the parent directory (i.e., */usr/lib/spark/*) . It is assigned to `SPARK_HOME`, which is marked to be passed to child processes in the environment.
 
-- `:-` in `${PYSPARK_PYTHON:-"python3"}` means if `PYSPARK_PYTHON` isn't already set, set it to `"python3"`.
+- [`:-`](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) in `${PYSPARK_PYTHON:-"python3"}` means if `PYSPARK_PYTHON` is unset or null, the whole thing expands to `"python3"`.
 
 <br>
 
@@ -319,7 +319,7 @@ CMD=("${CMD[@]:0:$LAST}")
 exec "${CMD[@]}"
 ```
 
-- `. "${SPARK_HOME}"/bin/load-spark-env.sh`: `.` means `source`. See https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source
+- `. "${SPARK_HOME}"/bin/load-spark-env.sh`: [`.`](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#index-source) means `source`
 
    - *load-spark-env.sh* contains commands that load variables from *spark-env.sh*.
 
