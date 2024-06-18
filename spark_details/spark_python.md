@@ -360,7 +360,9 @@ def launch_gateway(conf=None, popen_kwargs=None):
 
 - `command = command + shlex.split(submit_args)`
   
-    - `shlex.split(submit_args)` splits the string `submit_args` using shell-like syntax. It results in a list `['/usr/lib/spark/./bin/spark-submit', '--master', 'yarn', '--conf', 'spark.driver.memory=2g', '--name', 'PySparkShell', '--executor-memory', '2g', 'pyspark-shell']`
+    - `shlex.split(submit_args)` splits the string `submit_args` using shell-like syntax.
+    
+    - `command` equals `['/usr/lib/spark/./bin/spark-submit', '--master', 'yarn', '--conf', 'spark.driver.memory=2g', '--name', 'PySparkShell', '--executor-memory', '2g', 'pyspark-shell']` after the assignment.
 
 
 
