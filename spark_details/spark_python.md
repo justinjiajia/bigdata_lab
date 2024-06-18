@@ -4,11 +4,24 @@
 env PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell" LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server /usr/bin/python3
 ```
 
-
-
-
 - [`env`](https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html) runs a command with a modified environment.
 
+- `LD_LIBRARY_PATH` tells the dynamic link loader (a program that starts all applications; typically named `ld. so` on Linux) where to search for the dynamic shared libraries an application was linked against.
+
+      - Python relies on the dynamic link loader to load shared libraries, especially when using C extension modules or external libraries.
+  
+      - There is the `ldd` command that shows which libraries are needed by a dynamically linked executable (e.g., `python3`)
+
+        ```shell
+        [hadoop@ip-xxxx ~]$ which python3
+        /usr/bin/python3
+        [hadoop@ip-xxxx ~]$ ldd $(which python3)
+        	linux-vdso.so.1 (0x00007ffd981a1000)
+        	libpython3.9.so.1.0 => /lib64/libpython3.9.so.1.0 (0x00007fb61f800000)
+        	libc.so.6 => /lib64/libc.so.6 (0x00007fb61f400000)
+        	libm.so.6 => /lib64/libm.so.6 (0x00007fb61f725000)
+        	/lib64/ld-linux-x86-64.so.2 (0x00007fb61fbe2000)
+        ```
   
 
 ### [*python/pyspark/shell.py*](https://github.com/apache/spark/blob/master/python/pyspark/shell.py)
