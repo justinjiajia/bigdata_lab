@@ -18,9 +18,13 @@
  'EMR_CLUSTER_ID': 'j-VC0KIOO5V5LS', 'SPARK_WORKER_WEBUI_PORT': '8081',
  'SPARK_MASTER_IP': 'ip-172-31-62-159.ec2.internal',
  'PYTHONSTARTUP': '/usr/lib/spark/python/pyspark/shell.py',
- 'SPARK_MASTER_PORT': '7077', 'HIVE_CONF_DIR': '/etc/hive/conf', 'PYSPARK_PYTHON': '/usr/bin/python3', 'PYTHONPATH': '/usr/lib/spark/python/lib/py4j-0.10.9.7-src.zip:/usr/lib/spark/python/:',
+ 'SPARK_MASTER_PORT': '7077', 'HIVE_CONF_DIR': '/etc/hive/conf',
+ 'PYSPARK_PYTHON': '/usr/bin/python3',
+ 'PYTHONPATH': '/usr/lib/spark/python/lib/py4j-0.10.9.7-src.zip:/usr/lib/spark/python/:',
  'HADOOP_CONF_DIR': '/etc/hadoop/conf',
- 'HADOOP_HOME': '/usr/lib/hadoop',  'EMR_RELEASE_LABEL': 'emr-7.1.0', 'SPARK_PUBLIC_DNS': 'ip-172-31-62-159.ec2.internal',
+ 'HADOOP_HOME': '/usr/lib/hadoop',
+ 'EMR_RELEASE_LABEL': 'emr-7.1.0',
+ 'SPARK_PUBLIC_DNS': 'ip-172-31-62-159.ec2.internal',
  'HIVE_SERVER2_THRIFT_PORT': '10001', 'OLD_PYTHONSTARTUP': '',
  'HIVE_SERVER2_THRIFT_BIND_HOST': '0.0.0.0',
  'AWS_ACCOUNT_ID': '154048744197',
@@ -36,7 +40,7 @@ also 2 entries created during the execution of *Main.java*:
 
 ```python
 {'PYSPARK_SUBMIT_ARGS': '"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"',
-'LD_LIBRARY_PATH': '/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server'}
+ 'LD_LIBRARY_PATH': '/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server'}
 ```
 
 and one added in *java_gateway.py*:
@@ -455,7 +459,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
      
             - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* on an EMR instance.
           
-  - if (isClientMode): `isClientMode` evaluates to `true` because `userDeployMode == null` is `true`.
+  - `if (isClientMode)`: `isClientMode` evaluates to `true` because `userDeployMode == null` is `true`.
     ```java
     boolean isClientMode(Map<String, String> userProps) {
       String userMaster = firstNonEmpty(master, userProps.get(SparkLauncher.SPARK_MASTER));
@@ -468,7 +472,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
   - Set `defaultExtraClassPath` to `"hive-jackson/*"`
  
-  - `extraClassPath += File.pathSeparator + defaultExtraClassPath;` appends `"hive-jackson/*"` to `extraClassPath`
+  - `extraClassPath += File.pathSeparator + defaultExtraClassPath;` appends `"hive-jackson/*"` to `extraClassPath`. The value of on EMR seems different.
 
   - `List<String> cmd = buildJavaCommand(extraClassPath);`
  
@@ -476,9 +480,11 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
       - Return an `ArrayList<>` that contains `'/usr/lib/jvm/jre-17/bin/java'`, `"-cp"`, and a list of class files formed from `extraClassPath`
 
+  - `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));`
+    
   - `driverDefaultJavaOptions` is set to the value configured for `"spark.driver.defaultJavaOptions"` in *spark-defaults.conf* .
  
-  - `String memory = firstNonEmpty(tsMemory, config.get(SparkLauncher.DRIVER_MEMORY), `System.getenv("SPARK_DRIVER_MEMORY"), System.getenv("SPARK_MEM"), DEFAULT_MEM);`
+  - `String memory = firstNonEmpty(tsMemory, config.get(SparkLauncher.DRIVER_MEMORY), System.getenv("SPARK_DRIVER_MEMORY"), System.getenv("SPARK_MEM"), DEFAULT_MEM);`
  
       - Since `config.get(SparkLauncher.DRIVER_MEMORY)` is non-empty and equals `"2g"`, `memory` is set to `"2g"`
     
@@ -490,7 +496,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       
        -  [`getLibPathEnvName()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L90C3-L102C4): return `"LD_LIBRARY_PATH"` because `System.getProperty("os.name")` returns `Linux` on an EMR instance.  
      
-       - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property "spark.driver.extraLibraryPath" to the first nom-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`.
+       - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property "spark.driver.extraLibraryPath" to the first non-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`.
 
           - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value of property `"spark.driver.extraLibraryPath"`, which is set in *spark-defaults.conf*.
 
