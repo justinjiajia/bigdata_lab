@@ -82,6 +82,7 @@ else:
 <br>
 
 ```ptyhon
+
 class SparkContext:
 
     """
@@ -284,8 +285,7 @@ def launch_gateway(conf=None, popen_kwargs=None):
                 popen_kwargs["preexec_fn"] = preexec_func
                 proc = Popen(command, **popen_kwargs)
             else:
-                # preexec_fn not supported on Windows
-                proc = Popen(command, **popen_kwargs)
+                ...
 
             # Wait for the file to appear, or for the process to exit, whichever happens first.
             while not proc.poll() and not os.path.isfile(conn_info_file):
@@ -363,6 +363,8 @@ def launch_gateway(conf=None, popen_kwargs=None):
     - `shlex.split(submit_args)` splits the string `submit_args` using shell-like syntax.
     
     - `command` equals `['/usr/lib/spark/./bin/spark-submit', '--master', 'yarn', '--conf', 'spark.driver.memory=2g', '--name', 'PySparkShell', '--executor-memory', '2g', 'pyspark-shell']` after the assignment.
+ 
+       - `SPARK_HOME` was assigned `"/usr/lib/spark/"`.
 
 
 - `Popen(command, **popen_kwargs)` launches a child process to run the program with the arguments specified by `command`. `preexec_func()` will be called before the child process to set a signal handler that [ignores](https://docs.python.org/3/library/signal.html#signal.SIG_IGN) [the interrupt from keyboard](https://docs.python.org/3/library/signal.html#signal.SIGINT) (CTRL + C). [`Popen()`](https://docs.python.org/3/library/subprocess.html#using-the-subprocess-module) is a non-blocking call. It'll run the child process in parallel. Check out [this tutorial](https://realpython.com/python-subprocess/#the-popen-class) for more details
