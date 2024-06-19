@@ -499,7 +499,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
    - `cmd.add("org.apache.spark.deploy.SparkSubmit");`
    - `cmd.addAll(buildSparkSubmitArgs());`
      
-   - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`.
+   - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf"` and `"spark.driver.memory=<value>"`; then add all configurations maintained by `parsedArgs`.
      
      ```java
      List<String> buildSparkSubmitArgs() {
