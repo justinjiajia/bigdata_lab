@@ -82,7 +82,12 @@ else:
 <br>
 
 ```ptyhon
+import os
+import shutil
+import signal
+import sys
 
+...
 class SparkContext:
 
     """
