@@ -367,6 +367,27 @@ def launch_gateway(conf=None, popen_kwargs=None):
  
        - `SPARK_HOME` was assigned `"/usr/lib/spark/"`.
 
+- `conn_info_dir = tempfile.mkdtemp()`
+
+    - [`tempfile.mkdtemp()`](https://docs.python.org/3/library/tempfile.html#tempfile.mkdtemp) creates a temporary directory and returns the absolute pathname of the new directory.
+
+- `fd, conn_info_file = tempfile.mkstemp(dir=conn_info_dir)`
+
+    - [`tempfile.mkstemp(dir=conn_info_dir)`](https://docs.python.org/3/library/tempfile.html#tempfile.mkstemp) creates a temporary file in the given directory, and then opens the file in binary mode. It returns both a file descriptor and the absolute pathname of that file.
+
 
 - `Popen(command, **popen_kwargs)` launches a child process to run the program with the arguments specified by `command`. `preexec_func()` will be called before the child process to set a signal handler that [ignores](https://docs.python.org/3/library/signal.html#signal.SIG_IGN) [the interrupt from keyboard](https://docs.python.org/3/library/signal.html#signal.SIGINT) (CTRL + C). [`Popen()`](https://docs.python.org/3/library/subprocess.html#using-the-subprocess-module) is a non-blocking call. It'll run the child process in parallel. Check out [this tutorial](https://realpython.com/python-subprocess/#the-popen-class) for more details
 
+    - `popen_kwargs` contains an entry with the key `env` and the value that is set as follows:
+      ```python
+      env = dict(os.environ)
+      env["_PYSPARK_DRIVER_CONN_INFO_PATH"] = conn_info_file
+      ```
+      
+        - The `env` argument defines the environment variables for the new process; these are used instead of the default behavior of inheriting the current process' environment. 
+
+- The `while` loop makes the program to wait for the file to appear, or for the child process to exit, whichever happens first.
+
+    - `proc.poll()` returns `None` when the child process is ongoing.
+ 
+      
