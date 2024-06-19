@@ -420,9 +420,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       // - SPARK_MEM env variable
       // - default value (1g)
       // Take Thrift/Connect Server as daemon
-      String tsMemory =
-        isThriftServer(mainClass) || isConnectServer(mainClass) ?
-          System.getenv("SPARK_DAEMON_MEMORY") : null;
+      String tsMemory = ...;
       String memory = firstNonEmpty(tsMemory, config.get(SparkLauncher.DRIVER_MEMORY),
         System.getenv("SPARK_DRIVER_MEMORY"), System.getenv("SPARK_MEM"), DEFAULT_MEM);
       cmd.add("-Xmx" + memory);
