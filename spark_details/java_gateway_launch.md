@@ -490,49 +490,49 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       
        -  [`getLibPathEnvName()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L90C3-L102C4): return `"LD_LIBRARY_PATH"` because `System.getProperty("os.name")` returns `Linux` on an EMR instance.  
      
-     - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property "spark.driver.extraLibraryPath" to the first nom-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`.
+       - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property "spark.driver.extraLibraryPath" to the first nom-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`.
 
-        - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value of property `"spark.driver.extraLibraryPath"`, which is set in *spark-defaults.conf*.
+          - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value of property `"spark.driver.extraLibraryPath"`, which is set in *spark-defaults.conf*.
 
-    - `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());`
-    - `addOptionString(cmd, "-Dderby.connection.requireAuthentication=false");`
-    - `cmd.add("org.apache.spark.deploy.SparkSubmit");`
-    - `cmd.addAll(buildSparkSubmitArgs());`
-      
-    - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`.
-      
-      ```java
-      List<String> buildSparkSubmitArgs() {
-        List<String> args = new ArrayList<>();
-        OptionParser parser = new OptionParser(false);
-        final boolean isSpecialCommand;
-    
-        ...
-    
-        if (master != null) {
-          args.add(parser.MASTER);
-          args.add(master);
-        }
-    
-        ...
-    
-        for (Map.Entry<String, String> e : conf.entrySet()) {
-          args.add(parser.CONF);
-          args.add(String.format("%s=%s", e.getKey(), e.getValue()));
-        }
-    
-        if (propertiesFile != null) {
-          args.add(parser.PROPERTIES_FILE);
-          args.add(propertiesFile);
-        }
-      
-        ..
-        args.addAll(parsedArgs);
-      
-        ...
-        return args;
-      }
-      ```
+   - `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());`
+   - `addOptionString(cmd, "-Dderby.connection.requireAuthentication=false");`
+   - `cmd.add("org.apache.spark.deploy.SparkSubmit");`
+   - `cmd.addAll(buildSparkSubmitArgs());`
+     
+   - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`.
+     
+     ```java
+     List<String> buildSparkSubmitArgs() {
+       List<String> args = new ArrayList<>();
+       OptionParser parser = new OptionParser(false);
+       final boolean isSpecialCommand;
+   
+       ...
+   
+       if (master != null) {
+         args.add(parser.MASTER);
+         args.add(master);
+       }
+   
+       ...
+   
+       for (Map.Entry<String, String> e : conf.entrySet()) {
+         args.add(parser.CONF);
+         args.add(String.format("%s=%s", e.getKey(), e.getValue()));
+       }
+   
+       if (propertiesFile != null) {
+         args.add(parser.PROPERTIES_FILE);
+         args.add(propertiesFile);
+       }
+     
+       ..
+       args.addAll(parsedArgs);
+     
+       ...
+       return args;
+     }
+     ```
 
 
 
