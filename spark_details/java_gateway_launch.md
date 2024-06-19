@@ -482,9 +482,9 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
  
       - Since `config.get(SparkLauncher.DRIVER_MEMORY)` is non-empty and equals `"2g"`, `memory` is set to `"2g"`
     
-  - `cmd.add("-Xmx" + memory);`
+  - `cmd.add("-Xmx" + memory);`, e.g., `-Xmx2g`
  
-  -  `addOptionString(cmd, driverDefaultJavaOptions);`
+  -  `addOptionString(cmd, driverDefaultJavaOptions);`, e.g., `-XX:OnOutOfMemoryError=kill -9 %p`
  
   - `mergeEnvPathList(env, getLibPathEnvName(), getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));`
       
