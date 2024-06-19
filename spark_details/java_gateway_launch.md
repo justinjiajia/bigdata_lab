@@ -472,40 +472,34 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
   - `List<String> cmd = buildJavaCommand(extraClassPath);`
  
-  - `List<String> buildJavaCommand(String extraClassPath)` is defined in [*AbstractCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L83C3-L120C4)  
+      - `List<String> buildJavaCommand(String extraClassPath)` is defined in [*AbstractCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L83C3-L120C4)  
+
+      - Return an `ArrayList<>` that contains `'/usr/lib/jvm/jre-17/bin/java'`, `"-cp"`, and a list of class files formed from `extraClassPath`
+
+  - `driverDefaultJavaOptions` is set to the value configured for `"spark.driver.defaultJavaOptions"` in *spark-defaults.conf* .
  
+  - `String memory = firstNonEmpty(tsMemory, config.get(SparkLauncher.DRIVER_MEMORY), `System.getenv("SPARK_DRIVER_MEMORY"), System.getenv("SPARK_MEM"), DEFAULT_MEM);`
+ 
+      - Since `config.get(SparkLauncher.DRIVER_MEMORY)` is non-empty and equals `"2g"`, `memory` is set to `"2g"`
     
-  - `constructEnvVarArgs(env, "PYSPARK_SUBMIT_ARGS");`
-  
-    ```java
-    private void constructEnvVarArgs(
-        Map<String, String> env,
-        String submitArgsEnvVariable) throws IOException {
-      mergeEnvPathList(env, getLibPathEnvName(),
-        getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));
-  
-      StringBuilder submitArgs = new StringBuilder();
-      for (String arg : buildSparkSubmitArgs()) {
-        if (submitArgs.length() > 0) {
-          submitArgs.append(" ");
-        }
-        submitArgs.append(quoteForCommandString(arg));
-      }
-      env.put(submitArgsEnvVariable, submitArgs.toString());
-    }
-    ```
-    - `mergeEnvPathList(env, getLibPathEnvName(), getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));`
+  - `cmd.add("-Xmx" + memory);`
+ 
+  -  `addOptionString(cmd, driverDefaultJavaOptions);`
+ 
+  - `mergeEnvPathList(env, getLibPathEnvName(), getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));`
       
-       -  [`getLibPathEnvName()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L90C3-L102C4): return `"LD_LIBRARY_PATH"` because `System.getProperty("os.name")` returns `Linux` on an EMR instance.  the the name of the env variable that holds the native library path.
-         
-
+       -  [`getLibPathEnvName()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L90C3-L102C4): return `"LD_LIBRARY_PATH"` because `System.getProperty("os.name")` returns `Linux` on an EMR instance.  
      
-     - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append `"hive-jackson/*"` to the first nom-empty value between the entry named `"LD_LIBRARY_PATH"` in `HashMap` `env` and the same-name environment variable, and write the prolonged path to the user environment `env`
-   
-        - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value `"hive-jackson/*"`
+     - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property "spark.driver.extraLibraryPath" to the first nom-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`.
 
+        - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value of property `"spark.driver.extraLibraryPath"`, which is set in *spark-defaults.conf*.
 
-    - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`; lastly, add `"pyspark-shell"`
+    - `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());`
+    - `addOptionString(cmd, "-Dderby.connection.requireAuthentication=false");`
+    - `cmd.add("org.apache.spark.deploy.SparkSubmit");`
+    - `cmd.addAll(buildSparkSubmitArgs());`
+      
+    - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`.
       
       ```java
       List<String> buildSparkSubmitArgs() {
@@ -520,16 +514,6 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
           args.add(master);
         }
     
-        if (remote != null) {
-          args.add(parser.REMOTE);
-          args.add(remote);
-        }
-    
-        if (deployMode != null) {
-          args.add(parser.DEPLOY_MODE);
-          args.add(deployMode);
-        }
-    
         ...
     
         for (Map.Entry<String, String> e : conf.entrySet()) {
@@ -541,28 +525,14 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
           args.add(parser.PROPERTIES_FILE);
           args.add(propertiesFile);
         }
-    
+      
         ..
-    
         args.addAll(parsedArgs);
-    
-        if (appResource != null) {
-          args.add(appResource);
-        }
-    
-        args.addAll(appArgs);
-    
+      
+        ...
         return args;
       }
       ```
 
-     - Construct a string from the `ArrayList<>` returned from `buildSparkSubmitArgs()`, e.g.,  `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`, and associate it with the key `"PYSPARK_SUBMIT_ARGS"`, and write it into `env`.
 
-         - Now, `env` contains the 2nd entry with the key `PYSPARK_SUBMIT_ARGS` and the value `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`
-           
-  -  `List<String> pyargs = new ArrayList<>();`
- 
-  -  Pick up the binary executable in the following order: `--conf spark.pyspark.driver.python` > `--conf spark.pyspark.python` > environment variable `PYSPARK_DRIVER_PYTHON` > environment variable `PYSPARK_PYTHON` > `python3`, and add it to  `pyargs`. Note that environment variables `PYSPARK_DRIVER_PYTHON` and `PYSPARK_PYTHON` were set to `/usr/bin/python3` in script [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark#L41C1-L46C3)
-
-  - return `pyargs`
 
