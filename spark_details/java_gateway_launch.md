@@ -449,6 +449,11 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
          - Add to `effectiveConfig` all configurations specified by the properties file and an additional one with the key `"spark.driver.defaultExtraClassPath"` and the value `"hive-jackson/*"` if no such an entry is present in the properties file.
      
             - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* on an EMR instance.
+            -  Find a way to check if an EMR instance also uses the following setting in *SparkLauncher.java*. Seem not?????
+               ```javaj
+               public static final String DRIVER_DEFAULT_EXTRA_CLASS_PATH = "spark.driver.defaultExtraClassPath";
+               public static final String DRIVER_DEFAULT_EXTRA_CLASS_PATH_VALUE = "hive-jackson/*";
+               ```
           
   - `if (isClientMode)`: `isClientMode` evaluates to `true` because `userDeployMode == null` is `true`.
     ```java
@@ -461,9 +466,9 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     ```
   - Set `extraClassPath` to the value of property `"spark.driver.extraClassPath"`. This property is set in */usr/lib/spark/conf/spark-defaults.conf* on an EMR instance.
 
-  - Set `defaultExtraClassPath` to `"hive-jackson/*"`
+  - `String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);`
  
-  - `extraClassPath += File.pathSeparator + defaultExtraClassPath;` appends `"hive-jackson/*"` to `extraClassPath`. The value of on EMR seems different.
+  - `extraClassPath += File.pathSeparator + defaultExtraClassPath;` 
 
   - `List<String> cmd = buildJavaCommand(extraClassPath);`
  
@@ -487,13 +492,18 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       
        -  [`getLibPathEnvName()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L90C3-L102C4): return `"LD_LIBRARY_PATH"` because `System.getProperty("os.name")` returns `Linux` on an EMR instance.  
      
-       - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property "spark.driver.extraLibraryPath" to the first non-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`.
+       - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property `"spark.driver.extraLibraryPath"` to the first non-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`.
+   
+          - 
 
-          - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value of property `"spark.driver.extraLibraryPath"`, which is set in *spark-defaults.conf*.
+          - Now, `env` contains the 1st entry `LD_LIBRARY_PATH`. Its value is a combination of the value of environment variable and the value of property `"spark.driver.extraLibraryPath"`, which is set in *spark-defaults.conf*. It contains duplicate paths. But there are additional unseen paths????
 
    - `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());`
-   - `addOptionString(cmd, "-Dderby.connection.requireAuthentication=false");`
+     
+   - `addOptionString(cmd, "-Dderby.connection.requireAuthentication=false");` it seems that it didn't take effect????
+     
    - `cmd.add("org.apache.spark.deploy.SparkSubmit");`
+     
    - `cmd.addAll(buildSparkSubmitArgs());`
      
    - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf"` and `"spark.driver.memory=<value>"`; then add all configurations maintained by `parsedArgs`.
@@ -532,4 +542,92 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
      ```
 
 
+The contents printed by the `while` loop:
 
+```
+env
+PYSPARK_SUBMIT_ARGS="--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"
+LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server
+/usr/bin/python3
+0
+```
+
+
+```
+env
+LD_LIBRARY_PATH=/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib:/usr/lib/jvm/java-17-amazon-corretto.x86_64/../lib:/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server
+/usr/lib/jvm/jre-17/bin/java
+-cp
+/usr/lib/hadoop-lzo/lib/*:/usr/lib/hadoop/hadoop-aws.jar:/usr/share/aws/aws-java-sdk/*:/usr/share/aws/aws-java-sdk-v2/*:/usr/share/aws/emr/goodies/lib/emr-spark-goodies.jar:/usr/share/aws/emr/security/conf:/usr/share/aws/emr/security/lib/*:/usr/share/aws/redshift/jdbc/*:/usr/share/aws/redshift/spark-redshift/lib/*:/usr/share/aws/kinesis/spark-sql-kinesis/lib/*:/usr/share/aws/hmclient/lib/aws-glue-datacatalog-spark-client.jar:/usr/share/java/Hive-JSON-Serde/hive-openx-serde.jar:/usr/share/aws/emr/s3select/lib/emr-s3-select-spark-connector.jar:/docker/usr/lib/hadoop-lzo/lib/*:/docker/usr/lib/hadoop/hadoop-aws.jar:/docker/usr/share/aws/aws-java-sdk/*:/docker/usr/share/aws/aws-java-sdk-v2/*:/docker/usr/share/aws/emr/goodies/lib/emr-spark-goodies.jar:/docker/usr/share/aws/emr/security/conf:/docker/usr/share/aws/emr/security/lib/*:/docker/usr/share/aws/redshift/jdbc/*:/docker/usr/share/aws/redshift/spark-redshift/lib/*:/docker/usr/share/aws/kinesis/spark-sql-kinesis/lib/*:/docker/usr/share/aws/hmclient/lib/aws-glue-datacatalog-spark-client.jar:/docker/usr/share/java/Hive-JSON-Serde/hive-openx-serde.jar:/docker/usr/share/aws/emr/s3select/lib/emr-s3-select-spark-connector.jar:/usr/lib/spark/conf/:/usr/lib/spark/jars/*:/etc/hadoop/conf/
+-DAWS_ACCOUNT_ID=154048744197
+-DEMR_CLUSTER_ID=j-VC0KIOO5V5LS
+-DEMR_RELEASE_LABEL=emr-7.1.0
+-DAWS_ACCOUNT_ID=154048744197
+-DEMR_CLUSTER_ID=j-VC0KIOO5V5LS
+-DEMR_RELEASE_LABEL=emr-7.1.0
+-Xmx2g
+-XX:OnOutOfMemoryError=kill -9 %p
+-XX:+IgnoreUnrecognizedVMOptions
+--add-opens=java.base/java.lang=ALL-UNNAMED
+--add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+--add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+--add-opens=java.base/java.io=ALL-UNNAMED
+--add-opens=java.base/java.net=ALL-UNNAMED
+--add-opens=java.base/java.nio=ALL-UNNAMED
+--add-opens=java.base/java.util=ALL-UNNAMED
+--add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
+--add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+--add-opens=java.base/sun.nio.cs=ALL-UNNAMED
+--add-opens=java.base/sun.security.action=ALL-UNNAMED
+--add-opens=java.base/sun.util.calendar=ALL-UNNAMED
+--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+-Djdk.reflect.useDirectMethodHandle=false
+org.apache.spark.deploy.SparkSubmit
+--master
+yarn
+--conf
+spark.driver.memory=2g
+--name
+PySparkShell
+--executor-memory
+2g
+pyspark-shell
+0
+```
+
+----
+
+```
+LD_LIBRARY_PATH=/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib:/usr/lib/jvm/java-17-amazon-corretto.x86_64/../lib:/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server
+/usr/lib/jvm/jre-17/bin/java
+```
+contains duplicates for paths present in the counterpart section in output 1
+
+
+```
+/usr/lib/hadoop-lzo/lib/*:/usr/lib/hadoop/hadoop-aws.jar:/usr/share/aws/aws-java-sdk/*:/usr/share/aws/aws-java-sdk-v2/*:/usr/share/aws/emr/goodies/lib/emr-spark-goodies.jar:/usr/share/aws/emr/security/conf:/usr/share/aws/emr/security/lib/*:/usr/share/aws/redshift/jdbc/*:/usr/share/aws/redshift/spark-redshift/lib/*:/usr/share/aws/kinesis/spark-sql-kinesis/lib/*:/usr/share/aws/hmclient/lib/aws-glue-datacatalog-spark-client.jar:/usr/share/java/Hive-JSON-Serde/hive-openx-serde.jar:/usr/share/aws/emr/s3select/lib/emr-s3-select-spark-connector.jar:/docker/usr/lib/hadoop-lzo/lib/*:/docker/usr/lib/hadoop/hadoop-aws.jar:/docker/usr/share/aws/aws-java-sdk/*:/docker/usr/share/aws/aws-java-sdk-v2/*:/docker/usr/share/aws/emr/goodies/lib/emr-spark-goodies.jar:/docker/usr/share/aws/emr/security/conf:/docker/usr/share/aws/emr/security/lib/*:/docker/usr/share/aws/redshift/jdbc/*:/docker/usr/share/aws/redshift/spark-redshift/lib/*:/docker/usr/share/aws/kinesis/spark-sql-kinesis/lib/*:/docker/usr/share/aws/hmclient/lib/aws-glue-datacatalog-spark-client.jar:/docker/usr/share/java/Hive-JSON-Serde/hive-openx-serde.jar:/docker/usr/share/aws/emr/s3select/lib/emr-s3-select-spark-connector.jar:/usr/lib/spark/conf/:/usr/lib/spark/jars/*:/etc/hadoop/conf/
+```
+include addition paths: `/usr/lib/spark/conf/:/usr/lib/spark/jars/*:/etc/hadoop/conf/`
+may be generated by `buildSparkSubmitCommand()`
+https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L133
+
+```
+-XX:+IgnoreUnrecognizedVMOptions
+--add-opens=java.base/java.lang=ALL-UNNAMED
+--add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+--add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+--add-opens=java.base/java.io=ALL-UNNAMED
+--add-opens=java.base/java.net=ALL-UNNAMED
+--add-opens=java.base/java.nio=ALL-UNNAMED
+--add-opens=java.base/java.util=ALL-UNNAMED
+--add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
+--add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+--add-opens=java.base/sun.nio.cs=ALL-UNNAMED
+--add-opens=java.base/sun.security.action=ALL-UNNAMED
+--add-opens=java.base/sun.util.calendar=ALL-UNNAMED
+--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+-Djdk.reflect.useDirectMethodHandle=false
+```
+generated by `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());`
