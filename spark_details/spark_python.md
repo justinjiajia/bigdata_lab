@@ -304,22 +304,7 @@ def launch_gateway(conf=None, popen_kwargs=None):
         finally:
             shutil.rmtree(conn_info_dir)
 
-        # In Windows, ensure the Java child processes do not linger after Python has exited.
-        # In UNIX-based systems, the child process can kill itself on broken pipe (i.e. when
-        # the parent process' stdin sends an EOF). In Windows, however, this is not possible
-        # because java.lang.Process reads directly from the parent process' stdin, contending
-        # with any opportunity to read an EOF from the parent. Note that this is only best
-        # effort and will not take effect if the python process is violently terminated.
-        if on_windows:
-            # In Windows, the child process here is "spark-submit.cmd", not the JVM itself
-            # (because the UNIX "exec" command is not available). This means we cannot simply
-            # call proc.kill(), which kills only the "spark-submit.cmd" process but not the
-            # JVMs. Instead, we use "taskkill" with the tree-kill option "/t" to terminate all
-            # child processes in the tree (http://technet.microsoft.com/en-us/library/bb491009.aspx)
-            def killChild():
-                Popen(["cmd", "/c", "taskkill", "/f", "/t", "/pid", str(proc.pid)])
-
-            atexit.register(killChild)
+        ...
 
     # Connect to the gateway (or client server to pin the thread between JVM and Python)
     if os.environ.get("PYSPARK_PIN_THREAD", "true").lower() == "true":
@@ -384,10 +369,28 @@ def launch_gateway(conf=None, popen_kwargs=None):
       env["_PYSPARK_DRIVER_CONN_INFO_PATH"] = conn_info_file
       ```
       
-        - The `env` argument defines the environment variables for the new process; these are used instead of the default behavior of inheriting the current process' environment. 
+        - The `env` argument defines the environment variables for the new process; these are used instead of the default behavior of inheriting the current process' environment.
+     
+
+
+```
+{'SHELL': '/bin/bash', 'HISTCONTROL': 'ignoredups', 'SYSTEMD_COLORS': 'false', 'HISTSIZE': '1000', 'HOSTNAME': 'ip-172-31-62-159.ec2.internal', 'SPARK_LOG_DIR': '/var/log/spark', 'JAVA17_HOME': '/usr/lib/jvm/jre-17', 'PYTHONHASHSEED': '0', 'PYSPARK_DRIVER_PYTHON': '/usr/bin/python3', 'JAVA_HOME': '/usr/lib/jvm/jre-17', 'SPARK_WORKER_PORT': '7078', 'SPARK_MASTER_WEBUI_PORT': '8080', 'AWS_DEFAULT_REGION': 'us-east-1', 'HUDI_CONF_DIR': '/etc/hudi/conf', 'SPARK_DAEMON_JAVA_OPTS': ' -XX:+ExitOnOutOfMemoryError -DAWS_ACCOUNT_ID=154048744197 -DEMR_CLUSTER_ID=j-VC0KIOO5V5LS -DEMR_RELEASE_LABEL=emr-7.1.0', 'PWD': '/home/hadoop', 'LOGNAME': 'hadoop', 'SPARK_SUBMIT_OPTS': ' -DAWS_ACCOUNT_ID=154048744197 -DEMR_CLUSTER_ID=j-VC0KIOO5V5LS -DEMR_RELEASE_LABEL=emr-7.1.0', 'XDG_SESSION_TYPE': 'tty', 'MANPATH': ':/opt/puppetlabs/puppet/share/man', 'EMR_CLUSTER_ID': 'j-VC0KIOO5V5LS', 'SPARK_WORKER_WEBUI_PORT': '8081', 'MOTD_SHOWN': 'pam', 'SPARK_MASTER_IP': 'ip-172-31-62-159.ec2.internal', 'HOME': '/home/hadoop', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.m4a=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.oga=01;36:*.opus=01;36:*.spx=01;36:*.xspf=01;36:', 'PYTHONSTARTUP': '/usr/lib/spark/python/pyspark/shell.py', 'SPARK_MASTER_PORT': '7077', 'SSH_CONNECTION': '1.64.143.12 59381 172.31.62.159 22', 'HIVE_CONF_DIR': '/etc/hive/conf', 'PYSPARK_PYTHON': '/usr/bin/python3', 'GEM_HOME': '/home/hadoop/.local/share/gem/ruby', 'XDG_SESSION_CLASS': 'user', 'SELINUX_ROLE_REQUESTED': '', 'PYTHONPATH': '/usr/lib/spark/python/lib/py4j-0.10.9.7-src.zip:/usr/lib/spark/python/:', 'TERM': 'xterm-256color', 'HADOOP_CONF_DIR': '/etc/hadoop/conf', 'HADOOP_HOME': '/usr/lib/hadoop', 'LESSOPEN': '||/usr/bin/lesspipe.sh %s', 'USER': 'hadoop', 'EMR_RELEASE_LABEL': 'emr-7.1.0', 'SPARK_PUBLIC_DNS': 'ip-172-31-62-159.ec2.internal', 'HIVE_SERVER2_THRIFT_PORT': '10001', 'OLD_PYTHONSTARTUP': '', 'HIVE_SERVER2_THRIFT_BIND_HOST': '0.0.0.0', 'SELINUX_USE_CURRENT_RANGE': '', 'AWS_ACCOUNT_ID': '154048744197', 'SHLVL': '1', 'SPARK_HOME': '/usr/lib/spark', 'STANDALONE_SPARK_MASTER_HOST': 'ip-172-31-62-159.ec2.internal', 'XDG_SESSION_ID': '4', 'SPARK_CONF_DIR': '/usr/lib/spark/conf', 'XDG_RUNTIME_DIR': '/run/user/992', 'S_COLORS': 'auto', 'AWS_SPARK_REDSHIFT_CONNECTOR_SERVICE_NAME': 'EMR', 'SSH_CLIENT': '1.64.143.12 59381 22', '_SPARK_CMD_USAGE': 'Usage: ./bin/pyspark [options]', 'which_declare': 'declare -f', 'SPARK_WORKER_DIR': '/var/run/spark/work', 'SPARK_ENV_LOADED': '1', 'PATH': '/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/aws/puppet/bin/:/opt/puppetlabs/bin', 'SELINUX_LEVEL_REQUESTED': '', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/992/bus', 'SPARK_SCALA_VERSION': '2.12', 'MAIL': '/var/spool/mail/hadoop', 'SSH_TTY': '/dev/pts/0', 'BASH_FUNC_which%%': '() {  ( alias;\n eval ${which_declare} ) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot "$@"\n}', 'PYSPARK_SUBMIT_ARGS': '"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"', 'LD_LIBRARY_PATH': '/usr/lib/hadoop/lib/native:/usr/lib/hadoop-lzo/lib/native:/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server:/docker/usr/lib/hadoop/lib/native:/docker/usr/lib/hadoop-lzo/lib/native:/docker/usr/lib/jvm/java-17-amazon-corretto.x86_64/lib/server', '_PYSPARK_DRIVER_CONN_INFO_PATH': '/tmp/tmp8d5mne_q/tmp3dk7xihm'}
+```
+
 
 - The `while` loop makes the program to wait for the file to appear, or for the child process to exit, whichever happens first.
 
     - `proc.poll()` returns `None` when the child process is ongoing.
  
+- `gateway_port = read_int(info)`
+
+    - `read_int()` is defined in [*python/pyspark/serializers.py*](https://github.com/apache/spark/blob/master/python/pyspark/serializers.py) as follows:
+      ```python
+      def read_int(stream):
+        length = stream.read(4)
+        if not length:
+            raise EOFError
+        return struct.unpack("!i", length)[0]
+      ```
+
       
