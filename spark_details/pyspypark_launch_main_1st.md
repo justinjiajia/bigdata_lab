@@ -324,7 +324,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
      
      - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property `"spark.driver.extraLibraryPath"` to the first nom-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`
    
-        - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value of property `"spark.driver.extraLibraryPath"`, which is set in *spark-default.confs*.
+        - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value of property `"spark.driver.extraLibraryPath"`, which is set in *spark-defaults.conf*.
 
 
     - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`; lastly, add `"pyspark-shell"`
