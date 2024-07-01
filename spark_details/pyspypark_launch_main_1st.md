@@ -127,7 +127,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     - `bashCmd` equals `["env", "PYSPARK_SUBMIT_ARGS=<some value>", "LD_LIBRARY_PATH=<some value>", "/usr/bin/python3"]`. Note that Java HashMap class doesn't guarantee the insertion order. 
  
 
-    - The value of environment variable `PYSPARK_SUBMIT_ARGS` is verified (adding a printing step to a proper place in *java-gateway.py*; the output was `"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"`).
+    - The value of environment variable `PYSPARK_SUBMIT_ARGS` is verified (adding a printing step to a proper place in [*java-gateway.py*](https://github.com/apache/spark/blob/master/python/pyspark/java_gateway.py); the output was `"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"`).
  
     - The value of environment variable `LD_LIBRARY_PATH` is also verified to be the same as property `"spark.driver.extraLibraryPath"` set in *spark-defaults.conf*.
  
