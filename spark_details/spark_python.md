@@ -86,67 +86,6 @@ else:
 
 class SparkContext:
 
-    """
-    Main entry point for Spark functionality. A SparkContext represents the
-    connection to a Spark cluster, and can be used to create :class:`RDD` and
-    broadcast variables on that cluster.
-
-    When you create a new SparkContext, at least the master and app name should
-    be set, either through the named parameters here or through `conf`.
-
-    Parameters
-    ----------
-    master : str, optional
-        Cluster URL to connect to (e.g. spark://host:port, local[4]).
-    appName : str, optional
-        A name for your job, to display on the cluster web UI.
-    sparkHome : str, optional
-        Location where Spark is installed on cluster nodes.
-    pyFiles : list, optional
-        Collection of .zip or .py files to send to the cluster
-        and add to PYTHONPATH.  These can be paths on the local file
-        system or HDFS, HTTP, HTTPS, or FTP URLs.
-    environment : dict, optional
-        A dictionary of environment variables to set on
-        worker nodes.
-    batchSize : int, optional, default 0
-        The number of Python objects represented as a single
-        Java object. Set 1 to disable batching, 0 to automatically choose
-        the batch size based on object sizes, or -1 to use an unlimited
-        batch size
-    serializer : :class:`Serializer`, optional, default :class:`CPickleSerializer`
-        The serializer for RDDs.
-    conf : :class:`SparkConf`, optional
-        An object setting Spark properties.
-    gateway : class:`py4j.java_gateway.JavaGateway`,  optional
-        Use an existing gateway and JVM, otherwise a new JVM
-        will be instantiated. This is only used internally.
-    jsc : class:`py4j.java_gateway.JavaObject`, optional
-        The JavaSparkContext instance. This is only used internally.
-    profiler_cls : type, optional, default :class:`BasicProfiler`
-        A class of custom Profiler used to do profiling
-    udf_profiler_cls : type, optional, default :class:`UDFBasicProfiler`
-        A class of custom Profiler used to do udf profiling
-
-    Notes
-    -----
-    Only one :class:`SparkContext` should be active per JVM. You must `stop()`
-    the active :class:`SparkContext` before creating a new one.
-
-    :class:`SparkContext` instance is not supported to share across multiple
-    processes out of the box, and PySpark does not guarantee multi-processing execution.
-    Use threads instead for concurrent processing purpose.
-
-    Examples
-    --------
-    >>> from pyspark.core.context import SparkContext
-    >>> sc = SparkContext('local', 'test')
-    >>> sc2 = SparkContext('local', 'test2') # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: ...
-    """
-
     _gateway: ClassVar[Optional[JavaGateway]] = None
     _jvm: ClassVar[Optional[JVMView]] = None
     _next_accum_id = 0
