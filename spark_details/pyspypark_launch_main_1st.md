@@ -109,12 +109,12 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - If so, `AbstractCommandBuilder builder = new SparkSubmitCommandBuilder(args);`, which creates a `SparkSubmitCommandBuilder` instance with the remaining command line options (i.e., `pyspark-shell-main --name "PySparkShell" "$@"`).
 
-  - The instance constructor contains [case matching code](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L131C9-L147C8) that assigns values to two fields:
+  - When the 1st element in `args` equals `pyspark-shell-main`, the [case matching code](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L131C9-L147C8) assigns the following values to the two fields:
     ```java
     appResource = PYSPARK_SHELL;
     submitArgs = args.subList(1, args.size());
     ```
-    when the 1st element in `args` equals `pyspark-shell-main`. Note `PYSPARK_SHELL` is a static constant equal to `"pyspark-shell-main"`.
+    where `PYSPARK_SHELL` is a static constant equal to `"pyspark-shell-main"`.
 
 - `cmd = buildCommand(builder, env, printLaunchCommand);`: calling `buildCommand()` further invokes `builder.buildCommand(env);` defined in [*SparkSubmitCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L159C3-L169C4)
 
