@@ -287,7 +287,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - [`private List<String> buildPySparkShellCommand(Map<String, String> env)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L333C3-L385C4)
 
-  - `appResource = PYSPARK_SHELL_RESOURCE;` where `static final String PYSPARK_SHELL_RESOURCE = "pyspark-shell";`
+  - `appResource = PYSPARK_SHELL_RESOURCE;` where [`PYSPARK_SHELL_RESOURCE`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L51) equals `"pyspark-shell"`.
     
   - `constructEnvVarArgs(env, "PYSPARK_SUBMIT_ARGS");`: Construct a new environment variable called `"PYSPARK_SUBMIT_ARGS"`
   
