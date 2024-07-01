@@ -142,8 +142,6 @@ class SparkContext:
                     )
                 else:
                     SparkContext._active_spark_context = instance
-    
-
 ```
 
 
@@ -163,23 +161,7 @@ import shlex
 ...
 
 def launch_gateway(conf=None, popen_kwargs=None):
-    """
-    launch jvm gateway
 
-    Parameters
-    ----------
-    conf : :py:class:`pyspark.SparkConf`
-        spark configuration passed to spark-submit
-    popen_kwargs : dict
-        Dictionary of kwargs to pass to Popen when spawning
-        the py4j JVM. This is a developer feature intended for use in
-        customizing how pyspark interacts with the py4j JVM (e.g., capturing
-        stdout/stderr).
-
-    Returns
-    -------
-    ClientServer or JavaGateway
-    """
     if "PYSPARK_GATEWAY_PORT" in os.environ:
         gateway_port = int(os.environ["PYSPARK_GATEWAY_PORT"])
         gateway_secret = os.environ["PYSPARK_GATEWAY_SECRET"]
@@ -279,7 +261,7 @@ def launch_gateway(conf=None, popen_kwargs=None):
     return gateway
 ```
 
-- `script = "./bin/spark-submit.cmd" if on_windows else "./bin/spark-submit"` evaluates to `"./bin/spark-submit"`
+- `script = "./bin/spark-submit.cmd" if on_windows else "./bin/spark-submit"` where the conditional expression evaluates to `"./bin/spark-submit"`
   
 - `submit_args = os.environ.get("PYSPARK_SUBMIT_ARGS", "pyspark-shell")` gets the value associated with the key `"PYSPARK_SUBMIT_ARGS"`. `print(submit_args)` outputs `"--master" "yarn" "--conf" "spark.driver.memory=2g" "--name" "PySparkShell" "--executor-memory" "2g" "pyspark-shell"`.
 
