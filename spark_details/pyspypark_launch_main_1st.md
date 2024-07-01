@@ -17,7 +17,6 @@ pyspark-shell-main --name "PySparkShell" --master yarn --driver-memory=2g --exec
 <br>
  
 ```java
-package org.apache.spark.launcher;
 ...
 import static org.apache.spark.launcher.CommandBuilderUtils.*;
 ...
