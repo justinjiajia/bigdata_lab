@@ -322,7 +322,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
               - `public static final String DRIVER_DEFAULT_EXTRA_CLASS_PATH_VALUE = "hive-jackson/*";`  in [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60)
               - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* available on an EMR instance.
  
-           - `getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH)` gets the value of the property `"spark.driver.extraLibraryPath"`, which is set in *spark-default.confs*.
+           - `getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH)` gets the value of the property `"spark.driver.extraLibraryPath"`, which is set in *spark-defaults.conf*.
      
      - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append the value of property `"spark.driver.extraLibraryPath"` to the first nom-empty value between the entry `"LD_LIBRARY_PATH"` in the user environment `env` and the same-name environment variable, and write the prolonged path to the user environment `env`
    
