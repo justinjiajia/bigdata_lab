@@ -100,7 +100,9 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 -  `printLaunchCommand` is `false`. Verified by adding `echo $(env | grep SPARK_PRINT_LAUNCH_COMMAND)` to proper places in  *spark-class*.
   
-- `Map<String, String> env = new HashMap<>();`: used to maintain the user environment 
+- `Map<String, String> env = new HashMap<>();`
+    
+    -  Used to maintain the user environment 
 
 - Remove the 1st command line option and check if it equals `"org.apache.spark.deploy.SparkSubmit"`
 
