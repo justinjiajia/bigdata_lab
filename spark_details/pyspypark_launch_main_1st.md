@@ -318,8 +318,9 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
            - [loadPropertiesFile()](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L286C3-L311C4): load configurations from a file specified via the command line option `--properties-file` or the *spark-defaults.conf* file under the Spark configuration directory. [`DEFAULT_PROPERTIES_FILE`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L31) is a constant with the value of `"spark-defaults.conf"`.
        
            - Add to `effectiveConfig` all configurations specified by the properties file and an additional one with the key `"spark.driver.defaultExtraClassPath"` and the value `"hive-jackson/*"` if no such an entry is present in the properties file.
-       
-              - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* on an EMR instance.
+              - `public static final String DRIVER_DEFAULT_EXTRA_CLASS_PATH = "spark.driver.defaultExtraClassPath";` in [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L58)
+              - `public static final String DRIVER_DEFAULT_EXTRA_CLASS_PATH_VALUE = "hive-jackson/*";`  in [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60)
+              - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* available on an EMR instance.
  
            - `getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH)` gets the value of the property `"spark.driver.extraLibraryPath"`, which is set in *spark-default.confs*.
      
