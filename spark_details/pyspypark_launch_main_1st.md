@@ -386,7 +386,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
            
   -  `List<String> pyargs = new ArrayList<>();`
  
-  -  Pick up the binary executable in the following order: `--conf spark.pyspark.driver.python` > `--conf spark.pyspark.python` > environment variable `PYSPARK_DRIVER_PYTHON` > environment variable `PYSPARK_PYTHON` > `python3`, and add it to  `pyargs`. Note that environment variables `PYSPARK_DRIVER_PYTHON` and `PYSPARK_PYTHON` were set to `/usr/bin/python3` in script [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark#L41C1-L46C3)
+  -  Pick up the binary executable in the following order: `--conf spark.pyspark.driver.python` > `--conf spark.pyspark.python` > environment variable `PYSPARK_DRIVER_PYTHON` > environment variable `PYSPARK_PYTHON` > `python3`, and add it to  `pyargs`. Note that the environment variable `PYSPARK_DRIVER_PYTHON` was set to `/usr/bin/python3` in  *spark-env.sh* on an EMR instance, while the environment variable `PYSPARK_PYTHON` was set to the value of `PYSPARK_DRIVER_PYTHON` in script [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark#L41C1-L46C3)
 
   - return `pyargs`
 
