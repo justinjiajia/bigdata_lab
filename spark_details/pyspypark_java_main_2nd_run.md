@@ -1,3 +1,12 @@
+Effectively
+
+```shell
+/usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> \
+org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit \
+--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-memory 2g pyspark-shell
+```
+
+
 <br>
  
 ### [*java/org/apache/spark/launcher/Main.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/Main.java)
