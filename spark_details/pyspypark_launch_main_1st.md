@@ -289,7 +289,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
   - `appResource = PYSPARK_SHELL_RESOURCE;` where `static final String PYSPARK_SHELL_RESOURCE = "pyspark-shell";`
     
-  - `constructEnvVarArgs(env, "PYSPARK_SUBMIT_ARGS");`
+  - `constructEnvVarArgs(env, "PYSPARK_SUBMIT_ARGS");`: Construct a new environment variable called `"PYSPARK_SUBMIT_ARGS"`
   
     ```java
     private void constructEnvVarArgs(
