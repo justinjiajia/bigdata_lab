@@ -274,6 +274,59 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
   ```
 
 - [`private List<String> buildSparkSubmitCommand(Map<String, String> env)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L262C3-L318C4)
+  ```java
+  Map<String, String> config = getEffectiveConfig();
+  boolean isClientMode = isClientMode(config);
+  String extraClassPath = isClientMode ? config.get(SparkLauncher.DRIVER_EXTRA_CLASSPATH) : null;
+  String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);
+  if (extraClassPath == null || extraClassPath.trim().isEmpty()) {
+    ...
+  } else {
+    extraClassPath += File.pathSeparator + defaultExtraClassPath;
+  }
+
+  List<String> cmd = buildJavaCommand(extraClassPath);
+  // Take Thrift/Connect Server as daemon
+  if (isThriftServer(mainClass) || isConnectServer(mainClass)) {
+    addOptionString(cmd, System.getenv("SPARK_DAEMON_JAVA_OPTS"));
+  }
+  addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));
+
+  // We don't want the client to specify Xmx. These have to be set by their corresponding
+  // memory flag --driver-memory or configuration entry spark.driver.memory
+  String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);
+  checkJavaOptions(driverDefaultJavaOptions);
+  String driverExtraJavaOptions = config.get(SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS);
+  checkJavaOptions(driverExtraJavaOptions);
+
+  if (isClientMode) {
+    // Figuring out where the memory value come from is a little tricky due to precedence.
+    // Precedence is observed in the following order:
+    // - explicit configuration (setConf()), which also covers --driver-memory cli argument.
+    // - properties file.
+    // - SPARK_DRIVER_MEMORY env variable
+    // - SPARK_MEM env variable
+    // - default value (1g)
+    // Take Thrift/Connect Server as daemon
+    String tsMemory =
+      isThriftServer(mainClass) || isConnectServer(mainClass) ?
+        System.getenv("SPARK_DAEMON_MEMORY") : null;
+    String memory = firstNonEmpty(tsMemory, config.get(SparkLauncher.DRIVER_MEMORY),
+      System.getenv("SPARK_DRIVER_MEMORY"), System.getenv("SPARK_MEM"), DEFAULT_MEM);
+    cmd.add("-Xmx" + memory);
+    addOptionString(cmd, driverDefaultJavaOptions);
+    addOptionString(cmd, driverExtraJavaOptions);
+    mergeEnvPathList(env, getLibPathEnvName(),
+      config.get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));
+  }
+
+  // SPARK-36796: Always add some JVM runtime default options to submit command
+  addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());
+  addOptionString(cmd, "-Dderby.connection.requireAuthentication=false");
+  cmd.add("org.apache.spark.deploy.SparkSubmit");
+  cmd.addAll(buildSparkSubmitArgs());
+  return cmd;
+  ```
 
   - `Map<String, String> config = getEffectiveConfig();`
          
@@ -314,13 +367,13 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
        ```
        - *conf/java-opts* does not exist on an EMR instance.
 
-   - `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));`
-  
-      - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*
-   - `String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);`:  `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` equals `"spark.driver.defaultJavaOptions";`. Its value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` by *spark-defaults.conf*.
-   - `String driverExtraJavaOptions = config.get(SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS);`: `SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS` equals `"spark.driver.extraJavaOptions"`
+   - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*.
+   - `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` is an alias of `"spark.driver.defaultJavaOptions"`, whose value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` by *spark-defaults.conf*.
+   
+   - `SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS` is an alias of `"spark.driver.extraJavaOptions"`.
  
-       
+
+   - 
     - Construct a string from the `ArrayList<>` returned from `buildSparkSubmitArgs()`, e.g.,  `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`, and associate it with the key `"PYSPARK_SUBMIT_ARGS"`, and write it into `env`.
 
          - Now, `env` contains the 2nd entry with the key `PYSPARK_SUBMIT_ARGS` and the value `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`
