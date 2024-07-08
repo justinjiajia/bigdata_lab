@@ -280,9 +280,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
        -  [`getEffectiveConfig()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L274C3-L284C4)
          - `effectiveConfig = new HashMap<>(conf);` creates a HashMap from `conf`.
          - [loadPropertiesFile()](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L286C3-L311C4): load additional configurations from a file specified via the command line option `--properties-file` or the *spark-defaults.conf* file under the Spark configuration directory. [`DEFAULT_PROPERTIES_FILE`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L31) is a constant with the value of `"spark-defaults.conf"`.
-     
          - Return a `HashMap<>` that contains the configurations set via the command-line flags `-c` and `--conf`, additional configurations loaded from the properties file, and an entry with the key `"spark.driver.defaultExtraClassPath"` if no such an entry is specified in the properties file.
-     
             - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* on an EMR instance.
      
 
