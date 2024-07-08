@@ -314,11 +314,11 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
        ```
        - *conf/java-opts* does not exist on an EMR instance.
 
-    - `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));`
-   
-       - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*
-    - `String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);`:  `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` equals `"spark.driver.defaultJavaOptions";`. Its value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` by *spark-defaults.conf*.
-    - `String driverExtraJavaOptions = config.get(SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS);`: `SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS` equals `"spark.driver.extraJavaOptions"`
+   - `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));`
+  
+      - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*
+   - `String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);`:  `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` equals `"spark.driver.defaultJavaOptions";`. Its value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` by *spark-defaults.conf*.
+   - `String driverExtraJavaOptions = config.get(SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS);`: `SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS` equals `"spark.driver.extraJavaOptions"`
  
        
     - Construct a string from the `ArrayList<>` returned from `buildSparkSubmitArgs()`, e.g.,  `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`, and associate it with the key `"PYSPARK_SUBMIT_ARGS"`, and write it into `env`.
