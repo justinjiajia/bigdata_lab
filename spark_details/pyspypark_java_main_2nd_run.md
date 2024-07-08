@@ -264,49 +264,27 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
   public List<String> buildCommand(Map<String, String> env)
       throws IOException, IllegalArgumentException {
     if (PYSPARK_SHELL.equals(appResource) && !isSpecialCommand) {
-      return buildPySparkShellCommand(env);
-    } 
-    ...
+      ...
+    } else if (SPARKR_SHELL.equals(appResource) && !isSpecialCommand) {
+      ...
+    } else {
+      return buildSparkSubmitCommand(env);
+    }
   }
   ```
 
-- [`private List<String> buildPySparkShellCommand(Map<String, String> env)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L333C3-L385C4)
+- [`private List<String> buildSparkSubmitCommand(Map<String, String> env)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L262C3-L318C4)
 
-  - `appResource = PYSPARK_SHELL_RESOURCE;`. Note `static final String PYSPARK_SHELL_RESOURCE = "pyspark-shell";`
-    
-  - `constructEnvVarArgs(env, "PYSPARK_SUBMIT_ARGS");`
-  
-    ```java
-    private void constructEnvVarArgs(
-        Map<String, String> env,
-        String submitArgsEnvVariable) throws IOException {
-      mergeEnvPathList(env, getLibPathEnvName(),
-        getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));
-  
-      StringBuilder submitArgs = new StringBuilder();
-      for (String arg : buildSparkSubmitArgs()) {
-        if (submitArgs.length() > 0) {
-          submitArgs.append(" ");
-        }
-        submitArgs.append(quoteForCommandString(arg));
-      }
-      env.put(submitArgsEnvVariable, submitArgs.toString());
-    }
-    ```
-    - `mergeEnvPathList(env, getLibPathEnvName(), getEffectiveConfig().get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));`
-      
-       -  [`getLibPathEnvName()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L90C3-L102C4): return `"LD_LIBRARY_PATH"` because `System.getProperty("os.name")` returns `Linux` on an EMR instance.  the the name of the env variable that holds the native library path.
+  - `Map<String, String> config = getEffectiveConfig();`
          
        -  [`getEffectiveConfig()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L274C3-L284C4)
-         - [loadPropertiesFile()](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L286C3-L311C4): load configurations from a file specified via the command line option `--properties-file` or the *spark-defaults.conf* file under the Spark configuration directory. [`DEFAULT_PROPERTIES_FILE`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L31) is a constant with the value of `"spark-defaults.conf"`.
+         - `effectiveConfig = new HashMap<>(conf);` creates a HashMap from `conf`.
+         - [loadPropertiesFile()](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L286C3-L311C4): load additional configurations from a file specified via the command line option `--properties-file` or the *spark-defaults.conf* file under the Spark configuration directory. [`DEFAULT_PROPERTIES_FILE`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L31) is a constant with the value of `"spark-defaults.conf"`.
      
-         - Return a `HashMap<>` with all configurations loaded from the properties file and an entry with the key `"spark.driver.defaultExtraClassPath"` and the value `"hive-jackson/*"` if no such an entry is specified in the properties file.
+         - Return a `HashMap<>` that contains the configurations set via the command-line flags `-c` and `--conf`, additional configurations loaded from the properties file, and an entry with the key `"spark.driver.defaultExtraClassPath"` if no such an entry is specified in the properties file.
      
             - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* on an EMR instance.
      
-     - [`mergeEnvPathList(Map<String, String> userEnv, String envKey, String pathList)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L110C3-L119C4): append `"hive-jackson/*"` to the first nom-empty value between the entry named `"LD_LIBRARY_PATH"` in `HashMap` `env` and the same-name environment variable, and write the prolonged path to the user environment `env`
-   
-        - Now, `env` contains the 1st entry with the key `LD_LIBRARY_PATH` and the value `"hive-jackson/*"`
 
 
     - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`; lastly, add `"pyspark-shell"`
