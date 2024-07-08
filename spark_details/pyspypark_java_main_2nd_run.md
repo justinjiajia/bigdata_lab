@@ -217,20 +217,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       ...
     ```
     
-  - Get the 1st argument for case maching: 
-    ```java
-    if (args.size() > 0) {
-      switch (args.get(0)) {
-        case PYSPARK_SHELL:
-          this.allowsMixedArguments = true;
-          appResource = PYSPARK_SHELL;
-          submitArgs = args.subList(1, args.size());
-          break;
-        ...
-      }
-    ```
-
-    - There's no matching case in this run.
+  - Get the 1st argument for case maching. There's no matching case in this run.
 
   - `OptionParser parser = new OptionParser(true)`: [class `OptionParser`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L488C3-L577C4) extends class `SparkSubmitOptionParser` defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java)
  
