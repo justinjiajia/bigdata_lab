@@ -288,62 +288,36 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
      
   - `String extraClassPath = isClientMode ? config.get(SparkLauncher.DRIVER_EXTRA_CLASSPATH) : null;`: load the value of `"spark.driver.extraClassPath"` specified in *spark-defaults.conf* available on an EMR instance.
         
-  - `String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);`: load the value of `"spark.driver.defaultExtraClassPath"` specified in [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60).
+  - `String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);`: load the value of `"spark.driver.defaultExtraClassPath"` specified in [*AbstractCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L280C7-L281C62) and [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60).
  
   - `extraClassPath += File.pathSeparator + defaultExtraClassPath;`
-  - 
-    - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`; lastly, add `"pyspark-shell"`
-      
-      ```java
-      List<String> buildSparkSubmitArgs() {
-        List<String> args = new ArrayList<>();
-        OptionParser parser = new OptionParser(false);
-        final boolean isSpecialCommand;
     
-        ...
-    
-        if (master != null) {
-          args.add(parser.MASTER);
-          args.add(master);
-        }
-    
-        if (remote != null) {
-          args.add(parser.REMOTE);
-          args.add(remote);
-        }
-    
-        if (deployMode != null) {
-          args.add(parser.DEPLOY_MODE);
-          args.add(deployMode);
-        }
-    
-        ...
-    
-        for (Map.Entry<String, String> e : conf.entrySet()) {
-          args.add(parser.CONF);
-          args.add(String.format("%s=%s", e.getKey(), e.getValue()));
-        }
-    
-        if (propertiesFile != null) {
-          args.add(parser.PROPERTIES_FILE);
-          args.add(propertiesFile);
-        }
-    
-        ..
-    
-        args.addAll(parsedArgs);
-    
-        if (appResource != null) {
-          args.add(appResource);
-        }
-    
-        args.addAll(appArgs);
-    
-        return args;
-      }
-      ```
+  - `List<String> cmd = buildJavaCommand(extraClassPath);`:
+ 
+     - `buildJavaCommand(extraClassPath)`
+       ```java
+       List<String> cmd = new ArrayList<>();
+   
+       String firstJavaHome = firstNonEmpty(javaHome,
+         childEnv.get("JAVA_HOME"),
+         System.getenv("JAVA_HOME"),
+         System.getProperty("java.home"));
+   
+       if (firstJavaHome != null) {
+         cmd.add(join(File.separator, firstJavaHome, "bin", "java"));
+       }
 
-     - Construct a string from the `ArrayList<>` returned from `buildSparkSubmitArgs()`, e.g.,  `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`, and associate it with the key `"PYSPARK_SUBMIT_ARGS"`, and write it into `env`.
+       ...
+       cmd.add("-cp");
+       cmd.add(join(File.pathSeparator, buildClassPath(extraClassPath)));
+       return cmd;
+       ```
+       - *conf/java-opts* does not exist on an EMR instance.
+
+    - `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));`
+   
+    - 
+    - Construct a string from the `ArrayList<>` returned from `buildSparkSubmitArgs()`, e.g.,  `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`, and associate it with the key `"PYSPARK_SUBMIT_ARGS"`, and write it into `env`.
 
          - Now, `env` contains the 2nd entry with the key `PYSPARK_SUBMIT_ARGS` and the value `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`
            
