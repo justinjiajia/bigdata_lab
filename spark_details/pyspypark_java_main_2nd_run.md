@@ -230,7 +230,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       }
     ```
 
-    - Because the 1st element equals `"pyspark-shell-main"`, the `appResource` field is assigned the value `"pyspark-shell-main"`, the `submitArgs` field is assigned a list packing the rest of the arguments (i.e., `--name "PySparkShell" "$@"`).
+    - There's no matching case in this run.
 
   - `OptionParser parser = new OptionParser(true)`: [class `OptionParser`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitCommandBuilder.java#L488C3-L577C4) extends class `SparkSubmitOptionParser` defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java)
  
