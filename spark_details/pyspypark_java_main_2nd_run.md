@@ -286,8 +286,12 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       
              - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* on an EMR instance.
      
-
-
+  - `String extraClassPath = isClientMode ? config.get(SparkLauncher.DRIVER_EXTRA_CLASSPATH) : null;`: load the value of `"spark.driver.extraClassPath"` specified in *spark-defaults.conf* available on an EMR instance.
+        
+  - `String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);`: load the value of `"spark.driver.defaultExtraClassPath"` specified in [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60).
+ 
+  - `extraClassPath += File.pathSeparator + defaultExtraClassPath;`
+  - 
     - `buildSparkSubmitArgs()`: add a restricted set of options in a particular order (e.g., `--master`, `--remote`, `--deploy-mode`, etc.) to an `ArrayList<>`; then add all configurations `conf` contains to the same list as pairs of `"--conf"` and `"<key string>=<value>"`. So driver-related properties set via options such as `--driver-memory` get translated to pairs of `"--conf" and "spark.driver.memory=<value>"; then add all configurations maintained by `parsedArgs`; lastly, add `"pyspark-shell"`
       
       ```java
