@@ -5,7 +5,7 @@ Effectively
 org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit \
 --master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-memory 2g pyspark-shell
 ```
-ddd
+
 
 <br>
  
@@ -330,18 +330,12 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
   - `Map<String, String> config = getEffectiveConfig();`
          
-       -  [`getEffectiveConfig()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L274C3-L284C4)
-         
-          - `effectiveConfig = new HashMap<>(conf);` creates a HashMap from `conf`.
-      
-          - [loadPropertiesFile()](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L286C3-L311C4): load additional configurations from a file specified via the command line option `--properties-file` or the *spark-defaults.conf* file under the Spark configuration directory. [`DEFAULT_PROPERTIES_FILE`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L31) is a constant with the value of `"spark-defaults.conf"`.
-          - Return a `HashMap<>` that contains the configurations set via the command-line flags `-c` and `--conf`, additional configurations loaded from the properties file, and an entry with the key `"spark.driver.defaultExtraClassPath"` if no such an entry is specified in the properties file.
-      
-             - No entry with the name `"spark.driver.defaultExtraClassPath"` in */usr/lib/spark/conf/spark-defaults.conf* on an EMR instance.
+       -  [`getEffectiveConfig()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L274C3-L284C4) merges several driver-related command line options and options specified via the flags `--conf` or `-c` with configurations specified in the properties file
+  
      
   - `String extraClassPath = isClientMode ? config.get(SparkLauncher.DRIVER_EXTRA_CLASSPATH) : null;`: load the value of `"spark.driver.extraClassPath"` specified in *spark-defaults.conf* available on an EMR instance.
         
-  - `String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);`: load the value of `"spark.driver.defaultExtraClassPath"` specified in [*AbstractCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L280C7-L281C62) and [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60).
+  - `config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH)` in `String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);` retrieves the value of `"spark.driver.defaultExtraClassPath"` specified in [*AbstractCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L280C7-L281C62) and [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60).
  
   - `extraClassPath += File.pathSeparator + defaultExtraClassPath;`
     
@@ -365,15 +359,19 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
        cmd.add(join(File.pathSeparator, buildClassPath(extraClassPath)));
        return cmd;
        ```
-       - *conf/java-opts* does not exist on an EMR instance.
+       - there is no *java-opts* in */usr/lib/spark/conf* on an EMR instance.
 
    - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*.
-   - `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` is an alias of `"spark.driver.defaultJavaOptions"`, whose value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` by *spark-defaults.conf*.
+     
+   - `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` is an alias of `"spark.driver.defaultJavaOptions"`, whose value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` in *spark-defaults.conf*.
    
    - `SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS` is an alias of `"spark.driver.extraJavaOptions"`.
  
 
-   - 
+   - `mergeEnvPathList(env, getLibPathEnvName(), config.get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));`
+
+     - `getLibPathEnvName()` returns `"LD_LIBRARY_PATH"` because `System.getProperty("os.name")` returns Linux on an EMR instance.
+     - 
     - Construct a string from the `ArrayList<>` returned from `buildSparkSubmitArgs()`, e.g.,  `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`, and associate it with the key `"PYSPARK_SUBMIT_ARGS"`, and write it into `env`.
 
          - Now, `env` contains the 2nd entry with the key `PYSPARK_SUBMIT_ARGS` and the value `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`
