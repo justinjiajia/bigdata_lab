@@ -359,9 +359,18 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
        cmd.add(join(File.pathSeparator, buildClassPath(extraClassPath)));
        return cmd;
        ```
-       - there is no *java-opts* in */usr/lib/spark/conf* on an EMR instance.
+       - There is no file *java-opts* in */usr/lib/spark/conf* on an EMR instance.
+       - The returned list `cmd` contains `"/usr/lib/jvm/jre-17/bin/java"`, `"-cp"`, and ...
 
-   - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*.
+   - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*. `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));` inserts the following items into the `cmd` list
+     ```shell
+     -DAWS_ACCOUNT_ID=688430810480
+     -DEMR_CLUSTER_ID=j-3JZ8WOC269WHI
+     -DEMR_RELEASE_LABEL=emr-7.1.0
+     -DAWS_ACCOUNT_ID=688430810480
+     -DEMR_CLUSTER_ID=j-3JZ8WOC269WHI
+     -DEMR_RELEASE_LABEL=emr-7.1.0
+     ```
      
    - `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` is an alias of `"spark.driver.defaultJavaOptions"`, whose value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` in *spark-defaults.conf*.
    
