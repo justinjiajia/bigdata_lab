@@ -296,8 +296,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
   // memory flag --driver-memory or configuration entry spark.driver.memory
   String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);
   checkJavaOptions(driverDefaultJavaOptions);
-  String driverExtraJavaOptions = config.get(SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS);
-  checkJavaOptions(driverExtraJavaOptions);
+  ...
 
   if (isClientMode) {
     // Figuring out where the memory value come from is a little tricky due to precedence.
@@ -315,7 +314,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
       System.getenv("SPARK_DRIVER_MEMORY"), System.getenv("SPARK_MEM"), DEFAULT_MEM);
     cmd.add("-Xmx" + memory);
     addOptionString(cmd, driverDefaultJavaOptions);
-    addOptionString(cmd, driverExtraJavaOptions);
+    ...
     mergeEnvPathList(env, getLibPathEnvName(),
       config.get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));
   }
@@ -375,11 +374,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
    - `String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);
       - `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` is an alias of `"spark.driver.defaultJavaOptions"`, whose value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` in *spark-defaults.conf*. 
    - `addOptionString(cmd, driverDefaultJavaOptions);` inserts `-XX:OnOutOfMemoryError='kill -9 %p'` into the `cmd` list.
-   
-   
-   - `SparkLauncher.DRIVER_EXTRA_JAVA_OPTIONS` is an alias of `"spark.driver.extraJavaOptions"`.
- 
-
+  
    - `mergeEnvPathList(env, getLibPathEnvName(), config.get(SparkLauncher.DRIVER_EXTRA_LIBRARY_PATH));` 
 
      - `getLibPathEnvName()` returns `"LD_LIBRARY_PATH"` because `System.getProperty("os.name")` returns Linux on an EMR instance.
@@ -390,10 +385,37 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
         - Now, the user environment `env` contains the 1st entry with the key `LD_LIBRARY_PATH`.
    
 
-         - Now, `env` contains the 2nd entry with the key `PYSPARK_SUBMIT_ARGS` and the value `'--master yarn --conf spark.driver.memory=2g --name PySparkShell --executor-driver 2g pyspark-shell'`
+   - [`JavaModuleOptions.defaultModuleOptions()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/JavaModuleOptions.java#L52C5-L54C6) in `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());` adds the following items into the `cmd` list:
+     ```shell
+     --add-opens=java.base/java.lang=ALL-UNNAMED
+     --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+     --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+     --add-opens=java.base/java.io=ALL-UNNAMED
+     --add-opens=java.base/java.net=ALL-UNNAMED
+     --add-opens=java.base/java.nio=ALL-UNNAMED
+     --add-opens=java.base/java.util=ALL-UNNAMED
+     --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+     --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
+     --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+     --add-opens=java.base/sun.nio.cs=ALL-UNNAMED
+     --add-opens=java.base/sun.security.action=ALL-UNNAMED
+     --add-opens=java.base/sun.util.calendar=ALL-UNNAMED
+     --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+     -Djdk.reflect.useDirectMethodHandle=false
+     ```
            
-  -  `List<String> pyargs = new ArrayList<>();`
+  - `cmd.add("org.apache.spark.deploy.SparkSubmit");` adds `"org.apache.spark.deploy.SparkSubmit"` into the `cmd` list.
+  - `cmd.add(join(File.pathSeparator, buildClassPath(extraClassPath)));` adds the following items into the `cmd` list:
+    ```shell
+    --master
+    yarn
+    --conf
+    spark.driver.memory=2g
+    --name
+    PySparkShell
+    --executor-memory
+    2g
+    pyspark-shell
+    ```
  
-  -  Pick up the binary executable in the following order: `--conf spark.pyspark.driver.python` > `--conf spark.pyspark.python` > environment variable `PYSPARK_DRIVER_PYTHON` > environment variable `PYSPARK_PYTHON` > `python3`, and add it to  `pyargs`. Note that environment variables `PYSPARK_DRIVER_PYTHON` and `PYSPARK_PYTHON` were set to `/usr/bin/python3` in script [*pyspark*](https://github.com/apache/spark/blob/master/bin/pyspark#L41C1-L46C3)
-
-  - return `pyargs`
+ 
