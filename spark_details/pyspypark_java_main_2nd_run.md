@@ -126,6 +126,8 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
 - Lastly, print each string to the standard output, followed by a null character (`'\0'`). 
 
+
+<img width="1049" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/59b75799-e92b-4c50-82fd-deb58404ac9a">
    
 <br>
 
@@ -388,8 +390,6 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
      -DEMR_RELEASE_LABEL=emr-7.1.0
      ```
      But why this gets duplicated in the printed output??
-
-<img width="1049" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/59b75799-e92b-4c50-82fd-deb58404ac9a">
 
    - `cmd.add("-Xmx" + memory);` inserts `-Xmx2g` into the `cmd` list.
    - `String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);`
