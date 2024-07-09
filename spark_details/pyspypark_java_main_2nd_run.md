@@ -389,13 +389,14 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
    - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*. `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));` adds the following items into the `cmd` list:
      ```shell
-     -DAWS_ACCOUNT_ID=688430810480
-     -DEMR_CLUSTER_ID=j-3JZ8WOC269WHI
-     -DEMR_RELEASE_LABEL=emr-7.1.0
-     -DAWS_ACCOUNT_ID=688430810480
-     -DEMR_CLUSTER_ID=j-3JZ8WOC269WHI
+     -DAWS_ACCOUNT_ID=xxxx
+     -DEMR_CLUSTER_ID=j-xxxx
      -DEMR_RELEASE_LABEL=emr-7.1.0
      ```
+     But why this gets duplicated in the printed output??
+
+<img width="1049" alt="image" src="https://github.com/justinjiajia/bigdata_lab/assets/8945640/59b75799-e92b-4c50-82fd-deb58404ac9a">
+
    - `cmd.add("-Xmx" + memory);` inserts `-Xmx2g` into the `cmd` list.
    - `String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);`
       - `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` is an alias of `"spark.driver.defaultJavaOptions"`, whose value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` in *spark-defaults.conf*. 
