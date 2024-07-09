@@ -388,24 +388,24 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
    
 
    -  `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());` adds the following items into the `cmd` list:
-     ```shell
-     --add-opens=java.base/java.lang=ALL-UNNAMED
-     --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
-     --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
-     --add-opens=java.base/java.io=ALL-UNNAMED
-     --add-opens=java.base/java.net=ALL-UNNAMED
-     --add-opens=java.base/java.nio=ALL-UNNAMED
-     --add-opens=java.base/java.util=ALL-UNNAMED
-     --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
-     --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
-     --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
-     --add-opens=java.base/sun.nio.cs=ALL-UNNAMED
-     --add-opens=java.base/sun.security.action=ALL-UNNAMED
-     --add-opens=java.base/sun.util.calendar=ALL-UNNAMED
-     --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
-     -Djdk.reflect.useDirectMethodHandle=false
-     ```
-     - [`JavaModuleOptions.defaultModuleOptions()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/JavaModuleOptions.java#L52C5-L54C6)
+      ```shell
+      --add-opens=java.base/java.lang=ALL-UNNAMED
+      --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+      --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+      --add-opens=java.base/java.io=ALL-UNNAMED
+      --add-opens=java.base/java.net=ALL-UNNAMED
+      --add-opens=java.base/java.nio=ALL-UNNAMED
+      --add-opens=java.base/java.util=ALL-UNNAMED
+      --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
+      --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+      --add-opens=java.base/sun.nio.cs=ALL-UNNAMED
+      --add-opens=java.base/sun.security.action=ALL-UNNAMED
+      --add-opens=java.base/sun.util.calendar=ALL-UNNAMED
+      --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+      -Djdk.reflect.useDirectMethodHandle=false
+      ```
+      - [`JavaModuleOptions.defaultModuleOptions()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/JavaModuleOptions.java#L52C5-L54C6)
            
   - `cmd.add("org.apache.spark.deploy.SparkSubmit");` adds `"org.apache.spark.deploy.SparkSubmit"` into the `cmd` list.
   - `cmd.add(join(File.pathSeparator, buildClassPath(extraClassPath)));` adds the following items into the `cmd` list:
