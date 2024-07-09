@@ -443,18 +443,5 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     ```
  
 
- <br>
- 
-### [*scala/org/apache/spark/deploy/SparkSubmit.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala)
 
-<br>
-
-
-
-
- <br>
- 
-### [*scala/org/apache/spark/deploy/SparkSubmitArguments.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala)
-
-<br>
 
