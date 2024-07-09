@@ -371,7 +371,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
      -DEMR_RELEASE_LABEL=emr-7.1.0
      ```
    - `cmd.add("-Xmx" + memory);` inserts `-Xmx2g` into the `cmd` list.
-   - `String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);
+   - `String driverDefaultJavaOptions = config.get(SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS);`
       - `SparkLauncher.DRIVER_DEFAULT_JAVA_OPTIONS` is an alias of `"spark.driver.defaultJavaOptions"`, whose value is set to `-XX:OnOutOfMemoryError='kill -9 %p'` in *spark-defaults.conf*. 
    - `addOptionString(cmd, driverDefaultJavaOptions);` inserts `-XX:OnOutOfMemoryError='kill -9 %p'` into the `cmd` list.
   
