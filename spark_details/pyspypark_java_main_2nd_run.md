@@ -329,14 +329,15 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
 
   - `Map<String, String> config = getEffectiveConfig();`
          
-       -  [`getEffectiveConfig()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L274C3-L284C4) merges several driver-related command line options and options specified via the flags `--conf` or `-c` with configurations specified in the properties file
+       -  [`getEffectiveConfig()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L274C3-L284C4) merges several driver-related command line options and options specified via the flags `--conf` or `-c` with configurations specified in the properties file.
   
      
-  - `String extraClassPath = isClientMode ? config.get(SparkLauncher.DRIVER_EXTRA_CLASSPATH) : null;`: load the value of `"spark.driver.extraClassPath"` specified in *spark-defaults.conf* available on an EMR instance.
+  - `String extraClassPath = isClientMode ? config.get(SparkLauncher.DRIVER_EXTRA_CLASSPATH) : null;`:  `config.get(SparkLauncher.DRIVER_EXTRA_CLASSPATH)` retrieves the value of `"spark.driver.extraClassPath"` specified in *spark-defaults.conf* available on an EMR instance.
         
-  - `config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH)` in `String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);` retrieves the value of `"spark.driver.defaultExtraClassPath"` specified in [*AbstractCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L280C7-L281C62) and [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60).
+  - `String defaultExtraClassPath = config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH);`: `config.get(SparkLauncher.DRIVER_DEFAULT_EXTRA_CLASS_PATH)` retrieves the value of `"spark.driver.defaultExtraClassPath"` specified in [*AbstractCommandBuilder.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L280C7-L281C62) and [*SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java#L60).
  
   - `extraClassPath += File.pathSeparator + defaultExtraClassPath;`
+
     
   - `List<String> cmd = buildJavaCommand(extraClassPath);`:
  
@@ -382,6 +383,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
          ```
          - The returned list contains the value of the `spark.driver.extraClassPath` property specified in the *spark-defaults.conf* file, `/usr/lib/spark/conf/`, `/usr/lib/spark/jars/*`, and `/etc/hadoop/conf/`.
          - [`static String findJarsDir(String sparkHome, String scalaVersion, boolean failIfNotFound)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L310C3-L327C4)
+         -  The value of  `defaultExtraClassPath` seems to be `null` on an EMR instance. 
          
        - The returned list `cmd` contains `"/usr/lib/jvm/jre-17/bin/java"`, `"-cp"`, and what `buildClassPath(extraClassPath)` returns.
 
