@@ -361,7 +361,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
        - There is no file *java-opts* in */usr/lib/spark/conf* on an EMR instance.
        - The returned list `cmd` contains `"/usr/lib/jvm/jre-17/bin/java"`, `"-cp"`, and ...
 
-   - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*. `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));` inserts the following items into the `cmd` list
+   - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*. `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));` adds the following items into the `cmd` list:
      ```shell
      -DAWS_ACCOUNT_ID=688430810480
      -DEMR_CLUSTER_ID=j-3JZ8WOC269WHI
@@ -385,7 +385,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
         - Now, the user environment `env` contains the 1st entry with the key `LD_LIBRARY_PATH`.
    
 
-   - [`JavaModuleOptions.defaultModuleOptions()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/JavaModuleOptions.java#L52C5-L54C6) in `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());` adds the following items into the `cmd` list:
+   -  `addOptionString(cmd, JavaModuleOptions.defaultModuleOptions());` adds the following items into the `cmd` list:
      ```shell
      --add-opens=java.base/java.lang=ALL-UNNAMED
      --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
@@ -403,6 +403,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
      --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED
      -Djdk.reflect.useDirectMethodHandle=false
      ```
+     - [`JavaModuleOptions.defaultModuleOptions()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/JavaModuleOptions.java#L52C5-L54C6)
            
   - `cmd.add("org.apache.spark.deploy.SparkSubmit");` adds `"org.apache.spark.deploy.SparkSubmit"` into the `cmd` list.
   - `cmd.add(join(File.pathSeparator, buildClassPath(extraClassPath)));` adds the following items into the `cmd` list:
