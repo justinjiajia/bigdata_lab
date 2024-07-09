@@ -385,7 +385,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
          - [`static String findJarsDir(String sparkHome, String scalaVersion, boolean failIfNotFound)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L310C3-L327C4)
          -  The value of  `defaultExtraClassPath` seems to be `null` on an EMR instance. 
          
-       - The returned list `cmd` contains `"/usr/lib/jvm/jre-17/bin/java"`, `"-cp"`, and what `buildClassPath(extraClassPath)` returns.
+       - The returned list `cmd` contains `"/usr/lib/jvm/jre-17/bin/java"`, `"-cp"`, and the classpath returned by `buildClassPath(extraClassPath)`.
 
    - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*. `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));` adds the following items into the `cmd` list:
      ```shell
