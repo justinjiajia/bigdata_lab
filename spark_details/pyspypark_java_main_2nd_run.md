@@ -340,7 +340,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
     
   - `List<String> cmd = buildJavaCommand(extraClassPath);`:
  
-     - `buildJavaCommand(extraClassPath)`
+     - [`buildJavaCommand(extraClassPath)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L83C3-L120C4)
        ```java
        List<String> cmd = new ArrayList<>();
    
@@ -352,7 +352,7 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
        if (firstJavaHome != null) {
          cmd.add(join(File.separator, firstJavaHome, "bin", "java"));
        }
-
+       
        ...
        cmd.add("-cp");
        cmd.add(join(File.pathSeparator, buildClassPath(extraClassPath)));
