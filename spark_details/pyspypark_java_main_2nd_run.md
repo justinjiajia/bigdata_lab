@@ -359,7 +359,31 @@ import static org.apache.spark.launcher.CommandBuilderUtils.*;
        return cmd;
        ```
        - There is no file *java-opts* in */usr/lib/spark/conf* on an EMR instance.
-       - The returned list `cmd` contains `"/usr/lib/jvm/jre-17/bin/java"`, `"-cp"`, and ...
+       - [`List<String> buildClassPath(String appClassPath)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/AbstractCommandBuilder.java#L128C3-L209C3)
+         ```java
+         ...
+         Set<String> cp = new LinkedHashSet<>();
+         addToClassPath(cp, appClassPath);
+
+         addToClassPath(cp, getConfDir());
+         ...
+         String jarsDir = findJarsDir(getSparkHome(), getScalaVersion(), !isTesting && !isTestingSql);
+         if (jarsDir != null) {
+           // Place slf4j-api-* jar first to be robust
+           for (File f: new File(jarsDir).listFiles()) {
+             if (f.getName().startsWith("slf4j-api-")) {
+               addToClassPath(cp, f.toString());
+             }
+           }
+           addToClassPath(cp, join(File.separator, jarsDir, "*"));
+         }
+         addToClassPath(cp, getenv("HADOOP_CONF_DIR"));
+         ...
+         ```
+         - The returned list contains the value of the `spark.driver.extraClassPath` property specified in the *spark-defaults.conf* file, `/usr/lib/spark/conf/`, `/usr/lib/spark/jars/*`, and `/etc/hadoop/conf/`.
+         - [`static String findJarsDir(String sparkHome, String scalaVersion, boolean failIfNotFound)`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/CommandBuilderUtils.java#L310C3-L327C4)
+         
+       - The returned list `cmd` contains `"/usr/lib/jvm/jre-17/bin/java"`, `"-cp"`, and what `buildClassPath(extraClassPath)` returns.
 
    - The environment variable `SPARK_SUBMIT_OPTS` was set by *load-emr-env.sh*. `addOptionString(cmd, System.getenv("SPARK_SUBMIT_OPTS"));` adds the following items into the `cmd` list:
      ```shell
