@@ -74,7 +74,7 @@
       }
     ```
 
-    - `super.doSubmit(args)`
+    - `super.doSubmit(args)` invokes `doSubmit()` defined in the [body of the `SparkSubmit` class](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala#L71C3-L101C4)
    
       ```scala
       def doSubmit(args: Array[String]): Unit = {
