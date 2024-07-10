@@ -8,6 +8,62 @@
 
 <br>
 
+
+- In Scala, `main` must be a method in an object.  It is the entry point to the application. The command-line arguments for the application are passed to main in an array of strings, e.g., `args: Array[String]`.
+  ```scala
+  override def main(args: Array[String]): Unit = {
+    Option(System.getenv("SPARK_PREFER_IPV6"))
+      .foreach(System.setProperty("java.net.preferIPv6Addresses", _))
+    val submit = new SparkSubmit() {
+      self =>
+
+      override protected def parseArguments(args: Array[String]): SparkSubmitArguments = {
+        new SparkSubmitArguments(args.toImmutableArraySeq) {
+          override protected def logInfo(msg: => String): Unit = self.logInfo(msg)
+
+          override protected def logInfo(entry: LogEntry): Unit = self.logInfo(entry)
+
+          override protected def logWarning(msg: => String): Unit = self.logWarning(msg)
+
+          override protected def logWarning(entry: LogEntry): Unit = self.logWarning(entry)
+
+          override protected def logError(msg: => String): Unit = self.logError(msg)
+
+          override protected def logError(entry: LogEntry): Unit = self.logError(entry)
+        }
+      }
+
+      override protected def logInfo(msg: => String): Unit = printMessage(msg)
+
+      override protected def logInfo(entry: LogEntry): Unit = printMessage(entry.message)
+
+      override protected def logWarning(msg: => String): Unit = printMessage(s"Warning: $msg")
+
+      override protected def logWarning(entry: LogEntry): Unit =
+        printMessage(s"Warning: ${entry.message}")
+
+      override protected def logError(msg: => String): Unit = printMessage(s"Error: $msg")
+
+      override protected def logError(entry: LogEntry): Unit =
+        printMessage(s"Error: ${entry.message}")
+
+      override def doSubmit(args: Array[String]): Unit = {
+        try {
+          super.doSubmit(args)
+        } catch {
+          case e: SparkUserAppException =>
+            exitFn(e.exitCode)
+        }
+      }
+
+    }
+
+    submit.doSubmit(args)
+  }
+  ```
+ 
+  - `self =>` is used to alias `this`:
+
 - `val appArgs = parseArguments(args)` -> `new SparkSubmitArguments(args.toImmutableArraySeq)`
 
 - `val sparkConf = appArgs.toSparkConf()`: `toSparkConf()` defined for class `SparkSubmitArguments` in *SparkSubmitArguments.scala*
