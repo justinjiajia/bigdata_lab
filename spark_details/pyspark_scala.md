@@ -86,13 +86,7 @@
         if (isShell(appArgs.primaryResource) || isSqlShell(appArgs.mainClass)) {
           Logging.disableStructuredLogging()
         } else {
-          // For non-shell applications, enable structured logging if it's not explicitly disabled
-          // via the configuration `spark.log.structuredLogging.enabled`.
-          if (sparkConf.getBoolean(STRUCTURED_LOGGING_ENABLED.key, defaultValue = true)) {
-            Logging.enableStructuredLogging()
-          } else {
-            Logging.disableStructuredLogging()
-          }
+          ...
         }
         // Initialize logging if it hasn't been done yet. Keep track of whether logging needs to
         // be reset before the application starts.
