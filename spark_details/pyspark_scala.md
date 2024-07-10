@@ -77,8 +77,37 @@
     - `super.doSubmit(args)`
    
       ```scala
-      
-
+      def doSubmit(args: Array[String]): Unit = {
+        val appArgs = parseArguments(args)
+        val sparkConf = appArgs.toSparkConf()
+    
+        // For interpreters, structured logging is disabled by default to avoid generating mixed
+        // plain text and structured logs on the same console.
+        if (isShell(appArgs.primaryResource) || isSqlShell(appArgs.mainClass)) {
+          Logging.disableStructuredLogging()
+        } else {
+          // For non-shell applications, enable structured logging if it's not explicitly disabled
+          // via the configuration `spark.log.structuredLogging.enabled`.
+          if (sparkConf.getBoolean(STRUCTURED_LOGGING_ENABLED.key, defaultValue = true)) {
+            Logging.enableStructuredLogging()
+          } else {
+            Logging.disableStructuredLogging()
+          }
+        }
+        // Initialize logging if it hasn't been done yet. Keep track of whether logging needs to
+        // be reset before the application starts.
+        val uninitLog = initializeLogIfNecessary(true, silent = true)
+    
+        if (appArgs.verbose) {
+          logInfo(appArgs.toString)
+        }
+        appArgs.action match {
+          case SparkSubmitAction.SUBMIT => submit(appArgs, uninitLog, sparkConf)
+          case SparkSubmitAction.KILL => kill(appArgs, sparkConf)
+          case SparkSubmitAction.REQUEST_STATUS => requestStatus(appArgs, sparkConf)
+          case SparkSubmitAction.PRINT_VERSION => printVersion()
+        }
+      }
       ```
   
 
