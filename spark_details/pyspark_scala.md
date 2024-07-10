@@ -61,8 +61,26 @@
     submit.doSubmit(args)
   }
   ```
- 
-  - `self =>` is used to alias `this`:
+  -  `val submit = new SparkSubmit() { ... }` instantiates an anonymous class subclassed from the `SparkSubmit` class
+  - `self =>` is used to alias `this`.
+  - `submit.doSubmit(args)`
+    ```scala
+    override def doSubmit(args: Array[String]): Unit = {
+        try {
+          super.doSubmit(args)
+        } catch {
+          ...
+        }
+      }
+    ```
+
+    - `super.doSubmit(args)`
+   
+      ```scala
+      
+
+      ```
+  
 
 - `val appArgs = parseArguments(args)` -> `new SparkSubmitArguments(args.toImmutableArraySeq)`
 
