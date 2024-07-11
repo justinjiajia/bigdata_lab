@@ -275,7 +275,7 @@ private[spark] class SparkSubmit extends Logging {
   - `loadPropertiesFromFile(Utils.getDefaultPropertiesFile(env))`: When no input properties file is specified via `--properties-file` or when `--load-spark-defaults` flag is set, load properties from `spark-defaults.conf`. Note: `env: Map[String, String] = sys.env` is in [the signature of the primary constructor](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L42) of class `SparkSubmitArguments`
   
   
-  - [`loadPropertiesFromFile(filePath: String)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L109) only adds new entries to `sparkProperties`
+  - [`loadPropertiesFromFile(filePath: String)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L109) only adds new entries to `sparkProperties` when `filePath != null` is `true`.
       ```scala
       ...
       val properties = Utils.getPropertiesFromFile(filePath)
