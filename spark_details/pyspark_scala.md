@@ -286,7 +286,7 @@ private[spark] class SparkSubmit extends Logging {
       }
       ...
       ```
-  - `Utils.getDefaultPropertiesFile(env)` return the path of the default Spark properties file.
+  - [`Utils.getDefaultPropertiesFile(env)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/util/Utils.scala#L1984C3-L1992C4) return the path of the default Spark properties file.
     ```scala  
     def getDefaultPropertiesFile(env: Map[String, String] = sys.env): String = {
       env.get("SPARK_CONF_DIR")
