@@ -286,7 +286,17 @@ private[spark] class SparkSubmit extends Logging {
       }
       ...
       ```
-  
+  - `Utils.getDefaultPropertiesFile(env)` return the path of the default Spark properties file.
+    ```scala  
+    def getDefaultPropertiesFile(env: Map[String, String] = sys.env): String = {
+      env.get("SPARK_CONF_DIR")
+        .orElse(env.get("SPARK_HOME").map { t => s"$t${File.separator}conf" })
+        .map { t => new File(s"$t${File.separator}spark-defaults.conf")}
+        .filter(_.isFile)
+        .map(_.getAbsolutePath)
+        .orNull
+    }
+    ```
   - In summary, the precedence of property setting is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
 
 
