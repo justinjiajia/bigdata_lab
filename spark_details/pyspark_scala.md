@@ -157,10 +157,7 @@ pyspark-shell
  
            override protected def logError(entry: LogEntry): Unit = self.logError(entry)
         }
-
-  
-
-
+        ```
 
 - `val sparkConf = appArgs.toSparkConf()`: `toSparkConf()` defined for class `SparkSubmitArguments` in *SparkSubmitArguments.scala*
   ```scala
