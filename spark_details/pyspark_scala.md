@@ -262,11 +262,11 @@ private[spark] class SparkSubmit extends Logging {
    
     - Insert the options defined via `--conf` or `-c` into `sparkProperties`, which is a `HashMap[String, String]` [initialized by this constructor](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L77).
       
-    - `action` equals `null` unless `opt` match `VERSION`. As a result, an invocation of `handle()` returns `true` unless `opt` match `VERSION`.
+    - `action` equals `null` unless `opt` matches `VERSION`. As a result, an invocation of `handle()` returns `true` unless `opt` matches `VERSION`.
 
 
 
-- [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) 
+- [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) merges values from the default properties file with those specified through `--conf`. When this is called, `sparkProperties` is already filled with configurations from the latter.
 
 
   - `loadPropertiesFromFile(propertiesFile)`: When `--properties-file` was used to specify a properties file (so `propertiesFile` is not `null`), merge values from that file with those specified through `--conf` in `sparkProperties`.
