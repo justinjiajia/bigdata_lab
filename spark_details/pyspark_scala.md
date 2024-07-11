@@ -218,32 +218,49 @@ private[spark] class SparkSubmit extends Logging {
     ```scala
     override protected def handle(opt: String, value: String): Boolean = {
       opt match {
+        case NAME =>
+          name = value
+
+        case MASTER =>
+          maybeMaster = Option(value)
+    
         ...
+        case CLASS =>
+          mainClass = value
+  
+        ...
+  
+        case NUM_EXECUTORS =>
+          numExecutors = value
+  
+        case TOTAL_EXECUTOR_CORES =>
+          totalExecutorCores = value
+  
         case EXECUTOR_CORES =>
           executorCores = value
   
         case EXECUTOR_MEMORY =>
           executorMemory = value
-    
-        ...
-        case PROPERTIES_FILE =>
-          propertiesFile = value
-        ...
-    ```
- 
-   - For options defined via `--conf` or `-c`, e.g., `--conf spark.eventLog.enabled=false
-      --conf "spark.executor.extraJavaOptions=-XX:+PrintGCDetails -XX:+PrintGCTimeStamps"`, the processing defined in `handle()` is a bit different:
-    
-      ```scala
-          case CONF =>
-            val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
-            sparkProperties(confName) = confValue
-      ```
-      where `sparkProperties` is an empty `HashMap[String, String]` [initialized by this constructor](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L77).
   
-   - After `parse()` completes, `sparkProperties` is already filled with properties specified through `--conf`
+        case DRIVER_MEMORY =>
+          driverMemory = value
+  
+        case DRIVER_CORES =>
+          driverCores = value
+  
+        ...
 
-   - The constants used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) are defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39C3-L80C44)
+        case CONF =>
+          val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
+          sparkProperties(confName) = confValue
+    ```
+    - The constants used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) are defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39C3-L80C44)
+   
+   - Insert the options defined via `--conf` or `-c` into `sparkProperties`, which is a `HashMap[String, String]` [initialized by this constructor](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L77).
+  
+   - After `parse()` completes, `sparkProperties` is filled with properties specified through `--conf`
+
+
 
 - [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) 
 
