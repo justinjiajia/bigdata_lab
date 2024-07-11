@@ -385,7 +385,8 @@ private[spark] class SparkSubmit extends Logging {
  
   - This method does not change the content of `sparkProperties`.
     
-- [validateArguments()](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L241C2-L249C4): validate all fields. Note: some fields can hold a `null` value. E.g., `executorMemory` could be `null` if it is not configured by `--executor-memory`, `--conf spark.executor.memory`,  the properties files, and the relevant environment variable.
+- [validateArguments()](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L241C2-L249C4) calls `validateSubmitArguments()` to validate all fields as `action` was set to `SUBMIT`.
+ 
 
   - This method does not change the content of `sparkProperties`. 
 
