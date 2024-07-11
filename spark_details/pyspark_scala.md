@@ -362,14 +362,7 @@ private[spark] class SparkSubmit extends Logging {
     numExecutors = Option(numExecutors)
       .getOrElse(sparkProperties.get(config.EXECUTOR_INSTANCES.key).orNull)
     queue = Option(queue).orElse(sparkProperties.get("spark.yarn.queue")).orNull
-    keytab = Option(keytab)
-      .orElse(sparkProperties.get(config.KEYTAB.key))
-      .orElse(sparkProperties.get("spark.yarn.keytab"))
-      .orNull
-    principal = Option(principal)
-      .orElse(sparkProperties.get(config.PRINCIPAL.key))
-      .orElse(sparkProperties.get("spark.yarn.principal"))
-      .orNull
+    ...
     dynamicAllocationEnabled =
       sparkProperties.get(DYN_ALLOCATION_ENABLED.key).exists("true".equalsIgnoreCase)
 
@@ -385,7 +378,9 @@ private[spark] class SparkSubmit extends Logging {
   }
   ```
 
-  - E.g., if `executorMemory` is `null` (i.e., not assigned a value by `handle()` as there's no `--executor-memory` flag among the command-line options), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
+  - E.g., `executorCores` is not assigned a value by `handle()` because there's no `--executor-cores` flag among the command-line options. As a result, the function tries to load the value associated with the key `"spark.executor.cores"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable. Eventually, `executorCores` is set to `4` because the property `"spark.executor.cores"` is associated with a value of `4` in *spark-defaults.conf*.
+  - `driverExtraClassPath` is set to the value associated with the property `"spark.driver.extraClassPath"` in *spark-defaults.conf*.
+  - `driverExtraLibraryPath` is set to the value associated with the property `"spark.driver.extraLibraryPath"` in *spark-defaults.conf*.
   - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`. The aliases of the keys are defined in [*java/org/apache/spark/launcher/SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java)
  
   - This method does not change the content of `sparkProperties`.
