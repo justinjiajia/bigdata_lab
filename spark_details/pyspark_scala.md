@@ -57,6 +57,24 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
 
 <br>
 
+- The fields and methods responsible for recognizing the primary resource:
+  ```scala
+  private val PYSPARK_SHELL = "pyspark-shell"
+
+  /**
+   * Return whether the given primary resource represents a shell.
+   */
+  private[deploy] def isShell(res: String): Boolean = {
+    (res == SPARK_SHELL || res == PYSPARK_SHELL || res == SPARKR_SHELL)
+  }
+  
+  /**
+   * Return whether the given primary resource requires running python.
+   */
+  private[deploy] def isPython(res: String): Boolean = {
+    res != null && res.endsWith(".py") || res == PYSPARK_SHELL
+  }
+  ```
 
 - In Scala, `main` must be a method in an object.  It is the entry point to the application. The command-line arguments for the application are passed to main in an array of strings, e.g., `args: Array[String]`.
   ```scala
@@ -283,7 +301,7 @@ private[spark] class SparkSubmit extends Logging {
   
       primaryResource =
         if (!SparkSubmit.isShell(opt) && !SparkSubmit.isInternal(opt)) {
-          Utils.resolveURI(opt).toString
+          ...
         } else {
           opt
         }
@@ -292,7 +310,7 @@ private[spark] class SparkSubmit extends Logging {
       false
     }
     ```
-    - This handles the last option `pyspark-shell`.
+    - This handles the last command-line option `pyspark-shell`. `primaryResource` is set to `"pyspark-shell"`, while `isPython` is set to `true`.
 
 - [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) merges values from the default properties file with those specified through `--conf`. When this is called, `sparkProperties` is already filled with configurations from the latter.
 
