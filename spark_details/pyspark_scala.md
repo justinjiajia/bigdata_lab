@@ -313,11 +313,29 @@ private[spark] class SparkSubmit extends Logging {
 
 
 
-- [`loadEnvironmentArguments()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L158C1-L239C4): Load arguments from environment variables, Spark properties etc.
-
-  - E.g,, if `executorMemory` is still `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
-    ```scala
+- [`loadEnvironmentArguments()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L158C1-L239C4) loads arguments from environment variables, Spark properties etc.
+  ```scala
+  private def loadEnvironmentArguments(): Unit = {
+    maybeMaster = maybeMaster
+      .orElse(sparkProperties.get("spark.master"))
+      .orElse(env.get("MASTER"))
     ...
+    driverExtraClassPath = Option(driverExtraClassPath)
+      .orElse(sparkProperties.get(config.DRIVER_CLASS_PATH.key))
+      .orNull
+    driverExtraJavaOptions = Option(driverExtraJavaOptions)
+      .orElse(sparkProperties.get(config.DRIVER_JAVA_OPTIONS.key))
+      .orNull
+    driverExtraLibraryPath = Option(driverExtraLibraryPath)
+      .orElse(sparkProperties.get(config.DRIVER_LIBRARY_PATH.key))
+      .orNull
+    driverMemory = Option(driverMemory)
+      .orElse(sparkProperties.get(config.DRIVER_MEMORY.key))
+      .orElse(env.get("SPARK_DRIVER_MEMORY"))
+      .orNull
+    driverCores = Option(driverCores)
+      .orElse(sparkProperties.get(config.DRIVER_CORES.key))
+      .orNull
     executorMemory = Option(executorMemory)
       .orElse(sparkProperties.get(config.EXECUTOR_MEMORY.key))
       .orElse(env.get("SPARK_EXECUTOR_MEMORY"))
@@ -326,8 +344,49 @@ private[spark] class SparkSubmit extends Logging {
       .orElse(sparkProperties.get(config.EXECUTOR_CORES.key))
       .orElse(env.get("SPARK_EXECUTOR_CORES"))
       .orNull
-    ```
-  - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`.
+    totalExecutorCores = Option(totalExecutorCores)
+      .orElse(sparkProperties.get(config.CORES_MAX.key))
+      .orNull
+    name = Option(name).orElse(sparkProperties.get("spark.app.name")).orNull
+    jars = Option(jars).orElse(sparkProperties.get(config.JARS.key)).orNull
+    files = Option(files).orElse(sparkProperties.get(config.FILES.key)).orNull
+    ...
+    packagesExclusions = Option(packagesExclusions)
+      .orElse(sparkProperties.get(config.JAR_PACKAGES_EXCLUSIONS.key)).orNull
+    repositories = Option(repositories)
+      .orElse(sparkProperties.get(config.JAR_REPOSITORIES.key)).orNull
+    deployMode = Option(deployMode)
+      .orElse(sparkProperties.get(config.SUBMIT_DEPLOY_MODE.key))
+      .orElse(env.get("DEPLOY_MODE"))
+      .orNull
+    numExecutors = Option(numExecutors)
+      .getOrElse(sparkProperties.get(config.EXECUTOR_INSTANCES.key).orNull)
+    queue = Option(queue).orElse(sparkProperties.get("spark.yarn.queue")).orNull
+    keytab = Option(keytab)
+      .orElse(sparkProperties.get(config.KEYTAB.key))
+      .orElse(sparkProperties.get("spark.yarn.keytab"))
+      .orNull
+    principal = Option(principal)
+      .orElse(sparkProperties.get(config.PRINCIPAL.key))
+      .orElse(sparkProperties.get("spark.yarn.principal"))
+      .orNull
+    dynamicAllocationEnabled =
+      sparkProperties.get(DYN_ALLOCATION_ENABLED.key).exists("true".equalsIgnoreCase)
+
+    // In YARN mode, app name can be set via SPARK_YARN_APP_NAME (see SPARK-5222)
+    if (master.startsWith("yarn")) {
+      name = Option(name).orElse(env.get("SPARK_YARN_APP_NAME")).orNull
+    }
+
+    ...
+
+    // Action should be SUBMIT unless otherwise specified
+    action = Option(action).getOrElse(SUBMIT)
+  }
+  ```
+
+  - E.g, if `executorMemory` is `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
+  - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`. The aliases of the keys are defined in [*java/org/apache/spark/launcher/SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java)
  
   - This method does not change the content of `sparkProperties`.
     
