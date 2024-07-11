@@ -1,4 +1,5 @@
-Effectively
+
+The process substitution `build_command "$@"` in script *spark-class* executes
 
 ```shell
 /usr/lib/jvm/jre-17/bin/java -Xmx128m -cp <all files under /usr/lib/spark/jars> \
