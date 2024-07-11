@@ -253,12 +253,19 @@ private[spark] class SparkSubmit extends Logging {
         case CONF =>
           val (confName, confValue) = SparkSubmitUtils.parseSparkConfProperty(value)
           sparkProperties(confName) = confValue
+        ...
+        case VERSION =>
+          action = SparkSubmitAction.PRINT_VERSION
+        ...
+      }
+      action != SparkSubmitAction.PRINT_VERSION
+    }
     ```
     - The constants used for matching (e.g., `CONF`, `PROPERTIES_FILE`, `EXECUTOR_MEMORY`, etc.) are defined in [*SparkSubmitOptionParser.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L39C3-L80C44)
    
-   - Insert the options defined via `--conf` or `-c` into `sparkProperties`, which is a `HashMap[String, String]` [initialized by this constructor](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L77).
-  
-   - After `parse()` completes, `sparkProperties` is filled with properties specified through `--conf`
+    - Insert the options defined via `--conf` or `-c` into `sparkProperties`, which is a `HashMap[String, String]` [initialized by this constructor](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L77).
+      
+    - `action` equals `null` unless `opt` match `VERSION`. As a result, an invocation of `handle()` returns `true` unless `opt` match `VERSION`.
 
 
 
