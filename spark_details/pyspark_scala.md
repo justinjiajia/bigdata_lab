@@ -385,7 +385,7 @@ private[spark] class SparkSubmit extends Logging {
   }
   ```
 
-  - E.g, if `executorMemory` is `null` (e.g., hasn't be set via the `--executor-memory` flag), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
+  - E.g., if `executorMemory` is `null` (i.e., not assigned a value by `handle()` as there's no `--executor-memory` flag among the command-line options), try to load the value associated with the key `"spark.executor.memory"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable.
   - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`. The aliases of the keys are defined in [*java/org/apache/spark/launcher/SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java)
  
   - This method does not change the content of `sparkProperties`.
