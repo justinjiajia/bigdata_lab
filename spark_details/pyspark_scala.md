@@ -218,7 +218,7 @@ private[spark] class SparkSubmit extends Logging {
 
 - `parse(args.asJava)`: [`parse()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C1-L193C4) defined for the parent class `SparkSubmitOptionParser` parses and handles different type of command line options. 
 
-  - If an option name exists in a two-level list named [`opts`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L92), 
+  - If a command-line option exists in [`opts`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L92), 
   [`handle()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L349C1-L473C4) 
   assigns its value to the corresponding field declared at the [beginning](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L44C1-L86C50) of the definition of class `SparkSubmitArguments`.
 
@@ -274,7 +274,25 @@ private[spark] class SparkSubmit extends Logging {
       
     - `action` equals `null` unless `opt` matches `VERSION`. As a result, an invocation of `handle()` returns `true` unless `opt` matches `VERSION`.
 
-
+  - [`handleUnknown()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L475C3-L495C4) handles unrecognized options (those do not exist in both `opts` and `switches`). The first unrecognized option is treated as the "primary resource". Everything else is treated as application arguments.
+    ```scala
+    override protected def handleUnknown(opt: String): Boolean = {
+      if (opt.startsWith("-")) {
+        error(s"Unrecognized option '$opt'.")
+      }
+  
+      primaryResource =
+        if (!SparkSubmit.isShell(opt) && !SparkSubmit.isInternal(opt)) {
+          Utils.resolveURI(opt).toString
+        } else {
+          opt
+        }
+      isPython = SparkSubmit.isPython(opt)
+      isR = SparkSubmit.isR(opt)
+      false
+    }
+    ```
+    - This handles the last option `pyspark-shell`.
 
 - [`mergeDefaultSparkProperties()`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L129C1-L144C4) merges values from the default properties file with those specified through `--conf`. When this is called, `sparkProperties` is already filled with configurations from the latter.
 
