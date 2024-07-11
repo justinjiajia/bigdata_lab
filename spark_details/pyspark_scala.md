@@ -296,7 +296,7 @@ private[spark] class SparkSubmit extends Logging {
       }
       ...
       ```
-  - [`Utils.getDefaultPropertiesFile(env)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/util/Utils.scala#L1984C3-L1992C4) return the path of the default Spark properties file.
+  - [`Utils.getDefaultPropertiesFile(env)`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/util/Utils.scala#L1984C3-L1992C4) returns the path of the default Spark properties file.
     ```scala  
     def getDefaultPropertiesFile(env: Map[String, String] = sys.env): String = {
       env.get("SPARK_CONF_DIR")
@@ -307,6 +307,8 @@ private[spark] class SparkSubmit extends Logging {
         .orNull
     }
     ```
+    - Variable `SPARK_CONF_DIR` is one of the environment variables exported by the Bash process that runs *spark-class*, and its value is `/usr/lib/spark/conf`.
+      
   - In summary, the precedence of property setting is as follows: `--conf` > properties in a file specified via  `--properties-file` > properties in file `spark-defaults.conf`
 
 
