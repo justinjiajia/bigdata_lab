@@ -381,6 +381,16 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
               ...
             }
           }
+          ```
+        - `childMainClass` is set to  `args.mainClass`
+          ```scala
+          if (deployMode == CLIENT) {
+            childMainClass = args.mainClass
+            if (localPrimaryResource != null && isUserJar(localPrimaryResource)) {
+              childClasspath += localPrimaryResource
+            }
+            if (localJars != null) { childClasspath ++= localJars.split(",") }
+          }
           ```  
           
       ```scala
