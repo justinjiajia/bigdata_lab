@@ -188,6 +188,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           }
         }
         ```
+        - `new SparkSubmitArguments(args.toImmutableArraySeq){...}` invokes the primmary constructor of the anonymous class. In Scala, the primary constructor is the class body (the entire class body is inside the outermost curly braces (`{...}`)).
     
 
       - `val sparkConf = appArgs.toSparkConf()`: `toSparkConf()` defined for class `SparkSubmitArguments` in *SparkSubmitArguments.scala*
