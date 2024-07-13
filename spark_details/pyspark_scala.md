@@ -248,9 +248,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
             assert(args.maybeRemote.isEmpty || sparkConf.contains("spark.local.connect"))
             v match {
               case "yarn" => YARN
-              case m if m.startsWith("spark") => STANDALONE
-              case m if m.startsWith("k8s") => KUBERNETES
-              case m if m.startsWith("local") => LOCAL
+              ...
               case _ =>
                 error("Master must either be yarn or start with spark, k8s, or local")
                 -1
@@ -276,15 +274,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           }
         }
     
-        if (clusterManager == KUBERNETES) {
-          args.maybeMaster = Option(Utils.checkAndGetK8sMasterUrl(args.master))
-          // Make sure KUBERNETES is included in our build if we're trying to use it
-          if (!Utils.classIsLoadable(KUBERNETES_CLUSTER_SUBMIT_CLASS) && !Utils.isTesting) {
-            error(
-              "Could not load KUBERNETES classes. " +
-                "This copy of Spark may not have been compiled with KUBERNETES support.")
-          }
-        }
+        ...
     
         // Fail fast, the following modes are not supported or applicable
         (clusterManager, deployMode) match {
@@ -333,22 +323,9 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
     
           if (resolvedMavenCoordinates.nonEmpty) {
             if (isKubernetesCluster) {
-              // We need this in K8s cluster mode so that we can upload local deps
-              // via the k8s application, like in cluster mode driver
-              childClasspath ++= resolvedMavenCoordinates
+              ...
             } else {
-              // In K8s client mode, when in the driver, add resolved jars early as we might need
-              // them at the submit time for artifact downloading.
-              // For example we might use the dependencies for downloading
-              // files from a Hadoop Compatible fs e.g. S3. In this case the user might pass:
-              // --packages com.amazonaws:aws-java-sdk:1.7.4:org.apache.hadoop:hadoop-aws:2.7.6
-              if (isKubernetesClusterModeDriver) {
-                val loader = getSubmitClassLoader(sparkConf)
-                for (jar <- resolvedMavenCoordinates) {
-                  addJarToClasspath(jar, loader)
-                }
-              }
-    
+              ...
               args.jars = mergeFileLists(args.jars, mergeFileLists(resolvedMavenCoordinates: _*))
               if (args.isPython || isInternal(args.primaryResource)) {
                 args.pyFiles = mergeFileLists(args.pyFiles,
@@ -357,11 +334,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
             }
           }
     
-          // install any R packages that may have been passed through --jars or --packages.
-          // Spark Packages may contain R source code inside the jar.
-          if (args.isR && !StringUtils.isBlank(args.jars)) {
-            RPackageUtils.checkAndBuildRPackage(args.jars, printStream, args.verbose)
-          }
+          ...
         }
     
         // update spark config from args
@@ -407,71 +380,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           }.orNull
     
           if (isKubernetesClusterModeDriver) {
-            // SPARK-33748: this mimics the behaviour of Yarn cluster mode. If the driver is running
-            // in cluster mode, the archives should be available in the driver's current working
-            // directory too.
-            // SPARK-33782 : This downloads all the files , jars , archiveFiles and pyfiles to current
-            // working directory
-            // SPARK-43540: add current working directory into driver classpath
-            // SPARK-47475: make download to driver optional so executors may fetch resource from remote
-            // url directly to avoid overwhelming driver network when resource is big and executor count
-            // is high
-            val workingDirectory = "."
-            childClasspath += workingDirectory
-            def downloadResourcesToCurrentDirectory(
-                uris: String,
-                isArchive: Boolean = false,
-                avoidDownload: String => Boolean = _ => false): String = {
-              val resolvedUris = Utils.stringToSeq(uris).map(Utils.resolveURI)
-              val (avoidDownloads, toDownloads) =
-                resolvedUris.partition(uri => avoidDownload(uri.getScheme))
-              val localResources = downloadFileList(
-                toDownloads.map(
-                  Utils.getUriBuilder(_).fragment(null).build().toString).mkString(","),
-                targetDir, sparkConf, hadoopConf)
-              (Utils.stringToSeq(localResources).map(Utils.resolveURI).zip(toDownloads).map {
-                case (localResources, resolvedUri) =>
-                  val source = new File(localResources.getPath).getCanonicalFile
-                  val dest = new File(
-                    workingDirectory,
-                    if (resolvedUri.getFragment != null) resolvedUri.getFragment else source.getName)
-                    .getCanonicalFile
-                  logInfo(log"Files ${MDC(LogKeys.URI, resolvedUri)}" +
-                    log" from ${MDC(LogKeys.SOURCE_PATH, source)}" +
-                    log" to ${MDC(LogKeys.DESTINATION_PATH, dest)}")
-                  Utils.deleteRecursively(dest)
-                  if (isArchive) {
-                    Utils.unpack(source, dest)
-                  } else {
-                    Files.copy(source.toPath, dest.toPath)
-                  }
-                  // Keep the URIs of local files with the given fragments.
-                  Utils.getUriBuilder(
-                    localResources).fragment(resolvedUri.getFragment).build().toString
-              } ++ avoidDownloads.map(_.toString)).mkString(",")
-            }
-    
-            val avoidJarDownloadSchemes = sparkConf.get(KUBERNETES_JARS_AVOID_DOWNLOAD_SCHEMES)
-    
-            def avoidJarDownload(scheme: String): Boolean =
-              avoidJarDownloadSchemes.contains("*") || avoidJarDownloadSchemes.contains(scheme)
-    
-            val filesLocalFiles = Option(args.files).map {
-              downloadResourcesToCurrentDirectory(_)
-            }.orNull
-            val updatedJars = Option(args.jars).map {
-              downloadResourcesToCurrentDirectory(_, avoidDownload = avoidJarDownload)
-            }.orNull
-            val archiveLocalFiles = Option(args.archives).map {
-              downloadResourcesToCurrentDirectory(_, true)
-            }.orNull
-            val pyLocalFiles = Option(args.pyFiles).map {
-              downloadResourcesToCurrentDirectory(_)
-            }.orNull
-            args.files = filesLocalFiles
-            args.archives = archiveLocalFiles
-            args.pyFiles = pyLocalFiles
-            args.jars = updatedJars
+            ...
           }
         }
     
@@ -550,17 +459,13 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           if (args.primaryResource == PYSPARK_SHELL) {
             args.mainClass = "org.apache.spark.api.python.PythonGatewayServer"
           } else {
-            // If a python file is provided, add it to the child arguments and list of files to deploy.
-            // Usage: PythonAppRunner <main python file> <extra python files> [app arguments]
-            args.mainClass = "org.apache.spark.deploy.PythonRunner"
-            args.childArgs = ArrayBuffer(localPrimaryResource, localPyFiles) ++ args.childArgs
+            ...
           }
         }
     
         // Non-PySpark applications can need Python dependencies.
         if (deployMode == CLIENT && clusterManager != YARN) {
-          // The YARN backend handles python files differently, so don't merge the lists.
-          args.files = mergeFileLists(args.files, args.pyFiles)
+          ...
         }
     
         if (localPyFiles != null) {
@@ -571,32 +476,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         // archive containing all of the built R libraries to archives so that they can
         // be distributed with the job
         if (args.isR && clusterManager == YARN) {
-          val sparkRPackagePath = RUtils.localSparkRPackagePath
-          if (sparkRPackagePath.isEmpty) {
-            error("SPARK_HOME does not exist for R application in YARN mode.")
-          }
-          val sparkRPackageFile = new File(sparkRPackagePath.get, SPARKR_PACKAGE_ARCHIVE)
-          if (!sparkRPackageFile.exists()) {
-            error(s"$SPARKR_PACKAGE_ARCHIVE does not exist for R application in YARN mode.")
-          }
-          val sparkRPackageURI = Utils.resolveURI(sparkRPackageFile.getAbsolutePath).toString
-    
-          // Distribute the SparkR package.
-          // Assigns a symbol link name "sparkr" to the shipped package.
-          args.archives = mergeFileLists(args.archives, sparkRPackageURI + "#sparkr")
-    
-          // Distribute the R package archive containing all the built R packages.
-          if (!RUtils.rPackages.isEmpty) {
-            val rPackageFile =
-              RPackageUtils.zipRLibraries(new File(RUtils.rPackages.get), R_PACKAGE_ARCHIVE)
-            if (!rPackageFile.exists()) {
-              error("Failed to zip all the built R packages.")
-            }
-    
-            val rPackageURI = Utils.resolveURI(rPackageFile.getAbsolutePath).toString
-            // Assigns a symbol link name "rpkg" to the shipped package.
-            args.archives = mergeFileLists(args.archives, rPackageURI + "#rpkg")
-          }
+          ...
         }
     
         // TODO: Support distributing R packages with standalone cluster
@@ -606,21 +486,11 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
     
         // If we're running an R app, set the main class to our specific R runner
         if (args.isR && deployMode == CLIENT) {
-          if (args.primaryResource == SPARKR_SHELL) {
-            args.mainClass = "org.apache.spark.api.r.RBackend"
-          } else {
-            // If an R file is provided, add it to the child arguments and list of files to deploy.
-            // Usage: RRunner <main R file> [app arguments]
-            args.mainClass = "org.apache.spark.deploy.RRunner"
-            args.childArgs = ArrayBuffer(localPrimaryResource) ++ args.childArgs
-            args.files = mergeFileLists(args.files, args.primaryResource)
-          }
+          ...
         }
     
         if (isYarnCluster && args.isR) {
-          // In yarn-cluster mode for an R app, add primary resource to files
-          // that can be distributed with the job
-          args.files = mergeFileLists(args.files, args.primaryResource)
+          ...
         }
     
         // Special flag to avoid deprecation warnings at the client
@@ -775,21 +645,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         // In standalone cluster mode, use the REST client to submit the application (Spark 1.3+).
         // All Spark parameters are expected to be passed to the client through system properties.
         if (args.isStandaloneCluster) {
-          if (args.useRest) {
-            childMainClass = REST_CLUSTER_SUBMIT_CLASS
-            childArgs += args.primaryResource += args.mainClass
-          } else {
-            // In legacy standalone cluster mode, use Client as a wrapper around the user class
-            childMainClass = STANDALONE_CLUSTER_SUBMIT_CLASS
-            if (args.supervise) { childArgs += "--supervise" }
-            Option(args.driverMemory).foreach { m => childArgs += "--memory" += m }
-            Option(args.driverCores).foreach { c => childArgs += "--cores" += c }
-            childArgs += "launch"
-            childArgs += args.master += args.primaryResource += args.mainClass
-          }
-          if (args.childArgs != null) {
-            childArgs ++= args.childArgs
-          }
+          ...
         }
     
         // Let YARN know it's a pyspark app, so it distributes needed libraries.
@@ -800,56 +656,16 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         }
     
         if (clusterManager == KUBERNETES && UserGroupInformation.isSecurityEnabled) {
-          setRMPrincipal(sparkConf)
+          ...
         }
     
         // In yarn-cluster mode, use yarn.Client as a wrapper around the user class
         if (isYarnCluster) {
-          childMainClass = YARN_CLUSTER_SUBMIT_CLASS
-          if (args.isPython) {
-            childArgs += "--primary-py-file" += args.primaryResource
-            childArgs += "--class" += "org.apache.spark.deploy.PythonRunner"
-          } else if (args.isR) {
-            val mainFile = new Path(args.primaryResource).getName
-            childArgs += "--primary-r-file" += mainFile
-            childArgs += "--class" += "org.apache.spark.deploy.RRunner"
-          } else {
-            if (args.primaryResource != SparkLauncher.NO_RESOURCE) {
-              childArgs += "--jar" += args.primaryResource
-            }
-            childArgs += "--class" += args.mainClass
-          }
-          if (args.childArgs != null) {
-            args.childArgs.foreach { arg => childArgs += "--arg" += arg }
-          }
+          ...
         }
     
         if (isKubernetesCluster) {
-          childMainClass = KUBERNETES_CLUSTER_SUBMIT_CLASS
-          if (args.primaryResource != SparkLauncher.NO_RESOURCE) {
-            if (args.isPython) {
-              childArgs ++= Array("--primary-py-file", args.primaryResource)
-              childArgs ++= Array("--main-class", "org.apache.spark.deploy.PythonRunner")
-            } else if (args.isR) {
-              childArgs ++= Array("--primary-r-file", args.primaryResource)
-              childArgs ++= Array("--main-class", "org.apache.spark.deploy.RRunner")
-            }
-            else {
-              childArgs ++= Array("--primary-java-resource", args.primaryResource)
-              childArgs ++= Array("--main-class", args.mainClass)
-            }
-          } else {
-            childArgs ++= Array("--main-class", args.mainClass)
-          }
-          if (args.childArgs != null) {
-            args.childArgs.foreach { arg =>
-              childArgs += "--arg" += arg
-            }
-          }
-          // Pass the proxyUser to the k8s app so it is possible to add it to the driver args
-          if (args.proxyUser != null) {
-            childArgs += "--proxy-user" += args.proxyUser
-          }
+          ...
         }
     
         // Load any properties specified through --conf and the default properties file
