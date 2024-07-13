@@ -128,7 +128,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
     submit.doSubmit(args)
   }
   ```
-  -  `val submit = new SparkSubmit() { ... }` instantiates an anonymous class subclassed from the `SparkSubmit` class
+  -  `val submit = new SparkSubmit() { ... }` instantiates an anonymous class subclassed from the `SparkSubmit` class and assigns it to `submit`.
   - `self =>` is used to alias `this`.
   - `submit.doSubmit(args)`
     ```scala
@@ -170,7 +170,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         }
       }
       ```
-      - `parseArguments(args)` invokes `parseArguments()` overridden in the [anonymous class subclassed from the `SparkSubmit` class](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala#L1097C7-L1112C1)
+      - `val appArgs = parseArguments(args)` invokes `parseArguments()` overridden in the [anonymous class subclassed from the `SparkSubmit` class](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala#L1097C7-L1112C1) and assigns what returns to `appArgs`.
         ```scala
         override protected def parseArguments(args: Array[String]): SparkSubmitArguments = {
           new SparkSubmitArguments(args.toImmutableArraySeq) {
@@ -188,45 +188,20 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           }
         }
         ```
+    
 
-- `val sparkConf = appArgs.toSparkConf()`: `toSparkConf()` defined for class `SparkSubmitArguments` in *SparkSubmitArguments.scala*
-  ```scala
-  private[deploy] def toSparkConf(sparkConf: Option[SparkConf] = None): SparkConf = {
-    // either use an existing config or create a new empty one
-    sparkProperties.foldLeft(sparkConf.getOrElse(new SparkConf())) {
-      case (conf, (k, v)) => conf.set(k, v)
-    }
-  }
-  ```
-  It puts all properties contained in `sparkProperties` into a `SparkConf` instance.
+      - `val sparkConf = appArgs.toSparkConf()`: `toSparkConf()` defined for class `SparkSubmitArguments` in *SparkSubmitArguments.scala*
+        ```scala
+        private[deploy] def toSparkConf(sparkConf: Option[SparkConf] = None): SparkConf = {
+          // either use an existing config or create a new empty one
+          sparkProperties.foldLeft(sparkConf.getOrElse(new SparkConf())) {
+            case (conf, (k, v)) => conf.set(k, v)
+          }
+        }
+        ```
+        It puts all properties contained in `sparkProperties` into a `SparkConf` instance.
   
-```scala
-/**
- * Main gateway of launching a Spark application.
- *
- * This program handles setting up the classpath with relevant Spark dependencies and provides
- * a layer over the different cluster managers and deploy modes that Spark supports.
- */
-private[spark] class SparkSubmit extends Logging {
 
-  override protected def logName: String = classOf[SparkSubmit].getName
-
-  import DependencyUtils._
-  import SparkSubmit._
-
-  def doSubmit(args: Array[String]): Unit = {
-    val appArgs = parseArguments(args)
-    val sparkConf = appArgs.toSparkConf()
-    ... 
-  }
-
-  protected def parseArguments(args: Array[String]): SparkSubmitArguments = {
-    new SparkSubmitArguments(args.toImmutableArraySeq)
-  }
-
-  ...
-
-```
 
 <br>
 
