@@ -200,7 +200,70 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           }
         }
         ```
-        It puts all properties contained in `sparkProperties` into a `SparkConf` instance.
+        It puts all properties contained in `sparkProperties` into a `SparkConf` instance, the class for which is defined in [*SparkConf.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/SparkConf.scala).
+
+     - `case SparkSubmitAction.SUBMIT => submit(appArgs, uninitLog, sparkConf)`
+   
+     - `submit`
+       ```scala
+       private def submit(args: SparkSubmitArguments, uninitLog: Boolean, sparkConf: SparkConf): Unit = {
+      
+         def doRunMain(): Unit = {
+            if (args.proxyUser != null) {
+              // Here we are checking for client mode because when job is sumbitted in cluster
+              // deploy mode with k8s resource manager, the spark submit in the driver container
+              // is done in client mode.
+              val isKubernetesClusterModeDriver = args.master.startsWith("k8s") &&
+                "client".equals(args.deployMode) &&
+                sparkConf.getBoolean("spark.kubernetes.submitInDriver", false)
+              if (isKubernetesClusterModeDriver) {
+                logInfo("Running driver with proxy user. Cluster manager: Kubernetes")
+                SparkHadoopUtil.get.runAsSparkUser(() => runMain(args, uninitLog))
+              } else {
+                val proxyUser = UserGroupInformation.createProxyUser(args.proxyUser,
+                  UserGroupInformation.getCurrentUser())
+                try {
+                  proxyUser.doAs(new PrivilegedExceptionAction[Unit]() {
+                    override def run(): Unit = {
+                      runMain(args, uninitLog)
+                    }
+                  })
+                } catch {
+                  case e: Exception =>
+                    // Hadoop's AuthorizationException suppresses the exception's stack trace, which
+                    // makes the message printed to the output by the JVM not very helpful. Instead,
+                    // detect exceptions with empty stack traces here, and treat them differently.
+                    if (e.getStackTrace().length == 0) {
+                      error(s"ERROR: ${e.getClass().getName()}: ${e.getMessage()}")
+                    } else {
+                      throw e
+                    }
+                } finally {
+                  FileSystem.closeAllForUGI(proxyUser)
+                }
+              }
+            } else {
+              runMain(args, uninitLog)
+            }
+          }
+      
+          // In standalone cluster mode, there are two submission gateways:
+          //   (1) The traditional RPC gateway using o.a.s.deploy.Client as a wrapper
+          //   (2) The new REST-based gateway introduced in Spark 1.3
+          // The latter is the default behavior as of Spark 1.3, but Spark submit will fail over
+          // to use the legacy gateway if the master endpoint turns out to be not a REST server.
+          if (args.isStandaloneCluster && args.useRest) {
+            ...
+            }
+          // In all other modes, just run the main class as prepared
+          } else {
+            doRunMain()
+          }
+        }
+        ```
+
+
+       
   
 
 
@@ -439,6 +502,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
   - `driverExtraLibraryPath` is set to the value associated with the property `"spark.driver.extraLibraryPath"` in *spark-defaults.conf*.
   - `driverMemory` is set to `2g` due to `.orElse(sparkProperties.get(config.DRIVER_MEMORY.key))`.
   - `name` is set to `PySparkShell`.
+  - `action` is set to `SUBMIT`.
   - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`. The aliases of the keys are defined in [*java/org/apache/spark/launcher/SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java)
  
   - This method does not change the content of `sparkProperties`.
