@@ -447,15 +447,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         if (clusterManager != STANDALONE
             && args.principal != null
             && args.keytab != null) {
-          // If client mode, make sure the keytab is just a local path.
-          if (deployMode == CLIENT && Utils.isLocalUri(args.keytab)) {
-            args.keytab = new URI(args.keytab).getPath()
-          }
-    
-          if (!Utils.isLocalUri(args.keytab)) {
-            require(new File(args.keytab).exists(), s"Keytab file: ${args.keytab} does not exist")
-            UserGroupInformation.loginUserFromKeytab(args.principal, args.keytab)
-          }
+           ...
         }
     
         // Resolve glob path for different resources.
