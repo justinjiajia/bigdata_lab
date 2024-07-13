@@ -709,18 +709,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           }
         }
     
-        if (clusterManager == KUBERNETES && UserGroupInformation.isSecurityEnabled) {
-          ...
-        }
-    
-        // In yarn-cluster mode, use yarn.Client as a wrapper around the user class
-        if (isYarnCluster) {
-          ...
-        }
-    
-        if (isKubernetesCluster) {
-          ...
-        }
+        ...
     
         // Load any properties specified through --conf and the default properties file
         for ((k, v) <- args.sparkProperties) {
