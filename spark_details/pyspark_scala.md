@@ -234,6 +234,44 @@ private[spark] class SparkSubmit extends Logging {
 
 `SparkSubmitArguments` extends class [`SparkSubmitArgumentsParser`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/launcher/SparkSubmitArgumentsParser.scala), which makes the Java class [`SparkSubmitOptionParser`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java) visible for Spark code.
 
+```scala
+...
+private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, String] = sys.env)
+  extends SparkSubmitArgumentsParser with Logging {
+  var maybeMaster: Option[String] = None
+  // Global defaults. These should be keep to minimum to avoid confusing behavior.
+  def master: String = maybeMaster.getOrElse("local[*]")
+  var maybeRemote: Option[String] = None
+  var deployMode: String = null
+  var executorMemory: String = null
+  var executorCores: String = null
+  var totalExecutorCores: String = null
+  var propertiesFile: String = null
+  private var loadSparkDefaults: Boolean = false
+  ...
+  val sparkProperties: HashMap[String, String] = new HashMap[String, String]()
+  ...
+
+  // Set parameters from command line arguments
+  parse(args.asJava)
+
+  // Populate `sparkProperties` map from properties file
+  mergeDefaultSparkProperties()
+  // Remove keys that don't start with "spark." from `sparkProperties`.
+  ignoreNonSparkProperties()
+  // Use `sparkProperties` map along with env vars to fill in any missing parameters
+  loadEnvironmentArguments()
+
+  useRest = sparkProperties.getOrElse("spark.master.rest.enabled", "false").toBoolean
+
+  validateArguments()
+
+  ...
+}
+
+```
+
+
 - `parse(args.asJava)`: [`parse()`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L137C1-L193C4) defined for the parent class `SparkSubmitOptionParser` parses and handles different type of command line options. 
 
   - If a command-line option exists in [`opts`](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkSubmitOptionParser.java#L92), 
@@ -407,7 +445,11 @@ private[spark] class SparkSubmit extends Logging {
       name = Option(name).orElse(env.get("SPARK_YARN_APP_NAME")).orNull
     }
 
-    ...
+    // Set name from main class if not given
+    name = Option(name).orElse(Option(mainClass)).orNull
+    if (name == null && primaryResource != null) {
+      name = new File(primaryResource).getName()
+    }
 
     // Action should be SUBMIT unless otherwise specified
     action = Option(action).getOrElse(SUBMIT)
@@ -417,56 +459,15 @@ private[spark] class SparkSubmit extends Logging {
   - E.g., `executorCores` is not assigned a value by `handle()` because there's no `--executor-cores` flag among the command-line options. As a result, the function tries to load the value associated with the key `"spark.executor.cores"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable. Eventually, `executorCores` is set to `4` because the property `"spark.executor.cores"` is associated with a value of `4` in *spark-defaults.conf*.
   - `driverExtraClassPath` is set to the value associated with the property `"spark.driver.extraClassPath"` in *spark-defaults.conf*.
   - `driverExtraLibraryPath` is set to the value associated with the property `"spark.driver.extraLibraryPath"` in *spark-defaults.conf*.
+  - `driverMemory` is set to `2g` due to `.orElse(sparkProperties.get(config.DRIVER_MEMORY.key))`.
+  - `name` is set to `PySparkShell`.
   - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`. The aliases of the keys are defined in [*java/org/apache/spark/launcher/SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java)
  
   - This method does not change the content of `sparkProperties`.
     
 - [validateArguments()](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmitArguments.scala#L241C2-L249C4) calls `validateSubmitArguments()` to validate all fields as `action` was set to `SUBMIT`.
- 
-
-  - This method does not change the content of `sparkProperties`. 
 
 
-```scala
-...
-/**
- * Parses and encapsulates arguments from the spark-submit script.
- * The env argument is used for testing.
- */
-private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, String] = sys.env)
-  extends SparkSubmitArgumentsParser with Logging {
-  var maybeMaster: Option[String] = None
-  // Global defaults. These should be keep to minimum to avoid confusing behavior.
-  def master: String = maybeMaster.getOrElse("local[*]")
-  var maybeRemote: Option[String] = None
-  var deployMode: String = null
-  var executorMemory: String = null
-  var executorCores: String = null
-  var totalExecutorCores: String = null
-  var propertiesFile: String = null
-  private var loadSparkDefaults: Boolean = false
-  ...
-  val sparkProperties: HashMap[String, String] = new HashMap[String, String]()
-  ...
-
-  // Set parameters from command line arguments
-  parse(args.asJava)
-
-  // Populate `sparkProperties` map from properties file
-  mergeDefaultSparkProperties()
-  // Remove keys that don't start with "spark." from `sparkProperties`.
-  ignoreNonSparkProperties()
-  // Use `sparkProperties` map along with env vars to fill in any missing parameters
-  loadEnvironmentArguments()
-
-  useRest = sparkProperties.getOrElse("spark.master.rest.enabled", "false").toBoolean
-
-  validateArguments()
-
-  ...
-}
-
-```
 
 
 <br>
