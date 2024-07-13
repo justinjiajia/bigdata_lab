@@ -317,7 +317,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
       - `val (childArgs, childClasspath, sparkConf, childMainClass) = prepareSubmitEnvironment(args)`: [prepareSubmitEnvironment(args: SparkSubmitArguments, conf: Option[HadoopConfiguration] = None)
           : (Seq[String], Seq[String], SparkConf, String)]()
          - `val sparkConf = args.toSparkConf()`
-         - Set the cluster manager. `clusterManager` is set to `YARN` because `args.maybeMaster` matches `Some(v)` and `v` matches `"yarn".
+         - `clusterManager` is set to `YARN` because `args.maybeMaster` matches `Some(v)` and `v` matches `"yarn".
            ```scala
            val clusterManager: Int = args.maybeMaster match {
              case Some(v) =>
@@ -332,7 +332,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
              case None => LOCAL // default master or remote mode.
            }
            ```
-        - Set the deploy mode.  `deployMode` is set `CLIENT` because `args.deployMode` matches `null`.
+        - `deployMode` is set `CLIENT` because `args.deployMode` matches `null`.
           ```scala
           val deployMode: Int = args.deployMode match {
             case "client" | null => CLIENT
@@ -361,6 +361,14 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
               error("Cluster deploy mode is not applicable to Spark Thrift server.")
             case (_, CLUSTER) if isConnectServer(args.mainClass) =>
               error("Cluster deploy mode is not applicable to Spark Connect server.")
+            case _ =>
+          }
+          ```
+        - Update `args.deployMode` to `"client"` if it is `null`
+          ```scala
+          (args.deployMode, deployMode) match {
+            case (null, CLIENT) => args.deployMode = "client"
+            case (null, CLUSTER) => args.deployMode = "cluster"
             case _ =>
           }
           ```
@@ -395,12 +403,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         // Fail fast,
         ...
     
-        // Update args.deployMode if it is null. It will be passed down as a Spark property later.
-        (args.deployMode, deployMode) match {
-          case (null, CLIENT) => args.deployMode = "client"
-          case (null, CLUSTER) => args.deployMode = "cluster"
-          case _ =>
-        }
+        // 
         val isYarnCluster = clusterManager == YARN && deployMode == CLUSTER
         val isStandAloneCluster = clusterManager == STANDALONE && deployMode == CLUSTER
         val isKubernetesCluster = clusterManager == KUBERNETES && deployMode == CLUSTER
