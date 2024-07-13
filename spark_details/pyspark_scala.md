@@ -531,34 +531,10 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           }.orNull
         }
     
-        // At this point, we have attempted to download all remote resources.
-        // Now we try to resolve the main class if our primary resource is a JAR.
-        if (args.mainClass == null && !args.isPython && !args.isR) {
-          try {
-            val uri = new URI(
-              Option(localPrimaryResource).getOrElse(args.primaryResource)
-            )
-            val fs = FileSystem.get(uri, hadoopConf)
-    
-            Utils.tryWithResource(new JarInputStream(fs.open(new Path(uri)))) { jar =>
-              args.mainClass = jar.getManifest.getMainAttributes.getValue("Main-Class")
-            }
-          } catch {
-            case e: Throwable =>
-              error(
-                s"Failed to get main class in JAR with error '${e.getMessage}'. " +
-                " Please specify one with --class."
-              )
-          }
-    
-          if (args.mainClass == null) {
-            // If we still can't figure out the main class at this point, blow up.
-            error("No main class set in JAR; please specify one with --class.")
-          }
-        }
+        ...
     
         // If we're running a python app, set the main class to our specific python runner
-        
+        ...
     
         // Non-PySpark applications can need Python dependencies.
         if (deployMode == CLIENT && clusterManager != YARN) {
@@ -569,26 +545,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           sparkConf.set(SUBMIT_PYTHON_FILES, localPyFiles.split(",").toImmutableArraySeq)
         }
     
-        // In YARN mode for an R app, add the SparkR package archive and the R package
-        // archive containing all of the built R libraries to archives so that they can
-        // be distributed with the job
-        if (args.isR && clusterManager == YARN) {
-          ...
-        }
-    
-        // TODO: Support distributing R packages with standalone cluster
-        if (args.isR && clusterManager == STANDALONE && !RUtils.rPackages.isEmpty) {
-          error("Distributing R packages with standalone cluster is not supported.")
-        }
-    
-        // If we're running an R app, set the main class to our specific R runner
-        if (args.isR && deployMode == CLIENT) {
-          ...
-        }
-    
-        if (isYarnCluster && args.isR) {
-          ...
-        }
+        ...
     
         // Special flag to avoid deprecation warnings at the client
         sys.props("SPARK_SUBMIT") = "true"
