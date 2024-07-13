@@ -1055,7 +1055,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
     // Set name from main class if not given
     name = Option(name).orElse(Option(mainClass)).orNull
     if (name == null && primaryResource != null) {
-      name = new File(primaryResource).getName()
+      ...
     }
 
     // Action should be SUBMIT unless otherwise specified
@@ -1064,10 +1064,14 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
   ```
 
   - E.g., `executorCores` is not assigned a value by `handle()` because there's no `--executor-cores` flag among the command-line options. As a result, the function tries to load the value associated with the key `"spark.executor.cores"` from `sparkProperties` first; if there's no such a key in `sparkProperties`, try to load the value from a relevant environment variable. Eventually, `executorCores` is set to `4` because the property `"spark.executor.cores"` is associated with a value of `4` in *spark-defaults.conf*.
+  - `executorMemory` is set to `2g` because of the command-line option `--executor-memory 2g`.
   - `driverExtraClassPath` is set to the value associated with the property `"spark.driver.extraClassPath"` in *spark-defaults.conf*.
   - `driverExtraLibraryPath` is set to the value associated with the property `"spark.driver.extraLibraryPath"` in *spark-defaults.conf*.
   - `driverMemory` is set to `2g` due to `.orElse(sparkProperties.get(config.DRIVER_MEMORY.key))`.
+  - `deployMode` is set to `null`.
+  - `repositories` is set to `null`.
   - `name` is set to `PySparkShell`.
+  - `dynamicAllocationEnabled` is set to `true` becausue the property `"spark.driver.extraClassPath"` in *spark-defaults.conf* is configured to `true`.
   - `action` is set to `SUBMIT`.
   - Objects like `config.EXECUTOR_MEMORY` and `config.DRIVER_CORES` are `ConfigEntry` instances defined in [*package.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/internal/config/package.scala). Their `.key` fields are strings like `"spark.executor.memory"` and `"spark.driver.memory"`. The aliases of the keys are defined in [*java/org/apache/spark/launcher/SparkLauncher.java*](https://github.com/apache/spark/blob/master/launcher/src/main/java/org/apache/spark/launcher/SparkLauncher.java)
  
