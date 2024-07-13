@@ -1000,10 +1000,7 @@ private[deploy] class SparkSubmitArguments(args: Seq[String], env: Map[String, S
 
     // Set name from main class if not given
     name = Option(name).orElse(Option(mainClass)).orNull
-    if (name == null && primaryResource != null) {
-      ...
-    }
-
+    ...
     // Action should be SUBMIT unless otherwise specified
     action = Option(action).getOrElse(SUBMIT)
   }
