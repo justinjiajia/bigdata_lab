@@ -880,8 +880,9 @@ private[spark] case class ConfigBuilder(key: String) {
 
 ### [*scala/org/apache/spark/SparkConf.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/SparkConf.scala)
 
-```scala
+<br>
 
+```scala
 class SparkConf(loadDefaults: Boolean) extends Cloneable with Logging with Serializable {
 
   import SparkConf._
@@ -909,6 +910,24 @@ class SparkConf(loadDefaults: Boolean) extends Cloneable with Logging with Seria
     this
   }
 
+  /** Set a configuration variable. */
+  def set(key: String, value: String): SparkConf = {
+    set(key, value, false)
+  }
+
+  private[spark] def set(key: String, value: String, silent: Boolean): SparkConf = {
+    if (key == null) {
+      throw new NullPointerException("null key")
+    }
+    if (value == null) {
+      throw new NullPointerException("null value for " + key)
+    }
+    if (!silent) {
+      logDeprecationWarning(key)
+    }
+    settings.put(key, value)
+    this
+  }
   ...
 
   /**
