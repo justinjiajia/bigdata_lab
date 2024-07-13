@@ -228,8 +228,143 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
           }
         }
         ```
-
-    - ``
+    - `runMain(args, uninitLog)`
+      ```scala
+      private def runMain(args: SparkSubmitArguments, uninitLog: Boolean): Unit = {
+        val (childArgs, childClasspath, sparkConf, childMainClass) = prepareSubmitEnvironment(args)
+        // Let the main class re-initialize the logging system once it starts.
+        if (uninitLog) {
+          Logging.uninitialize()
+        }
+    
+        if (args.verbose) {
+          logInfo(log"Main class:\n${MDC(LogKeys.CLASS_NAME, childMainClass)}")
+          logInfo(log"Arguments:\n${MDC(LogKeys.ARGS, childArgs.mkString("\n"))}")
+          // sysProps may contain sensitive information, so redact before printing
+          logInfo(log"Spark config:\n" +
+          log"${MDC(LogKeys.CONFIG, Utils.redact(sparkConf.getAll.toMap).sorted.mkString("\n"))}")
+          logInfo(log"Classpath elements:\n${MDC(LogKeys.CLASS_PATHS, childClasspath.mkString("\n"))}")
+          logInfo("\n")
+        }
+        assert(!(args.deployMode == "cluster" && args.proxyUser != null && childClasspath.nonEmpty) ||
+          sparkConf.get(ALLOW_CUSTOM_CLASSPATH_BY_PROXY_USER_IN_CLUSTER_MODE),
+          s"Classpath of spark-submit should not change in cluster mode if proxy user is specified " +
+            s"when ${ALLOW_CUSTOM_CLASSPATH_BY_PROXY_USER_IN_CLUSTER_MODE.key} is disabled")
+        val loader = getSubmitClassLoader(sparkConf)
+        for (jar <- childClasspath) {
+          addJarToClasspath(jar, loader)
+        }
+    
+        var mainClass: Class[_] = null
+    
+        try {
+          mainClass = Utils.classForName(childMainClass)
+        } catch {
+          case e: ClassNotFoundException =>
+            logError(log"Failed to load class ${MDC(LogKeys.CLASS_NAME, childMainClass)}.")
+            if (childMainClass.contains("thriftserver")) {
+              logInfo(log"Failed to load main class ${MDC(LogKeys.CLASS_NAME, childMainClass)}.")
+              logInfo("You need to build Spark with -Phive and -Phive-thriftserver.")
+            } else if (childMainClass.contains("org.apache.spark.sql.connect")) {
+              logInfo(log"Failed to load main class ${MDC(LogKeys.CLASS_NAME, childMainClass)}.")
+              // TODO(SPARK-42375): Should point out the user-facing page here instead.
+              logInfo("You need to specify Spark Connect jars with --jars or --packages.")
+            }
+            throw new SparkUserAppException(CLASS_NOT_FOUND_EXIT_STATUS)
+          case e: NoClassDefFoundError =>
+            logError(log"Failed to load ${MDC(LogKeys.CLASS_NAME, childMainClass)}", e)
+            if (e.getMessage.contains("org/apache/hadoop/hive")) {
+              logInfo("Failed to load hive class.")
+              logInfo("You need to build Spark with -Phive and -Phive-thriftserver.")
+            }
+            throw new SparkUserAppException(CLASS_NOT_FOUND_EXIT_STATUS)
+        }
+    
+        val app: SparkApplication = if (classOf[SparkApplication].isAssignableFrom(mainClass)) {
+          mainClass.getConstructor().newInstance().asInstanceOf[SparkApplication]
+        } else {
+          new JavaMainApplication(mainClass)
+        }
+    
+        @tailrec
+        def findCause(t: Throwable): Throwable = t match {
+          case e: UndeclaredThrowableException =>
+            if (e.getCause() != null) findCause(e.getCause()) else e
+          case e: InvocationTargetException =>
+            if (e.getCause() != null) findCause(e.getCause()) else e
+          case e: Throwable =>
+            e
+        }
+    
+        try {
+          app.start(childArgs.toArray, sparkConf)
+        } catch {
+          case t: Throwable =>
+            throw findCause(t)
+        } finally {
+          if (args.master.startsWith("k8s") && !isShell(args.primaryResource) &&
+              !isSqlShell(args.mainClass) && !isThriftServer(args.mainClass) &&
+              !isConnectServer(args.mainClass)) {
+            try {
+              SparkContext.getActive.foreach(_.stop())
+            } catch {
+              case e: Throwable => logError("Failed to close SparkContext", e)
+            }
+          }
+        }
+      }
+      ```
+      - `val (childArgs, childClasspath, sparkConf, childMainClass) = prepareSubmitEnvironment(args)`: [prepareSubmitEnvironment(args: SparkSubmitArguments, conf: Option[HadoopConfiguration] = None)
+          : (Seq[String], Seq[String], SparkConf, String)]()
+         - `val sparkConf = args.toSparkConf()`
+         - Set the cluster manager. `clusterManager` is set to `YARN` because `args.maybeMaster` matches `Some(v)` and `v` matches `"yarn".
+           ```scala
+           val clusterManager: Int = args.maybeMaster match {
+             case Some(v) =>
+               assert(args.maybeRemote.isEmpty || sparkConf.contains("spark.local.connect"))
+               v match {
+                 case "yarn" => YARN
+                 ...
+                 case _ =>
+                   error("Master must either be yarn or start with spark, k8s, or local")
+                   -1
+               }
+             case None => LOCAL // default master or remote mode.
+           }
+           ```
+        - Set the deploy mode.  `deployMode` is set `CLIENT` because `args.deployMode` matches `null`.
+          ```scala
+          val deployMode: Int = args.deployMode match {
+            case "client" | null => CLIENT
+            case "cluster" => CLUSTER
+            case _ =>
+              error("Deploy mode must be either client or cluster")
+              -1
+          }
+          ```
+        - Raise errors for the following ineligible settings:
+          ```scala
+          (clusterManager, deployMode) match {
+            case (STANDALONE, CLUSTER) if args.isPython =>
+              error("Cluster deploy mode is currently not supported for python " +
+                "applications on standalone clusters.")
+            case (STANDALONE, CLUSTER) if args.isR =>
+              error("Cluster deploy mode is currently not supported for R " +
+                "applications on standalone clusters.")
+            case (LOCAL, CLUSTER) =>
+              error("Cluster deploy mode is not compatible with master \"local\"")
+            case (_, CLUSTER) if isShell(args.primaryResource) =>
+              error("Cluster deploy mode is not applicable to Spark shells.")
+            case (_, CLUSTER) if isSqlShell(args.mainClass) =>
+              error("Cluster deploy mode is not applicable to Spark SQL shell.")
+            case (_, CLUSTER) if isThriftServer(args.mainClass) =>
+              error("Cluster deploy mode is not applicable to Spark Thrift server.")
+            case (_, CLUSTER) if isConnectServer(args.mainClass) =>
+              error("Cluster deploy mode is not applicable to Spark Connect server.")
+            case _ =>
+          }
+          ```
+          
       ```scala
       private[deploy] def prepareSubmitEnvironment(
           args: SparkSubmitArguments,
@@ -242,28 +377,9 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         if (sparkConf.contains("spark.local.connect")) sparkConf.remove("spark.remote")
         var childMainClass = ""
     
-        // Set the cluster manager
-        val clusterManager: Int = args.maybeMaster match {
-          case Some(v) =>
-            assert(args.maybeRemote.isEmpty || sparkConf.contains("spark.local.connect"))
-            v match {
-              case "yarn" => YARN
-              ...
-              case _ =>
-                error("Master must either be yarn or start with spark, k8s, or local")
-                -1
-            }
-          case None => LOCAL // default master or remote mode.
-        }
+        
     
-        // Set the deploy mode; default is client mode
-        val deployMode: Int = args.deployMode match {
-          case "client" | null => CLIENT
-          case "cluster" => CLUSTER
-          case _ =>
-            error("Deploy mode must be either client or cluster")
-            -1
-        }
+        
     
         if (clusterManager == YARN) {
           // Make sure YARN is included in our build if we're trying to use it
@@ -276,26 +392,8 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
     
         ...
     
-        // Fail fast, the following modes are not supported or applicable
-        (clusterManager, deployMode) match {
-          case (STANDALONE, CLUSTER) if args.isPython =>
-            error("Cluster deploy mode is currently not supported for python " +
-              "applications on standalone clusters.")
-          case (STANDALONE, CLUSTER) if args.isR =>
-            error("Cluster deploy mode is currently not supported for R " +
-              "applications on standalone clusters.")
-          case (LOCAL, CLUSTER) =>
-            error("Cluster deploy mode is not compatible with master \"local\"")
-          case (_, CLUSTER) if isShell(args.primaryResource) =>
-            error("Cluster deploy mode is not applicable to Spark shells.")
-          case (_, CLUSTER) if isSqlShell(args.mainClass) =>
-            error("Cluster deploy mode is not applicable to Spark SQL shell.")
-          case (_, CLUSTER) if isThriftServer(args.mainClass) =>
-            error("Cluster deploy mode is not applicable to Spark Thrift server.")
-          case (_, CLUSTER) if isConnectServer(args.mainClass) =>
-            error("Cluster deploy mode is not applicable to Spark Connect server.")
-          case _ =>
-        }
+        // Fail fast,
+        ...
     
         // Update args.deployMode if it is null. It will be passed down as a Spark property later.
         (args.deployMode, deployMode) match {
