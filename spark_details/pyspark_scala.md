@@ -172,18 +172,20 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
       ```
       - `parseArguments(args)` invokes `parseArguments()` overridden in the [anonymous class subclassed from the `SparkSubmit` class](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala#L1097C7-L1112C1)
         ```scala
-        new SparkSubmitArguments(args.toImmutableArraySeq) {
-           override protected def logInfo(msg: => String): Unit = self.logInfo(msg)
- 
-           override protected def logInfo(entry: LogEntry): Unit = self.logInfo(entry)
- 
-           override protected def logWarning(msg: => String): Unit = self.logWarning(msg)
- 
-           override protected def logWarning(entry: LogEntry): Unit = self.logWarning(entry)
- 
-           override protected def logError(msg: => String): Unit = self.logError(msg)
- 
-           override protected def logError(entry: LogEntry): Unit = self.logError(entry)
+        override protected def parseArguments(args: Array[String]): SparkSubmitArguments = {
+          new SparkSubmitArguments(args.toImmutableArraySeq) {
+            override protected def logInfo(msg: => String): Unit = self.logInfo(msg)
+  
+            override protected def logInfo(entry: LogEntry): Unit = self.logInfo(entry)
+  
+            override protected def logWarning(msg: => String): Unit = self.logWarning(msg)
+  
+            override protected def logWarning(entry: LogEntry): Unit = self.logWarning(entry)
+  
+            override protected def logError(msg: => String): Unit = self.logError(msg)
+  
+            override protected def logError(entry: LogEntry): Unit = self.logError(entry)
+          }
         }
         ```
 
