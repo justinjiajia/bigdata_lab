@@ -372,6 +372,16 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
             case _ =>
           }
           ```
+        - Set `args.mainClass` to  `"org.apache.spark.api.python.PythonGatewayServer"`
+          ```scala
+          if (args.isPython && deployMode == CLIENT) {
+            if (args.primaryResource == PYSPARK_SHELL) {
+              args.mainClass = "org.apache.spark.api.python.PythonGatewayServer"
+            } else {
+              ...
+            }
+          }
+          ```  
           
       ```scala
       private[deploy] def prepareSubmitEnvironment(
@@ -548,13 +558,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         }
     
         // If we're running a python app, set the main class to our specific python runner
-        if (args.isPython && deployMode == CLIENT) {
-          if (args.primaryResource == PYSPARK_SHELL) {
-            args.mainClass = "org.apache.spark.api.python.PythonGatewayServer"
-          } else {
-            ...
-          }
-        }
+        
     
         // Non-PySpark applications can need Python dependencies.
         if (deployMode == CLIENT && clusterManager != YARN) {
