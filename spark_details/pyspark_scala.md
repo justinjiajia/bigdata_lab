@@ -388,9 +388,22 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
       - `new JavaMainApplication(mainClass)` invokes the constructor of `JavaMainApplication` defined in [*SparkApplication.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkApplication.scala#L33C1-L55C2)
         ```scala
         private[deploy] class JavaMainApplication(klass: Class[_]) extends SparkApplication {
-          ...
+          override def start(args: Array[String], conf: SparkConf): Unit = {
+            val mainMethod = klass.getMethod("main", new Array[String](0).getClass)
+            if (!Modifier.isStatic(mainMethod.getModifiers)) {
+              throw new IllegalStateException("The main method in the given main class must be static")
+            }
+        
+            val sysProps = conf.getAll.toMap
+            sysProps.foreach { case (k, v) =>
+              sys.props(k) = v
+            }
+        
+            mainMethod.invoke(null, args)
+          }
         }
         ```
+      - `app.start(childArgs.toArray, sparkConf)`
       - 
                             
       ```scala
