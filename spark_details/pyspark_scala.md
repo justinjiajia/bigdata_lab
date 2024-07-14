@@ -307,7 +307,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
       ```
       - `val (childArgs, childClasspath, sparkConf, childMainClass) = prepareSubmitEnvironment(args)`: [prepareSubmitEnvironment()](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala#L226C3-L921C4)
          - `val sparkConf = args.toSparkConf()`
-         - `clusterManager` is set to `YARN` because `args.maybeMaster` matches `Some(v)` and `v` matches `"yarn".
+         - `clusterManager` is set to `YARN` because `args.maybeMaster` matches `Some(v)` and `v` matches `"yarn"`.
            ```scala
            val clusterManager: Int = args.maybeMaster match {
              case Some(v) =>
