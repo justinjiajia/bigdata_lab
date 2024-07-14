@@ -381,8 +381,12 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
             }
             if (localJars != null) { childClasspath ++= localJars.split(",") }
           }
-          ```  
-          
+          ```
+
+      - `classOf[SparkApplication].isAssignableFrom(mainClass)`: determines whether an instance of type `mainClass` can be assigned to a variable of type `SparkApplication`.
+   
+      - `new JavaMainApplication(mainClass)` invokes the constructor of [`JavaMainApplication`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkApplication.scala#L33C1-L55C2)
+                            
       ```scala
       private[deploy] def prepareSubmitEnvironment(
           args: SparkSubmitArguments,
