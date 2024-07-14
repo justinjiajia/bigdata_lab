@@ -238,18 +238,9 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         }
     
         if (args.verbose) {
-          logInfo(log"Main class:\n${MDC(LogKeys.CLASS_NAME, childMainClass)}")
-          logInfo(log"Arguments:\n${MDC(LogKeys.ARGS, childArgs.mkString("\n"))}")
-          // sysProps may contain sensitive information, so redact before printing
-          logInfo(log"Spark config:\n" +
-          log"${MDC(LogKeys.CONFIG, Utils.redact(sparkConf.getAll.toMap).sorted.mkString("\n"))}")
-          logInfo(log"Classpath elements:\n${MDC(LogKeys.CLASS_PATHS, childClasspath.mkString("\n"))}")
-          logInfo("\n")
+          ...
         }
-        assert(!(args.deployMode == "cluster" && args.proxyUser != null && childClasspath.nonEmpty) ||
-          sparkConf.get(ALLOW_CUSTOM_CLASSPATH_BY_PROXY_USER_IN_CLUSTER_MODE),
-          s"Classpath of spark-submit should not change in cluster mode if proxy user is specified " +
-            s"when ${ALLOW_CUSTOM_CLASSPATH_BY_PROXY_USER_IN_CLUSTER_MODE.key} is disabled")
+        ...
         val loader = getSubmitClassLoader(sparkConf)
         for (jar <- childClasspath) {
           addJarToClasspath(jar, loader)
@@ -314,8 +305,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
         }
       }
       ```
-      - `val (childArgs, childClasspath, sparkConf, childMainClass) = prepareSubmitEnvironment(args)`: [prepareSubmitEnvironment(args: SparkSubmitArguments, conf: Option[HadoopConfiguration] = None)
-          : (Seq[String], Seq[String], SparkConf, String)]()
+      - `val (childArgs, childClasspath, sparkConf, childMainClass) = prepareSubmitEnvironment(args)`: [prepareSubmitEnvironment()](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkSubmit.scala#L226C3-L921C4)
          - `val sparkConf = args.toSparkConf()`
          - `clusterManager` is set to `YARN` because `args.maybeMaster` matches `Some(v)` and `v` matches `"yarn".
            ```scala
