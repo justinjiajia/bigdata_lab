@@ -322,7 +322,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
              case None => LOCAL // default master or remote mode.
            }
            ```
-        - `deployMode` is set `CLIENT` because `args.deployMode` matches `null`.
+        - `deployMode` is set to `CLIENT` because `args.deployMode` matches `null`.
           ```scala
           val deployMode: Int = args.deployMode match {
             case "client" | null => CLIENT
@@ -354,7 +354,7 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
             case _ =>
           }
           ```
-        - Update `args.deployMode` to `"client"` if it is `null`
+        - Update `args.deployMode` to `"client"`
           ```scala
           (args.deployMode, deployMode) match {
             case (null, CLIENT) => args.deployMode = "client"
