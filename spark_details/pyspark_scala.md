@@ -385,7 +385,13 @@ SHELL=/bin/bash HISTCONTROL=ignoredups SYSTEMD_COLORS=false HISTSIZE=1000 HOSTNA
 
       - `classOf[SparkApplication].isAssignableFrom(mainClass)`: determines whether an instance of type `mainClass` can be assigned to a variable of type `SparkApplication`.
    
-      - `new JavaMainApplication(mainClass)` invokes the constructor of [`JavaMainApplication`](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkApplication.scala#L33C1-L55C2)
+      - `new JavaMainApplication(mainClass)` invokes the constructor of `JavaMainApplication` defined in [*SparkApplication.scala*](https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/deploy/SparkApplication.scala#L33C1-L55C2)
+        ```scala
+        private[deploy] class JavaMainApplication(klass: Class[_]) extends SparkApplication {
+          ...
+        }
+        ```
+      - 
                             
       ```scala
       private[deploy] def prepareSubmitEnvironment(
